@@ -1,47 +1,49 @@
 // eslint-disable-next-line
-import { UserLayout, BasicLayout, BlankLayout, PageView } from '@/layouts'
-import { bxAnaalyse } from '@/core/icons'
+import { UserLayout, BasicLayout, BlankLayout, PageView } from "@/layouts";
+import { bxAnaalyse } from "@/core/icons";
 
 const RouteView = {
-  name: 'RouteView',
-  render: (h) => h('router-view'),
-}
+  name: "RouteView",
+  render: h => h("router-view"),
+};
 
 export const asyncRouterMap = [
   {
-    path: '/',
-    name: 'index',
+    path: "/",
+    name: "index",
     component: BasicLayout,
-    meta: { title: '首页' },
-    redirect: '/live/list',
+    meta: { title: "首页" },
+    redirect: "/live/list",
     children: [
       // 直播平台
       {
-        path: '/live',
-        name: 'live',
+        path: "/live",
+        name: "live",
         component: PageView,
-        meta: { title: '直播平台', icon: 'home-o' },
+        meta: { title: "直播平台", icon: "home-o" },
         children: [
           // 直播列表
           {
-            path: '/live/list',
-            name: 'liveList',
-            component: () => import('@/views/live/list'),
-            meta: { title: '直播列表' },
+            path: "/live/list",
+            name: "liveList",
+            component: () => import("@/views/live/list"),
+            meta: { title: "直播列表" },
             // permission: ['live']
           },
           {
-            path: '/live/replay/:configId([1-9]\\d*)+',
-            name: 'replayList',
-            component: () => import('@/views/live/replayList'),
-            meta: { title: '直播回放' },
+            path: "/live/replay/:configId([1-9]\\d*)+",
+            name: "replayList",
+            component: () => import("@/views/live/replayList"),
+            meta: { title: "直播回放" },
             // permission: ['live']
+            hidden: true,
           },
-           {
-            path: '/live/live/:configId([1-9]\\d*)+',
-            name: 'livePage',
-            component: () => import('@/views/live/replayList'),
-            meta: { title: '课程直播' },
+          {
+            // 学生-课程直播
+            path: "/live/live/:liveId([1-9]\\d*)+",
+            name: "livePage",
+            component: () => import("@/views/live/liveClass/student"),
+            meta: { title: "课程直播页" },
             // permission: ['live']
           },
         ],
@@ -49,11 +51,11 @@ export const asyncRouterMap = [
     ],
   },
   {
-    path: '*',
-    redirect: '/404',
+    path: "*",
+    redirect: "/404",
     hidden: true,
   },
-]
+];
 
 /**
  * 基础路由
@@ -61,36 +63,36 @@ export const asyncRouterMap = [
  */
 export const constantRouterMap = [
   {
-    path: '/user',
+    path: "/user",
     component: UserLayout,
-    redirect: '/user/login',
+    redirect: "/user/login",
     hidden: true,
     children: [
       {
-        path: 'login',
-        name: 'login',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login'),
+        path: "login",
+        name: "login",
+        component: () => import(/* webpackChunkName: "user" */ "@/views/user/Login"),
       },
       {
-        path: 'register',
-        name: 'register',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register'),
+        path: "register",
+        name: "register",
+        component: () => import(/* webpackChunkName: "user" */ "@/views/user/Register"),
       },
       {
-        path: 'register-result',
-        name: 'registerResult',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/RegisterResult'),
+        path: "register-result",
+        name: "registerResult",
+        component: () => import(/* webpackChunkName: "user" */ "@/views/user/RegisterResult"),
       },
       {
-        path: 'recover',
-        name: 'recover',
+        path: "recover",
+        name: "recover",
         component: undefined,
       },
     ],
   },
 
   {
-    path: '/404',
-    component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404'),
+    path: "/404",
+    component: () => import(/* webpackChunkName: "fail" */ "@/views/exception/404"),
   },
-]
+];

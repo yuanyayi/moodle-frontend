@@ -30,8 +30,11 @@
         </p>
         <p v-else><b>直播时间:</b>{{ formatTime(detail.start_time) }} - {{ formatTime(detail.end_time) }}</p>
         <a-space>
-          <a-button v-if="detail.statusByTime !== 3" type="primary" @click="gotoCourseLive(detail.id)"
+          <a-button v-if="detail.status === 1" type="primary" @click="gotoCourseLive(detail.id)"
             >进入直播间</a-button
+          >
+          <a-button type="primary" @click="gotoCourseLive(detail.id)"
+            >测试：进入直播间</a-button
           >
           <a-button v-if="detail.replay" class="greenBtn" @click="gotoCourseReplay(detail.id)">直播回放</a-button>
           <template v-if="role === 'teacher'">
@@ -174,11 +177,11 @@ export default {
       }
       this.fetch()
     },
-    gotoCourseLive(id) {
-      console.log('gotoCourseLive', id)
+    gotoCourseLive(liveId) {
+      console.log('gotoCourseLive', liveId)
       this.$router.push({
         name: 'livePage',
-        params: { id },
+        params: { liveId },
       })
     },
     gotoCourseReplay(configId) {

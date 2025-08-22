@@ -6,11 +6,11 @@
 </template>
 
 <script>
-import moment from 'moment'
+import moment from "moment";
 export default {
-  name: 'DateAndTime',
+  name: "DateAndTime",
   props: {
-    val: {
+    value: {
       type: [Date, String, Number, moment],
       default: () => new moment(),
     },
@@ -18,35 +18,40 @@ export default {
   data() {
     return {
       // 可以在这里定义其他数据属性
-      value: new moment(), // moment
+      selfValue: new moment(), // moment 整体时间，最终值
       tempValue: {
+        // 给组件看的
         date: null,
         time: null,
       },
-    }
+    };
   },
   watch: {
-    val: {
+    value: {
       immediate: true,
       handler(newVal) {
-        this.tempValue = { date: newVal ? moment(newVal) : new moment(), time: newVal ? moment(newVal) : new moment() }
+        console.log("DateAndTime value:", newVal);
+        newVal = newVal || moment();
+        this.selfValue = newVal;
+        this.tempValue = { date: newVal ? moment(newVal) : new moment(), time: newVal ? moment(newVal) : new moment() };
+        this.triggerChange(newVal || this.selfValue);
       },
     },
   },
   methods: {
     // 可以在这里定义其他方法
     onDateChange(v) {
-      this.value = v ? moment(v).set({ hour: this.value.hour(), minute: this.value.minute(), second: 0 }) : null
-      this.triggerChange(this.value)
+      this.selfValue = v ? moment(v).set({ hour: this.selfValue.hour(), minute: this.selfValue.minute(), second: 0 }) : null;
+      this.triggerChange(this.selfValue);
     },
     onTimeChange(v) {
-      this.value = v ? moment(this.value).set({ hour: v.hour(), minute: v.minute(), second: 0 }) : null
-      this.triggerChange(this.value)
+      this.selfValue = v ? moment(this.selfValue).set({ hour: v.hour(), minute: v.minute(), second: 0 }) : null;
+      this.triggerChange(this.selfValue);
     },
     triggerChange(changedValue) {
-      // console.log('DateAndTime changed:', changedValue.format())
-      this.$emit('change', changedValue)
+      console.log("DateAndTime changed:", changedValue.format());
+      this.$emit("change", changedValue);
     },
   },
-}
+};
 </script>
