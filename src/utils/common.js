@@ -1,25 +1,14 @@
 import moment from "moment";
 
-export const cdnBaseUrl =
-  "https://trendy-download.oss-cn-beijing.aliyuncs.com/web";
+export const cdnBaseUrl = "https://trendy-download.oss-cn-beijing.aliyuncs.com/web";
 
 // 从列表中转vals为Label, 要求value格式完全一致才可计算
-export function readFromList(
-  vals,
-  list,
-  char = "，",
-  emptytxt = "<无>",
-  opt = {}
-) {
+export function readFromList(vals, list, char = "，", emptytxt = "<无>", opt = {}) {
   char = !!char ? char : "，";
   const label = opt.label || "label";
   const value = opt.value || "value";
   // value => label
-  if (
-    [undefined, null, ""].indexOf(vals) !== -1 ||
-    [undefined, null, ""].indexOf(list) !== -1 ||
-    !list.length
-  ) {
+  if ([undefined, null, ""].indexOf(vals) !== -1 || [undefined, null, ""].indexOf(list) !== -1 || !list.length) {
     if (process.env.NODE_ENV !== "production") {
       console.error("readFromList方法传入参数有误，重新检查代码。");
       console.error(vals, list, char);
@@ -31,12 +20,10 @@ export function readFromList(
   }
   if (!vals.length) return emptytxt;
   const result = list
-    .filter((el) => {
-      return (
-        vals.indexOf(el[value]) !== -1 || vals.indexOf("" + el[value]) !== -1
-      );
+    .filter(el => {
+      return vals.indexOf(el[value]) !== -1 || vals.indexOf("" + el[value]) !== -1;
     })
-    .map((el) => el[label]);
+    .map(el => el[label]);
   return result.length > 0 ? result.join(char) : emptytxt;
 }
 
@@ -49,7 +36,7 @@ export function readFromTree(vals = [], map = [], children = "children") {
     }
   }
   // console.log(result);
-  return result.filter((el) => !/<无>$/.test(el)).join("；") || "<无>";
+  return result.filter(el => !/<无>$/.test(el)).join("；") || "<无>";
 }
 
 export function readItemFromTree(val, map = [], opt) {
@@ -86,10 +73,7 @@ export function toThousands(num) {
   let [n1, n2] = (num + "").split(".");
   n2 = n2 ? n2 : "";
 
-  return (
-    n1.replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
-    ((num + "").match(/\./) ? "." + n2 : "")
-  );
+  return n1.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ((num + "").match(/\./) ? "." + n2 : "");
 }
 export function parseThousands(str) {
   return str.replace(/\$\s?|(,*)/g, "");
@@ -145,16 +129,8 @@ function toDataURL(chart) {
   let dataURL = "";
   if (renderer === "svg") {
     const clone = canvasDom.cloneNode(true);
-    const svgDocType = document.implementation.createDocumentType(
-      "svg",
-      "-//W3C//DTD SVG 1.1//EN",
-      "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"
-    );
-    const svgDoc = document.implementation.createDocument(
-      "http://www.w3.org/2000/svg",
-      "svg",
-      svgDocType
-    );
+    const svgDocType = document.implementation.createDocumentType("svg", "-//W3C//DTD SVG 1.1//EN", "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd");
+    const svgDoc = document.implementation.createDocument("http://www.w3.org/2000/svg", "svg", svgDocType);
     svgDoc.replaceChild(clone, svgDoc.documentElement);
     const svgData = new XMLSerializer().serializeToString(svgDoc);
     dataURL = "data:image/svg+xml;charset=utf8," + encodeURIComponent(svgData);
@@ -186,7 +162,7 @@ export function downloadImage(chart, name = "G2Chart") {
     const imgData = newCanvas.toDataURL("image/png");
     fileDownload(imgData);
   };
-  const fileDownload = (imgData) => {
+  const fileDownload = imgData => {
     const aLink = document.createElement("a");
     aLink.style.display = "none";
     aLink.href = imgData;
@@ -211,10 +187,10 @@ export function obj2arr(obj, type = "kv", opt = {}) {
         str
           .slice(1, str.length - 1)
           .split(",")
-          .map((itemStr) => "{" + itemStr + "}") +
+          .map(itemStr => "{" + itemStr + "}") +
         "]";
     }
-    return JSON.parse(str).map((item) => {
+    return JSON.parse(str).map(item => {
       for (let key in item) {
         key = isNaN(+key) ? key : +key;
         return {
@@ -224,7 +200,7 @@ export function obj2arr(obj, type = "kv", opt = {}) {
       }
     });
   } else if (obj instanceof Array) {
-    return obj.map((item) => {
+    return obj.map(item => {
       return {
         [label]: item,
         [value]: item,
@@ -305,11 +281,8 @@ export const g2ColorList = [
   "#fae3ed",
 ];
 
-export function getDurationList(
-  list = [3, 5, 15, 20, 30, 60, 90, 9999],
-  readable = false
-) {
-  let result = list.map((v) => {
+export function getDurationList(list = [3, 5, 15, 20, 30, 60, 90, 9999], readable = false) {
+  let result = list.map(v => {
     if (v === 9999) {
       return {
         label: "不限",
@@ -333,12 +306,12 @@ export function getDurationList(
       value: v,
     };
   });
-  if (readable) return result.map((el) => el.label).join("，");
+  if (readable) return result.map(el => el.label).join("，");
   return result;
 }
 
-export function formatDate(timestamp) {
-  return timestamp ? moment(+timestamp).format("YYYY/MM/DD") : "无";
+export function formatDate(timestamp, type = "YYYY/MM/DD") {
+  return timestamp ? moment(+timestamp).format(type) : "无";
 }
 
 export function formatTime(timestamp) {
@@ -386,19 +359,7 @@ export function filterSendData(sendData = {}, options = {}) {
   return sendData;
 }
 
-export const eNumber = [
-  "zero",
-  "one",
-  "two",
-  "three",
-  "four",
-  "five",
-  "six",
-  "seven",
-  "eight",
-  "nine",
-  "ten",
-];
+export const eNumber = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
 
 export function fc(arr) {
   if (!arr.length) {
@@ -408,9 +369,7 @@ export function fc(arr) {
   }
   let sum = arr.reduce((sum, el) => Math.fround(sum + el), 0);
   let ave = sum / arr.length;
-  let re =
-    arr.reduce((sum, el) => Math.fround(sum + Math.pow(el - ave, 2)), 0) /
-    arr.length;
+  let re = arr.reduce((sum, el) => Math.fround(sum + Math.pow(el - ave, 2)), 0) / arr.length;
   return {
     fc: re,
     sd: Math.sqrt(re, 2),
@@ -456,34 +415,17 @@ export function timeago(dateTimeStamp) {
     let datetime = new Date();
     datetime.setTime(dateTimeStamp);
     let Nyear = datetime.getFullYear();
-    let Nmonth =
-      datetime.getMonth() + 1 < 10
-        ? "0" + (datetime.getMonth() + 1)
-        : datetime.getMonth() + 1;
-    let Ndate =
-      datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate();
-    let Nhour =
-      datetime.getHours() < 10
-        ? "0" + datetime.getHours()
-        : datetime.getHours();
-    let Nminute =
-      datetime.getMinutes() < 10
-        ? "0" + datetime.getMinutes()
-        : datetime.getMinutes();
-    let Nsecond =
-      datetime.getSeconds() < 10
-        ? "0" + datetime.getSeconds()
-        : datetime.getSeconds();
+    let Nmonth = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
+    let Ndate = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate();
+    let Nhour = datetime.getHours() < 10 ? "0" + datetime.getHours() : datetime.getHours();
+    let Nminute = datetime.getMinutes() < 10 ? "0" + datetime.getMinutes() : datetime.getMinutes();
+    let Nsecond = datetime.getSeconds() < 10 ? "0" + datetime.getSeconds() : datetime.getSeconds();
     result = Nyear + "-" + Nmonth + "-" + Ndate;
   }
   return result;
 }
 // 获取文件名
-export function getFileNameFromUrl(
-  url,
-  filename = "下载文件",
-  emptyTxt = "<无>"
-) {
+export function getFileNameFromUrl(url, filename = "下载文件", emptyTxt = "<无>") {
   const result = url.match(new RegExp("/([^/?#]+)[^/]*$"));
   if (!result) return emptyTxt;
   return result.length > 0 ? result[0].replace(new RegExp("^/"), "") : filename;

@@ -1,39 +1,31 @@
 <template>
   <a-card :bordered="false" style="margin-bottom: 24px">
-    <a-card title="直播基本信息">
+    <a-card title="直播基本信息" style="margin-bottom: 24px">
       <a-descriptions :column="2" :bordered="false" :dataSource="detail" :size="'small'">
         <a-descriptions-item v-for="(desc, field) in fieldsMap" :key="field" :label="desc.label">{{ detail[field] }} </a-descriptions-item>
       </a-descriptions>
     </a-card>
 
-    <Empty v-if="!tableList.length" />
-    <div v-for="(detail, index) in tableList" class="tableItem">
-      <div class="frame">
-        <img v-show="detail.img" :src="detail.img" :alt="detail.subject" />
-        <a-icon type="play-circle" style="font-size: 50px" />
-      </div>
-      <div class="content">
-        <p style="font-size: 18px">{{ detail.subject }}</p>
-        <p><b>相关课程：</b>{{ detail.course_name }}</p>
-        <p><b>主持人：</b>{{ detail.teacher_name }}</p>
-        <p>
-          <b>直播时间:</b>{{ formatTime(detail.start_time) }} - {{ formatTime(detail.end_time) }}
-          <!-- <span>下次直播：</span> -->
-        </p>
-        <a-space>
-          <a-button v-if="detail.status === 1" type="primary" @click="gotoCourseLive(detail.id)">进入直播间</a-button>
-          <a-button v-if="detail.replay && detail.status === 3" class="greenBtn" @click="gotoReplayList(detail.id)">直播回放{{detail.status === 3}}</a-button>
-          <template v-if="role === 'teacher'">
-            <a-button type="info" @click="searchByTheme(detail.theme_id)">编辑</a-button>
-            <a-button type="danger" @click="searchByTheme(detail.theme_id)">删除</a-button>
-          </template>
-        </a-space>
-      </div>
+    <a-row :gutter="[10, 10]">
+      <template v-for="(detail, index) in tableList">
+        <a-col :span="8">
+          <div class="tableItem" @click="gotoReplay(detail.id)">
+            <div class="frame">
+              <img v-show="detail.img" :src="detail.img" :alt="detail.subject" />
+              <a-icon type="play-circle" style="font-size: 50px" />
+            </div>
+            <div class="content">
+              <p style="font-size: 18px; font-weight: 500">{{ detail.name }}</p>
+              <p>{{ detail.teacher_name }} {{ formatDate(+detail.start_time, "YYYY-MM-DD") }}</p>
 
-      <div class="flag">
-        <a-badge :color="getStatusColor(detail.table_status)" :text="getStatusText(detail.table_status)" />
-      </div>
-    </div>
+              <!-- <a-button class="greenBtn" @click="gotoReplayList(detail.id)">直播回放{{ detail.status === 3 }}</a-button> -->
+            </div>
+          </div>
+        </a-col>
+      </template>
+    </a-row>
+    <Empty v-if="!tableList.length" />
+
     <a-pagination style="float: right" v-bind="pagination" @change="paginationChangeHandler" />
   </a-card>
 </template>
@@ -42,8 +34,9 @@
 import APagination from "ant-design-vue/es/pagination";
 import Empty from "@/components/Empty.vue";
 import DetailList from "@/components/DetailList";
-import { formatTime } from "@/utils/common";
-import { getLiveConfigDetail, fetchLiveReplayList, getLiveMaps } from "@/api/live";
+import { formatDate } from "@/utils/common";
+import { getLiveConfigDetail, getLiveMaps } from "@/api/live";
+import { getReplayList } from "@/api/livepage";
 
 export default {
   name: "replayList",
@@ -98,9 +91,13 @@ export default {
           type: "switch",
         },
       },
+      statusList: [],
     };
   },
   computed: {
+    role() {
+      return this.$route.params.role || "teacher";
+    },
     configId() {
       return this.$route.params.configId;
     },
@@ -112,7 +109,9 @@ export default {
   },
   methods: {
     getMaps() {
-      getLiveMaps().then(map => {});
+      getLiveMaps().then(map => {
+        this.statusList = map.liveStatusMap;
+      });
     },
     fetchDetail() {
       getLiveConfigDetail(this.configId).then(res => {
@@ -121,7 +120,7 @@ export default {
     },
     fetch() {
       this.loading = true;
-      fetchLiveReplayList(this.configId, {
+      getReplayList(this.configId, {
         // ...this.queryParam,
         ...this.listParam,
       })
@@ -144,10 +143,11 @@ export default {
         params: { level_name: this.level, id },
       });
     },
-    gotoReplayList(id) {
+    gotoReplay(liveId) {
       this.$router.push({
-        name: "sheetDetail",
-        params: { level_name: this.level, id },
+        name: "watch",
+        params: { liveId },
+        query: { mode: "replay" },
       });
     },
     handleOk() {
@@ -159,9 +159,9 @@ export default {
     },
     // ---------- Filters ---------- //
     getStatusText(s) {
-      return this.queryField.status.list.find(el => el.value == s)?.label || "未知的状态";
+      return this.statusList.find(el => el.value == s)?.label || "未知的状态";
     },
-    formatTime,
+    formatDate,
     getStatusColor(s) {
       return ["gold", "#2db7f5", "#fff", "#87d068", "#ff4d4f", "#ff4d4f"][s] || "#87d068";
     },
@@ -175,7 +175,7 @@ export default {
   padding: 10px;
   margin-bottom: 20px;
   border: 1px solid #dedede;
-  display: flex;
+  display: block;
   position: relative;
   &:hover {
     box-shadow: 2px 2px 3px #dedede;
@@ -192,7 +192,7 @@ export default {
   }
   .frame {
     flex: 0 0 auto;
-    width: 200px;
+    width: 100%;
     height: 140px;
     text-align: center;
     position: relative;

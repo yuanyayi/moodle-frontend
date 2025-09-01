@@ -33,18 +33,26 @@ export const asyncRouterMap = [
           {
             path: "/live/replay/:configId([1-9]\\d*)+",
             name: "replayList",
-            component: () => import("@/views/live/replayList"),
+            component: () => import("@/views/live/liveClass/replayList"),
             meta: { title: "直播回放" },
             // permission: ['live']
             hidden: true,
           },
           {
-            // 学生-课程直播
-            path: "/live/live/:liveId([1-9]\\d*)+",
-            name: "livePage",
-            component: () => import("@/views/live/liveClass/student"),
+            // 课程开播
+            path: "/live/broadcast/:liveId([1-9]\\d*)+/",
+            name: "broadcast",
+            meta: { title: "课程开播页" },
+            component: () => import("@/views/live/liveClass/broadcast"),
+            hidden: true,
+          },
+          {
+            // 课程观播
+            path: "/live/watch/:liveId([1-9]\\d*)+/",
+            name: "watch",
             meta: { title: "课程直播页" },
-            // permission: ['live']
+            component: () => import("@/views/live/liveClass/watchLive"),
+            hidden: true,
           },
         ],
       },

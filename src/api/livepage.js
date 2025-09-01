@@ -1,3 +1,5 @@
+// 火山直播接口
+
 import { axios } from "@/utils/request";
 // import { obj2arr, fileDownload, baseUrl, encodeRequest } from '@/utils/common'
 
@@ -28,5 +30,24 @@ export function prepareLivePage(liveId, userId = 1, username = "trendy") {
         },
       };
     });
+  });
+}
+
+export function prepareBroadcast(liveId, userId = 1, username = "trendy") {
+  return axios({
+    url: `/broadcastUrl`,
+    params: { liveId, userId, username },
+  });
+}
+
+export function getReplayList(liveConfigId){
+  return axios({
+    url: `/liveRecordPage/${liveConfigId}`,
+  });
+}
+export function prepareReplay(liveId, userId = 1, username = "trendy") {
+  return axios({
+    url: `/liveRecordDetail/${liveId}`,
+    params: { liveId, userId, username },
   });
 }

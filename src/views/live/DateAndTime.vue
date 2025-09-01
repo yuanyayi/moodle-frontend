@@ -31,7 +31,7 @@ export default {
       immediate: true,
       handler(newVal) {
         console.log("DateAndTime value:", newVal);
-        newVal = newVal || moment();
+        newVal = newVal || moment().add(11, "minutes");
         this.selfValue = newVal;
         this.tempValue = { date: newVal ? moment(newVal) : new moment(), time: newVal ? moment(newVal) : new moment() };
         this.triggerChange(newVal || this.selfValue);
