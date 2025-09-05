@@ -1,6 +1,6 @@
 <template>
   <div id="broadcastPage">
-    <iframe v-if="broadcastUrl" :src="broadcastUrl" width="100%" height="100%" frameborder="0" scrolling="no" allow="microphone;camera;midi;encrypted-media;"></iframe>
+    <iframe v-if="broadcastUrl" :src="broadcastUrl" width="100%" height="100%" frameborder="0" scrolling="no" allow="microphone;camera;midi;encrypted-media;display-capture;"></iframe>
     <div v-else style="background-color: #fff; padding: 20px">
       <Empty :opt="{ description: errorMsg }" />
     </div>
