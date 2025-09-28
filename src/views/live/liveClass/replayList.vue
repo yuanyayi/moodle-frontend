@@ -15,8 +15,25 @@
               <a-icon type="play-circle" style="font-size: 50px" />
             </div>
             <div class="content">
-              <p style="font-size: 18px; font-weight: 500">{{ detail.name }}</p>
-              <p>{{ detail.teacher_name }} {{ formatDate(+detail.start_time, "YYYY-MM-DD") }}</p>
+              <p style="font-size: 18px; font-weight: 500" @click.stop>
+                <EditText
+                  :ref="`edit${index}`"
+                  :value="detail.name"
+                  trigger="icon"
+                  @change="
+                    val => {
+                      editName(detail.id, val);
+                    }
+                  ">
+                  <template v-slot:addonAfter>
+                    <a-button class="operateBtn" icon="edit" size="small" ghost @click.stop="$refs[`edit${index}`][0].openEdit()" />
+                  </template>
+                </EditText>
+              </p>
+              <p style="display: flex; justify-content: space-between">
+                {{ detail.teacher_name }} {{ formatDate(+detail.start_time, "YYYY-MM-DD") }}
+                <a-button type="danger" icon="delete" size="small" ghost style="flex: none; border: none !important" @click.stop="deleteLiveRecord(detail.id)" />
+              </p>
 
               <!-- <a-button class="greenBtn" @click="gotoReplayList(detail.id)">直播回放{{ detail.status === 3 }}</a-button> -->
             </div>
@@ -36,7 +53,8 @@ import Empty from "@/components/Empty.vue";
 import DetailList from "@/components/DetailList";
 import { formatDate } from "@/utils/common";
 import { getLiveConfigDetail, getLiveMaps } from "@/api/live";
-import { getReplayList } from "@/api/livepage";
+import { getReplayList, renameLiveRecord, deleteLiveRecord } from "@/api/livepage";
+import EditText from "@/components/EditText";
 
 export default {
   name: "replayList",
@@ -44,6 +62,7 @@ export default {
     DetailList,
     APagination,
     Empty,
+    EditText,
   },
   data() {
     return {
@@ -133,20 +152,10 @@ export default {
           this.loading = false;
         });
     },
-    searchByTheme(bid) {
-      this.queryParam.theme = bid;
-      this.fetch();
-    },
-    gotoCourseLive(id) {
-      this.$router.push({
-        name: "sheetDetail",
-        params: { level_name: this.level, id },
-      });
-    },
-    gotoReplay(liveId) {
+    gotoReplay(liveConfigId) {
       this.$router.push({
         name: "watch",
-        params: { liveId },
+        params: { liveConfigId },
         query: { mode: "replay" },
       });
     },
@@ -164,6 +173,29 @@ export default {
     formatDate,
     getStatusColor(s) {
       return ["gold", "#2db7f5", "#fff", "#87d068", "#ff4d4f", "#ff4d4f"][s] || "#87d068";
+    },
+    editName(id, val) {
+      renameLiveRecord(id, val).then(res => {
+        this.fetch();
+      });
+    },
+    deleteLiveRecord(id) {
+      this.$confirm({
+        title: "确定要删除吗？",
+        content: "删除后无法恢复",
+        okText: "删除",
+        okType: "danger",
+        cancelText: "取消",
+        onOk: () => {
+          deleteLiveRecord(id).then(res => {
+            if (res.status) {
+              this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+              return;
+            }
+            this.fetch();
+          });
+        },
+      });
     },
   },
 };
@@ -213,6 +245,11 @@ export default {
       color: #fff;
       cursor: pointer;
     }
+  }
+  .content .operateBtn {
+    color: grey;
+    margin-left: 10px;
+    vertical-align: middle;
   }
 }
 .greenBtn {

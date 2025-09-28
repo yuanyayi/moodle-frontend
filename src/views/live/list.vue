@@ -90,6 +90,7 @@ export default {
           // start_time_begin start_time_stop
           type: "dateRange",
           label: "直播开始时间",
+          items: { md: 16, lg: 8 },
         },
         course_id: {
           type: "select",
@@ -136,8 +137,15 @@ export default {
     },
     fetch() {
       this.loading = true;
+      let queryParam = { ...this.queryParam };
+      if (queryParam.start_time.length) {
+        queryParam.start_time_begin = queryParam.start_time[0].format("x");
+        queryParam.start_time_stop = queryParam.start_time[1].format("x");
+        delete queryParam.start_time;
+      }
+
       fetchLiveList({
-        // ...this.queryParam,
+        ...queryParam,
         ...this.listParam,
       })
         .then(res => {
@@ -159,18 +167,18 @@ export default {
     clearQuery() {
       this.listParam.page = 1;
       this.queryParam = {
-        semester_id: "",
+        semester_id: undefined,
         status: -1,
-        subject: "",
+        subject: undefined,
         start_time: [],
-        course_id: "",
+        course_id: undefined,
       };
       this.fetch();
     },
-    gotoCourseLive(liveId) {
+    gotoCourseLive(liveConfigId) {
       this.$router.push({
         name: "watch",
-        params: { liveId },
+        params: { liveConfigId },
       });
     },
     gotoReplayList(configId) {
@@ -179,16 +187,10 @@ export default {
         params: { configId },
       });
     },
-    gotoCourseBroadcast(liveId) {
+    gotoCourseBroadcast(liveConfigId) {
       this.$router.push({
         name: "broadcast",
-        params: { liveId },
-      });
-    },
-    gotoCourseReplay(configId) {
-      this.$router.push({
-        name: "replayList",
-        params: { configId },
+        params: { liveConfigId },
       });
     },
     handleOk() {

@@ -11,7 +11,8 @@
     "lint:nofix": "vue-cli-service lint --no-fix",
     "lint:js": "eslint src/**/*.js --fix",
     "lint:css": "stylelint src/**/*.*ss --fix  --custom-syntax postcss-less",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "build:umd": "vue-cli-service build --target lib --name volcano --no-clean src/main.js"
   },
   "dependencies": {
     "@ant-design-vue/pro-layout": "^1.0.12",
@@ -90,5 +91,7 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
-  }
+  },
+  "main": "dist/umd/volcano.umd.min.js",
+  "unpkg": "dist/umd/volcano.umd.min.js"
 }

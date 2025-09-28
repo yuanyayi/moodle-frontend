@@ -23,12 +23,12 @@ export default {
     };
   },
   computed: {
-    liveId() {
-      return this.$route.params.liveId;
+    liveConfigId() {
+      return this.$route.params.liveConfigId;
     },
   },
   mounted() {
-    prepareBroadcast(this.liveId).then(res => {
+    prepareBroadcast(this.liveConfigId).then(res => {
       if (res.status) {
         this.$message.error(res.msg || "获取数据失败，请稍后再试。");
         this.errorMsg = res.msg || "获取数据失败，请稍后再试。";

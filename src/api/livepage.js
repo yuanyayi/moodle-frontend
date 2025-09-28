@@ -3,10 +3,10 @@
 import { axios } from "@/utils/request";
 // import { obj2arr, fileDownload, baseUrl, encodeRequest } from '@/utils/common'
 
-export function prepareLivePage(liveId, userId = 1, username = "trendy") {
+export function prepareLivePage(liveConfigId, userId = 1, username = "trendy") {
   return axios({
     url: `/getVolcLiveUrl`,
-    params: { username, liveId },
+    params: { username, liveConfigId },
   }).then(res => {
     if (res.status) {
       this.$message.error(res.msg || "获取数据失败，请稍后再试。");
@@ -33,14 +33,14 @@ export function prepareLivePage(liveId, userId = 1, username = "trendy") {
   });
 }
 
-export function prepareBroadcast(liveId, userId = 1, username = "trendy") {
+export function prepareBroadcast(liveConfigId, userId = 1, username = "trendy") {
   return axios({
     url: `/broadcastUrl`,
-    params: { liveId, userId, username },
+    params: { liveConfigId, userId, username },
   });
 }
 
-export function getReplayList(liveConfigId){
+export function getReplayList(liveConfigId) {
   return axios({
     url: `/liveRecordPage/${liveConfigId}`,
   });
@@ -50,4 +50,19 @@ export function prepareReplay(liveId, userId = 1, username = "trendy") {
     url: `/liveRecordDetail/${liveId}`,
     params: { liveId, userId, username },
   });
+}
+
+export function renameLiveRecord(id, name) {
+  return axios({
+    url: `/renameLiveRecord/${id}`,
+    params: { name },
+    method: "post",
+  });
+}
+
+export function deleteLiveRecord(id){
+  return axios({
+    url: `/deleteLiveRecord/${id}`,
+    method: "post",
+  })
 }
