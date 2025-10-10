@@ -87,8 +87,8 @@ export default {
           title: "直播时间",
           dataIndex: "start_time",
           key: "start_time",
-          customRender: ({ text }) => {
-            return this.formatTime(text, "YYYY-MM-DD HH:mm");
+          customRender: val => {
+            return this.formatTime(val, "YYYY-MM-DD HH:mm");
           },
         },
         {
@@ -138,9 +138,16 @@ export default {
     },
     fetch() {
       this.loading = true;
+      let queryParam = { ...this.queryParam };
+      if (queryParam.start_time.length) {
+        queryParam.start_time_begin = queryParam.start_time[0].format("x");
+        queryParam.start_time_stop = queryParam.start_time[1].format("x");
+        delete queryParam.start_time;
+      }
+
       getDistinguishList({
         ...this.listParam,
-        ...this.queryParam,
+        ...queryParam,
       })
         .then(res => {
           this.tableList = res.pageBean.list;
@@ -158,10 +165,11 @@ export default {
     clearQuery() {
       this.listParam.page = 1;
       this.queryParam = {
-        semester_id: "",
-        subject: "",
+        semester_id: undefined,
+        status: -1,
+        subject: undefined,
         start_time: [],
-        course_id: "",
+        course_id: undefined,
       };
       this.fetch();
     },

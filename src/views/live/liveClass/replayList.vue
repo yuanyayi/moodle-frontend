@@ -2,13 +2,24 @@
   <a-card :bordered="false" style="margin-bottom: 24px">
     <a-card title="直播基本信息" style="margin-bottom: 24px">
       <a-descriptions :column="2" :bordered="false" :dataSource="detail" :size="'small'">
-        <a-descriptions-item v-for="(desc, field) in fieldsMap" :key="field" :label="desc.label">{{ detail[field] }} </a-descriptions-item>
+        <a-descriptions-item v-for="(desc, field) in fieldsMap" :key="field" :label="desc.label">
+          <template v-if="['start_time', 'end_time'].indexOf(field) !== -1">
+            {{ formatDate(detail[field], "YYYY-MM-DD HH:mm") }}
+          </template>
+          <template v-else-if="field === 'repeat'">
+            {{ readFromList(detail[field], desc.list) }}
+          </template>
+          <template v-else-if="field === 'replay'">
+            {{ detail[field] ? "是" : "否" }}
+          </template>
+          <template v-else>{{ detail[field] }}</template>
+        </a-descriptions-item>
       </a-descriptions>
     </a-card>
 
     <a-row :gutter="[10, 10]">
       <template v-for="(detail, index) in tableList">
-        <a-col :span="8">
+        <a-col :xs="12" :sm="8" :lg="6">
           <div class="tableItem" @click="gotoReplay(detail.id)">
             <div class="frame">
               <img v-show="detail.img" :src="detail.img" :alt="detail.subject" />
@@ -32,7 +43,7 @@
               </p>
               <p style="display: flex; justify-content: space-between">
                 {{ detail.teacher_name }} {{ formatDate(+detail.start_time, "YYYY-MM-DD") }}
-                <a-button type="danger" icon="delete" size="small" ghost style="flex: none; border: none !important" @click.stop="deleteLiveRecord(detail.id)" />
+                <a-button type="danger" icon="delete" size="small" ghost style="flex: none; border: none !important; box-shadow: none" @click.stop="deleteLiveRecord(detail.id)" />
               </p>
 
               <!-- <a-button class="greenBtn" @click="gotoReplayList(detail.id)">直播回放{{ detail.status === 3 }}</a-button> -->
@@ -51,7 +62,7 @@
 import APagination from "ant-design-vue/es/pagination";
 import Empty from "@/components/Empty.vue";
 import DetailList from "@/components/DetailList";
-import { formatDate } from "@/utils/common";
+import { formatDate, readFromList } from "@/utils/common";
 import { getLiveConfigDetail, getLiveMaps } from "@/api/live";
 import { getReplayList, renameLiveRecord, deleteLiveRecord } from "@/api/livepage";
 import EditText from "@/components/EditText";
@@ -130,6 +141,7 @@ export default {
     getMaps() {
       getLiveMaps().then(map => {
         this.statusList = map.liveStatusMap;
+        this.fieldsMap.repeat.list = map.repeatMap;
       });
     },
     fetchDetail() {
@@ -171,6 +183,7 @@ export default {
       return this.statusList.find(el => el.value == s)?.label || "未知的状态";
     },
     formatDate,
+    readFromList,
     getStatusColor(s) {
       return ["gold", "#2db7f5", "#fff", "#87d068", "#ff4d4f", "#ff4d4f"][s] || "#87d068";
     },
@@ -250,6 +263,7 @@ export default {
     color: grey;
     margin-left: 10px;
     vertical-align: middle;
+    box-shadow: none;
   }
 }
 .greenBtn {

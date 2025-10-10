@@ -1,16 +1,16 @@
 <template>
   <div id="watchLivePage">
-    <div v-if="role === 'student' && mode !== 'replay'">
-      <camera-capture
-        ref="cameraCapture"
-        :user-id="1"
-        :live-config-id="liveConfigId"
-        @photoCaptured="handlePhotoCaptured"
-        @autoCaptureStarted="handleAutoCaptureStarted"
-        @autoCaptureStopped="handleAutoCaptureStopped" />
-    </div>
-
     <div class="volcLiveApp" v-if="mode === 'live'">
+      <div v-if="role === 'student' && mode !== 'replay'">
+        <camera-capture
+          ref="cameraCapture"
+          :user-id="1"
+          :live-config-id="liveConfigId"
+          @photoCaptured="handlePhotoCaptured"
+          @autoCaptureStarted="handleAutoCaptureStarted"
+          @autoCaptureStopped="handleAutoCaptureStopped" />
+      </div>
+
       <div class="content">
         <div class="menu-top">
           <div id="player" class="player"></div>
@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <iframe :src="liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *;"></iframe>
+    <iframe v-else :src="liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *;"></iframe>
   </div>
 </template>
 
@@ -89,6 +89,7 @@ export default {
                 },
               ],
               options: {
+                pcPlayerHeader: true,
                 mobileBackgroundTransparent: true,
                 saveUserInfo: true,
               },
@@ -151,7 +152,6 @@ export default {
 
 <style lang="less" scoped>
 #watchLivePage {
-  display: flex;
   font-size: 10px;
   margin: 0;
   background-color: #080b12;
@@ -164,13 +164,14 @@ export default {
     height: 100%;
     width: 100%;
     flex: 1;
+    display: flex;
 
     .content {
-      width: 90vw;
-      min-width: 972px;
-      max-width: 1612px;
+      width: 100%;
+      min-width: 600px;
+      // max-width: 1612px;
       margin: 0 auto;
-      padding-top: 150px;
+      padding-top: 120px;
       padding-bottom: 80px;
     }
 
@@ -180,18 +181,18 @@ export default {
     }
 
     .player {
-      width: calc(90vw - 332px);
-      height: calc((90vw - 332px) / 16 * 9 + 55px);
+      width: calc(100% - 282px);
+      height: calc((90vw - 282px) / 16 * 9 + 55px);
       min-width: 640px;
       max-width: 1280px;
-      min-height: 415px;
+      min-height: 360px;
       max-height: 775px;
     }
 
     .menu {
-      width: 320px;
+      width: 270px;
       margin-left: 12px;
-      height: calc((90vw - 332px) / 16 * 9 + 55px);
+      height: calc((90vw - 282px) / 16 * 9 + 55px);
       max-height: 775px;
       min-height: 415px;
     }

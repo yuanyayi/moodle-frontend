@@ -4,7 +4,7 @@
       <!-- 搜索功能 -->
       <SearchForm :queryField="queryField" :queryParam="queryParam" @queryFilter="queryFilter" @clearQuery="clearQuery"></SearchForm>
     </div>
-    <div style="padding: 12px 0">
+    <div style="padding-bottom: 12px">
       <a-button type="primary" @click="$refs.createModal.add()">新建直播</a-button>
     </div>
 

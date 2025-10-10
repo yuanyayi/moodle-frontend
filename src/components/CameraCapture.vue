@@ -1,6 +1,6 @@
 <template>
   <div class="camera-capture-component">
-    <a-card id="distinguishBox" :bordered="false" class="distinguish-box">
+    <div id="distinguishBox" class="distinguish-box">
       <div class="camera-section">
         <h3 class="section-title">摄像头采集</h3>
 
@@ -43,7 +43,7 @@
           </div>
         </div>
       </div>
-    </a-card>
+    </div>
 
     <!-- 隐藏的canvas用于抓拍 -->
     <canvas ref="captureCanvas" class="hidden"></canvas>
@@ -316,7 +316,7 @@ export default {
 <style lang="less" scoped>
 .camera-capture-component {
   .distinguish-box {
-    width: 250px;
+    width: 200px;
     height: fit-content;
     background: #1a1f2d;
     border-radius: 8px;

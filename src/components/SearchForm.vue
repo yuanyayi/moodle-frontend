@@ -1,29 +1,19 @@
 <template>
   <!-- 表格搜索栏 -->
-  <a-form
-    layout="inline"
-    class="searchForm"
-    :style="noNeedGrids && { marginBottom: 0 }"
-  >
+  <a-form layout="inline" class="searchForm" :style="noNeedGrids && { marginBottom: 0 }">
     <template v-if="noNeedGrids">
       <template v-for="(queryDesc, query) in queryField">
         <!-- {{queryDesc}}--{{query}} -->
-        <a-form-item
-          :key="query"
-          :label="queryDesc.label"
-          v-bind="queryDesc.formItemLayout || {}"
-          v-show="queryDesc.type !== 'hidden' && queryDesc.invisible !== true"
-        >
+        <a-form-item :key="query" :label="queryDesc.label" v-bind="queryDesc.formItemLayout || {}" v-show="queryDesc.type !== 'hidden' && queryDesc.invisible !== true">
           <!-- select -->
           <a-select
             v-if="queryDesc.type === 'select'"
             v-model="queryParam[query]"
             v-bind="mixinProps(queryDesc)"
             @keydown.enter.native="_queryFilter"
-            @change="(e) => _selectChange(e, queryDesc)"
-            @search="(e) => _selectSearch(e, queryDesc)"
-            :options="queryDesc.list"
-          >
+            @change="e => _selectChange(e, queryDesc)"
+            @search="e => _selectSearch(e, queryDesc)"
+            :options="queryDesc.list">
           </a-select>
           <!-- dataRange -->
           <a-range-picker
@@ -31,64 +21,32 @@
             v-model="queryParam[query]"
             v-bind="queryDesc.props"
             @keydown.enter.native="_queryFilter"
-            @change="(e) => _selectChange(e, queryDesc)"
-          />
+            @change="e => _selectChange(e, queryDesc)" />
           <!-- text -->
-          <a-input
-            v-else-if="queryDesc.type === 'hidden'"
-            v-model="queryParam[query]"
-          />
+          <a-input v-else-if="queryDesc.type === 'hidden'" v-model="queryParam[query]" />
           <!-- text -->
-          <a-input
-            v-else
-            v-model="queryParam[query]"
-            placeholder="输入查询内容"
-            v-bind="queryDesc.props"
-            @keydown.enter.native="_queryFilter"
-          />
+          <a-input v-else v-model="queryParam[query]" placeholder="输入查询内容" v-bind="queryDesc.props" @keydown.enter.native="_queryFilter" />
         </a-form-item>
       </template>
       <template v-if="noNeedGrids.needQueryButton">
-        <a-button
-          type="primary"
-          style="margin-left: 8px"
-          icon="search"
-          @click="_queryFilter"
-          >{{ okButtonText }}
-        </a-button>
-        <a-button
-          style="margin-left: 8px"
-          v-if="!hiddenClearBtn"
-          @click="_clearQuery"
-        >
-          {{ cancelButtonText }}</a-button
-        >
+        <a-button type="primary" style="margin-left: 8px" icon="search" @click="_queryFilter">{{ okButtonText }} </a-button>
+        <a-button style="margin-left: 8px" v-if="!hiddenClearBtn" @click="_clearQuery"> {{ cancelButtonText }}</a-button>
       </template>
     </template>
     <!-- 栅格系统 -->
     <a-row v-else :gutter="48">
-      <a-col
-        v-bind="{ ..._formLayout.items, ...queryDesc.items }"
-        v-for="(queryDesc, query) in queryField"
-        :key="query"
-        v-show="queryDesc.type !== 'hidden' && queryDesc.invisible !== true"
-      >
+      <a-col v-bind="{ ..._formLayout.items, ...queryDesc.items }" v-for="(queryDesc, query) in queryField" :key="query" v-show="queryDesc.type !== 'hidden' && queryDesc.invisible !== true">
         <!-- {{queryDesc}}--{{query}} -->
-        <a-form-item
-          :label="queryDesc.label"
-          v-bind="queryDesc.formItemLayout || {}"
-          style="width: 100%"
-        >
+        <a-form-item :label="queryDesc.label" v-bind="queryDesc.formItemLayout || {}" style="width: 100%">
           <!-- select -->
           <a-select
             v-if="queryDesc.type === 'select'"
             v-model="queryParam[query]"
             v-bind="mixinProps(queryDesc)"
             @keydown.enter.native="_queryFilter"
-            @change="(e) => _selectChange(e, queryDesc)"
-            @search="(e) => _selectSearch(e, queryDesc)"
-            :options="queryDesc.list"
-          >
+            @change="e => _selectChange(e, queryDesc)"
+            @search="e => _selectSearch(e, queryDesc)"
+            :options="queryDesc.list">
           </a-select>
           <!-- dataRange -->
           <a-range-picker
@@ -96,38 +54,16 @@
             v-model="queryParam[query]"
             v-bind="queryDesc.props"
             @keydown.enter.native="_queryFilter"
-            @change="(e) => _selectChange(e, queryDesc)"
-          />
+            @change="e => _selectChange(e, queryDesc)" />
           <!-- text -->
-          <a-input
-            v-else-if="queryDesc.type === 'hidden'"
-            v-model="queryParam[query]"
-          />
+          <a-input v-else-if="queryDesc.type === 'hidden'" v-model="queryParam[query]" />
           <!-- text -->
-          <a-input
-            v-else
-            v-model="queryParam[query]"
-            placeholder="输入查询内容"
-            v-bind="queryDesc.props"
-            @keydown.enter.native="_queryFilter"
-          />
+          <a-input v-else v-model="queryParam[query]" placeholder="输入查询内容" v-bind="queryDesc.props" @keydown.enter.native="_queryFilter" />
         </a-form-item>
       </a-col>
       <a-col v-bind="_formLayout.operations" class="ant-form-item">
-        <a-button
-          type="primary"
-          style="margin-left: 8px"
-          icon="search"
-          @click="_queryFilter"
-          >{{ okButtonText }}
-        </a-button>
-        <a-button
-          style="margin-left: 8px"
-          v-if="!hiddenClearBtn"
-          @click="_clearQuery"
-        >
-          {{ cancelButtonText }}</a-button
-        >
+        <a-button type="primary" style="margin-left: 8px" icon="search" @click="_queryFilter">{{ okButtonText }} </a-button>
+        <a-button style="margin-left: 8px" v-if="!hiddenClearBtn" @click="_clearQuery"> {{ cancelButtonText }}</a-button>
       </a-col>
     </a-row>
   </a-form>
@@ -152,7 +88,7 @@ export default {
     },
     formLayout: {
       type: Object,
-      default: (_) => {},
+      default: _ => {},
     },
     hiddenClearBtn: {
       type: [Boolean, Number],
@@ -205,7 +141,7 @@ export default {
             ...this.$route,
             query: this.FilterQueryParamType(),
           })
-          .catch((err) => {
+          .catch(err => {
             err;
           });
       }
@@ -236,9 +172,7 @@ export default {
         try {
           if (!this.queryField[key]) return; // 不需要处理的辅助搜索项
           if (this.queryField[key].type === "dateRange") {
-            result[key] =
-              this.queryParam[key] &&
-              this.queryParam[key].map((m) => m.valueOf() || m);
+            result[key] = this.queryParam[key] && this.queryParam[key].map(m => m.valueOf() || m);
           } else {
             if (isNaN(+this.queryParam[key])) {
               result[key] = this.queryParam[key];
@@ -257,17 +191,15 @@ export default {
       const query = this.$route.query;
       if (Object.keys(query).length > 0) {
         const initQueryParam = {};
-        Object.keys(this.queryField).forEach((key) => {
+        Object.keys(this.queryField).forEach(key => {
           if (query[key] === undefined) return;
           if (this.queryField[key].type === "dateRange") {
-            initQueryParam[key] =
-              query[key] && query[key].map((date) => moment(+date));
+            initQueryParam[key] = query[key] && query[key].map(date => moment(+date));
           } else {
             let isNumber = !!this.queryField[key].keyType
               ? this.queryField[key].keyType === "number"
               : query[key] == undefined
-              ? !!this.queryField[key].list ||
-                this.queryField[key].type === "select"
+              ? !!this.queryField[key].list || this.queryField[key].type === "select"
               : !isNaN(+query[key]);
             initQueryParam[key] = isNumber ? +query[key] : query[key];
           }
@@ -284,9 +216,7 @@ export default {
     mixinProps(queryDesc, type = "select") {
       if (type === "select") {
         return {
-          placeholder: queryDesc.doNotUseInputSearch
-            ? "选择一项进行搜索"
-            : "输入文字进行搜索",
+          placeholder: queryDesc.doNotUseInputSearch ? "选择一项进行搜索" : "输入文字进行搜索",
           showSearch: !queryDesc.doNotUseInputSearch,
           optionFilterProp: !queryDesc.doNotUseInputSearch && "children",
           notFoundContent: "--无结果--",
@@ -297,8 +227,3 @@ export default {
   },
 };
 </script>
-<style lang="less" scoped>
-.searchForm {
-  margin-bottom: -18px;
-}
-</style>
