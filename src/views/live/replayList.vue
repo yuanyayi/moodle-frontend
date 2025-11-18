@@ -22,7 +22,7 @@
         </p>
         <a-space>
           <a-button v-if="detail.status === 1" type="primary" @click="gotoCourseLive(detail.id)">进入直播间</a-button>
-          <a-button v-if="detail.replay && detail.status === 3" class="greenBtn" @click="gotoReplayList(detail.id)">直播回放{{detail.status === 3}}</a-button>
+          <a-button v-if="detail.replay && detail.status === 3" class="greenBtn" @click="gotoReplayList(detail.id)">直播回放{{ detail.status === 3 }}</a-button>
           <template v-if="role === 'teacher'">
             <a-button type="info" @click="searchByTheme(detail.theme_id)">编辑</a-button>
             <a-button type="danger" @click="searchByTheme(detail.theme_id)">删除</a-button>
@@ -44,6 +44,7 @@ import Empty from "@/components/Empty.vue";
 import DetailList from "@/components/DetailList";
 import { formatTime } from "@/utils/common";
 import { getLiveConfigDetail, fetchLiveReplayList, getLiveMaps } from "@/api/live";
+import { mapGetters } from "vuex";
 
 export default {
   name: "replayList",
@@ -104,6 +105,12 @@ export default {
     configId() {
       return this.$route.params.configId;
     },
+    ...mapGetters(["roles"]),
+    role() {
+      // 从store中获取用户角色，如果没有则默认为student
+
+      return this.roles.id || "student";
+    },
   },
   created() {
     this.getMaps();
@@ -138,16 +145,16 @@ export default {
       this.queryParam.theme = bid;
       this.fetch();
     },
-    gotoCourseLive(id) {
+    gotoCourseLive(liveConfigId) {
       this.$router.push({
-        name: "sheetDetail",
-        params: { level_name: this.level, id },
+        name: "watch",
+        params: { liveConfigId },
       });
     },
-    gotoReplayList(id) {
+    gotoReplayList(configId) {
       this.$router.push({
-        name: "sheetDetail",
-        params: { level_name: this.level, id },
+        name: "replayList",
+        params: { configId },
       });
     },
     handleOk() {

@@ -7,20 +7,20 @@
         <span class="value">{{ liveInfo.course_id }}</span>
       </div>
       <div class="info-row">
-        <span class="label">直播主题：</span>
-        <span class="value">{{ liveInfo.subject }}</span>
-      </div>
-      <div class="info-row">
-        <span class="label">主持人：</span>
-        <span class="value">{{ liveInfo.teacher_name || "未知" }}</span>
-      </div>
-      <div class="info-row">
         <span class="label">直播周期：</span>
         <span class="value">{{ liveInfo.repeat === 1 ? "重复" : "不重复" }}</span>
       </div>
       <div class="info-row">
+        <span class="label">直播主题：</span>
+        <span class="value">{{ liveInfo.subject }}</span>
+      </div>
+      <div class="info-row">
         <span class="label">下次直播时间：</span>
         <span class="value">{{ formatTime(liveInfo.start_time, "YYYY-MM-DD HH:mm") }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">主持人：</span>
+        <span class="value">{{ liveInfo.teacher_name || "未知" }}</span>
       </div>
       <div class="info-row">
         <span class="label">直播回放：</span>
@@ -63,27 +63,27 @@ export default {
       },
       columns: [
         {
-          title: "学生ID",
+          title: <div class='nowrap'>学生ID</div>,
           dataIndex: "student_id",
           key: "student_id",
         },
         {
-          title: "学生名称",
+          title: <div class='nowrap'>学生名称</div>,
           dataIndex: "student_name",
           key: "student_name",
         },
         {
-          title: "人脸识别次数",
+          title: <div class='nowrap'>人脸识别次数</div>,
           dataIndex: "count",
           key: "count",
         },
         {
-          title: "匹配成功次数",
+          title: <div class='nowrap'>匹配成功次数</div>,
           dataIndex: "match_count",
           key: "match_count",
         },
         {
-          title: "考勤状态",
+          title: <div class='nowrap'>考勤状态</div>,
           dataIndex: "status",
           key: "status",
           customRender: text => {
@@ -91,7 +91,7 @@ export default {
           },
         },
         {
-          title: "操作",
+          title: <div class='nowrap'>操作</div>,
           dataIndex: "id",
           key: "action",
           customRender: id => {
@@ -198,8 +198,11 @@ export default {
   border: 1px solid #e8e8e8;
   border-radius: 4px;
   margin-bottom: 24px;
+  display: flex;
+  flex-flow: row wrap;
 
   .info-row {
+    flex: 50% 0 0;
     display: flex;
     margin-bottom: 12px;
 
@@ -217,7 +220,6 @@ export default {
 }
 
 .student-list-section {
-  padding: 24px;
   background-color: #fff;
   border: 1px solid #e8e8e8;
   border-radius: 4px;

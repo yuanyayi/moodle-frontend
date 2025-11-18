@@ -19,14 +19,14 @@
 
     <a-row :gutter="[10, 10]">
       <template v-for="(detail, index) in tableList">
-        <a-col :xs="12" :sm="8" :lg="6">
-          <div class="tableItem" @click="gotoReplay(detail.id)">
-            <div class="frame">
+        <a-col :sm="12" :md="8" :xl="6">
+          <div class="tableItem">
+            <div class="frame" @click="gotoReplay(detail.id)">
               <img v-show="detail.img" :src="detail.img" :alt="detail.subject" />
               <a-icon type="play-circle" style="font-size: 50px" />
             </div>
             <div class="content">
-              <p style="font-size: 18px; font-weight: 500" @click.stop>
+              <p style="font-size: 18px; font-weight: 500">
                 <EditText
                   :ref="`edit${index}`"
                   :value="detail.name"
@@ -41,12 +41,13 @@
                   </template>
                 </EditText>
               </p>
-              <p style="display: flex; justify-content: space-between">
+              <p style="display: flex; justify-content: space-between; align-items: center">
                 {{ detail.teacher_name }} {{ formatDate(+detail.start_time, "YYYY-MM-DD") }}
-                <a-button type="danger" icon="delete" size="small" ghost style="flex: none; border: none !important; box-shadow: none" @click.stop="deleteLiveRecord(detail.id)" />
+                <span v-if="role !== 'student'">
+                  <a-switch v-model="detail.open" size="small" @change="e => handleSwitchChange(detail.id, e)" />
+                  <a-button type="danger" icon="delete" size="small" ghost style="flex: none; border: none !important; box-shadow: none" @click.stop="deleteLiveRecord(detail.id)" />
+                </span>
               </p>
-
-              <!-- <a-button class="greenBtn" @click="gotoReplayList(detail.id)">直播回放{{ detail.status === 3 }}</a-button> -->
             </div>
           </div>
         </a-col>
@@ -64,8 +65,9 @@ import Empty from "@/components/Empty.vue";
 import DetailList from "@/components/DetailList";
 import { formatDate, readFromList } from "@/utils/common";
 import { getLiveConfigDetail, getLiveMaps } from "@/api/live";
-import { getReplayList, renameLiveRecord, deleteLiveRecord } from "@/api/livepage";
+import { getReplayList, renameLiveRecord, deleteLiveRecord, updateOpen } from "@/api/livepage";
 import EditText from "@/components/EditText";
+import { mapGetters } from "vuex";
 
 export default {
   name: "replayList",
@@ -125,8 +127,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["roles"]),
     role() {
-      return this.$route.params.role || "teacher";
+      return this.roles.id || "student";
     },
     configId() {
       return this.$route.params.configId;
@@ -208,6 +211,16 @@ export default {
             this.fetch();
           });
         },
+      });
+    },
+    //
+    handleSwitchChange(liveRecordId, open) {
+      updateOpen(liveRecordId, open).then(res => {
+        if (res.status) {
+          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+          return;
+        }
+        this.fetch();
       });
     },
   },

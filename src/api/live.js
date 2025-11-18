@@ -79,3 +79,18 @@ export function removeLiveRecord(id) {
     method: "post",
   });
 }
+
+export function getVideoNoteList(liveRecordId, params = {}) {
+  return axios({
+    url: `/${liveRecordId}/getNotes`,
+    params,
+  });
+}
+
+export function createVideoNote(liveRecordId, note) {
+  return axios({
+    url: `/${liveRecordId}/addNote`,
+    params: { note },
+    method: "post",
+  });
+}

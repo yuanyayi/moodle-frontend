@@ -21,17 +21,21 @@
     </div>
 
     <iframe v-else :src="liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *;"></iframe>
+    <video-notes :vid="liveConfigId" style="background-color: #fff" />
   </div>
 </template>
 
 <script>
 import CameraCapture from "@/components/CameraCapture.vue";
 import { prepareLivePage, prepareReplay } from "@/api/livepage";
+import VideoNotes from "@/components/VideoNotes.vue";
+import { mapGetters } from "vuex";
 
 export default {
   name: "watchLive",
   components: {
     CameraCapture,
+    VideoNotes,
   },
   data() {
     return {
@@ -39,6 +43,7 @@ export default {
       liveUrl: "",
       liveToken: "",
       webSDK: null,
+      content: "",
     };
   },
   computed: {
@@ -48,8 +53,11 @@ export default {
     mode() {
       return this.$route.query.mode || "live"; // "replay"
     },
+    ...mapGetters(['roles']),
     role() {
-      return "student";
+      // 从store中获取用户角色，如果没有则默认为teacher
+       
+      return this.roles.id || "student";
     },
   },
   mounted() {
@@ -143,6 +151,10 @@ export default {
       console.log("上传照片:", imageUrl);
       // 实际项目中这里应该调用上传API
     },
+    // 编辑器内容变化监听
+    handleContentChange(html) {
+      console.log("编辑器内容变化:", html);
+    },
   },
   destroyed() {
     this.webSDK && this.webSDK.destroy();
@@ -154,7 +166,7 @@ export default {
 #watchLivePage {
   font-size: 10px;
   margin: 0;
-  background-color: #080b12;
+  // background-color: #080b12;
   height: 100vh;
 
   .volcLiveApp {
@@ -208,7 +220,8 @@ export default {
 
   .player-iframe {
     width: 100%;
-    height: calc(100vh - 202px);
+    // height: calc(100vh - 202px);
+    aspect-ratio: 16 / 11;
     min-height: 415px;
     border: none;
   }

@@ -57,14 +57,15 @@ import { formatTime, readFromList } from "@/utils/common";
 import { fetchLiveList, getLiveMaps, removeLiveConfig } from "@/api/live";
 import CreateLive from "./CreateLive.vue";
 import moment from "moment";
+import { mapGetters } from "vuex";
 
 export default {
   name: "liveList",
   components: {
     SearchForm,
-    DetailList,
     APagination,
     Empty,
+    DetailList,
     CreateLive,
   },
   data() {
@@ -119,8 +120,11 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['roles']),
     role() {
-      return this.$route.params.role || "teacher";
+      // 从store中获取用户角色，如果没有则默认为student
+       
+      return this.roles.id || "student";
     },
   },
   created() {

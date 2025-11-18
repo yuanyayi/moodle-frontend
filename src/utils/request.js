@@ -17,7 +17,7 @@ const service = axios.create({
   timeout: 40000, // 请求超时时间
 });
 
-const err = (error) => {
+const err = error => {
   if (error.response) {
     // 从 localstorage 获取 token
     const token = storage.get(ACCESS_TOKEN);
@@ -50,8 +50,14 @@ const err = (error) => {
 };
 
 // request interceptor
-service.interceptors.request.use((config) => {
-  const token = storage.get(ACCESS_TOKEN);
+service.interceptors.request.use(config => {
+  // 从URL查询参数中获取token
+  let urlToken = null;
+  if (typeof window !== "undefined" && window.location && window.location.search) {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlToken = urlParams.get("token");
+  }
+  const token = urlToken || storage.get(ACCESS_TOKEN);
   // console.log(token);
   if (token) {
     //     config.headers['Access-Token'] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
@@ -63,12 +69,11 @@ service.interceptors.request.use((config) => {
 }, err);
 
 // response interceptor
-service.interceptors.response.use((response) => {
+service.interceptors.response.use(response => {
   // 更新token判断
   const tempToken = response.data.token;
   if (tempToken && tempToken !== storage.get(ACCESS_TOKEN)) {
-    // storage.set(ACCESS_TOKEN, tempToken);
-    store.dispatch("UpdateToken", tempToken);
+    storage.set(ACCESS_TOKEN, tempToken);
   }
 
   if ([0, 1].indexOf(+response.data.status) === -1) {
@@ -102,6 +107,6 @@ function holdAnotherNotification() {
     }, 4500);
   }
 }
-export default service
+export default service;
 
 export { installer as VueAxios, service as axios };

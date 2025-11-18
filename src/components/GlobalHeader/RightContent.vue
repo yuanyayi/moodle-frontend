@@ -6,53 +6,52 @@
 </template>
 
 <script>
-import AvatarDropdown from './AvatarDropdown'
-import SelectLang from '@/components/SelectLang'
+import AvatarDropdown from "./AvatarDropdown";
+import SelectLang from "@/components/SelectLang";
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'RightContent',
+  name: "RightContent",
   components: {
     AvatarDropdown,
-    SelectLang
+    SelectLang,
   },
   props: {
     prefixCls: {
       type: String,
-      default: 'ant-pro-global-header-index-action'
+      default: "ant-pro-global-header-index-action",
     },
     isMobile: {
       type: Boolean,
-      default: () => false
+      default: () => false,
     },
     topMenu: {
       type: Boolean,
-      required: true
+      required: true,
     },
     theme: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
-  data () {
+  data() {
     return {
       showMenu: true,
-      currentUser: {}
-    }
+    };
   },
   computed: {
-    wrpCls () {
+    ...mapGetters(["nickname", "userInfo"]),
+    currentUser() {
       return {
-        'ant-pro-global-header-index-right': true,
-        [`ant-pro-global-header-index-${(this.isMobile || !this.topMenu) ? 'light' : this.theme}`]: true
-      }
-    }
+        name: this.nickname || (this.userInfo && this.userInfo.name) || "用户名称",
+      };
+    },
+    wrpCls() {
+      return {
+        "ant-pro-global-header-index-right": true,
+        [`ant-pro-global-header-index-${this.isMobile || !this.topMenu ? "light" : this.theme}`]: true,
+      };
+    },
   },
-  mounted () {
-    setTimeout(() => {
-      this.currentUser = {
-        name: 'Serati Ma'
-      }
-    }, 1500)
-  }
-}
+};
 </script>

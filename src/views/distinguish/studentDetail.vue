@@ -2,6 +2,7 @@
   <a-card :bordered="false" class="student-detail-container">
     <!-- 学生基本信息 -->
     <div class="student-info-section">
+      <h3>学生基本信息</h3>
       <div class="info-row">
         <span class="label">学生ID：</span>
         <span class="value">{{ studentInfo.student_id }}</span>
@@ -182,6 +183,11 @@ export default {
   margin-bottom: 20px;
   border-radius: 4px;
   display: flex;
+  flex-flow: row wrap;
+}
+
+.student-info-section h3 {
+  flex: 0 0 100%;
 }
 
 .info-row {

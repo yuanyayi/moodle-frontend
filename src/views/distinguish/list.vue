@@ -16,9 +16,9 @@
 import SearchForm from "@/components/SearchForm.vue";
 import Empty from "@/components/Empty.vue";
 import { formatTime } from "@/utils/common";
-import { getLiveMaps, removeLiveConfig } from "@/api/live";
+import { getLiveMaps } from "@/api/live";
 import { getDistinguishList } from "@/api/distinguish";
-import moment from "moment";
+import { mapGetters } from "vuex";
 
 export default {
   name: "liveList",
@@ -69,22 +69,22 @@ export default {
       // 表格列配置
       columns: [
         {
-          title: "班级名称",
+          title: <div class="nowrap">班级名称</div>,
           dataIndex: "course_name",
           key: "course_name",
         },
         {
-          title: "直播名称",
+          title: <div class="nowrap">直播名称</div>,
           dataIndex: "subject",
           key: "subject",
         },
         {
-          title: "主持人",
+          title: <div class="nowrap">主持人</div>,
           dataIndex: "teacher_name",
           key: "teacher_name",
         },
         {
-          title: "直播时间",
+          title: <div class="nowrap">直播时间</div>,
           dataIndex: "start_time",
           key: "start_time",
           customRender: val => {
@@ -92,12 +92,12 @@ export default {
           },
         },
         {
-          title: "人脸识别次数",
+          title: <div class="nowrap">人脸识别次数</div>,
           dataIndex: "count",
           key: "count",
         },
         {
-          title: "匹配成功次数",
+          title: <div class="nowrap">匹配成功次数</div>,
           dataIndex: "match_count",
           key: "match_count",
           customRender: (val, { count }) => {
@@ -108,7 +108,7 @@ export default {
           },
         },
         {
-          title: "操作",
+          title: <div class="nowrap">操作</div>,
           dataIndex: "id",
           key: "action",
           customRender: live_id => {
@@ -123,8 +123,11 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["roles"]),
     role() {
-      return this.$route.params.role || "teacher";
+      // 从store中获取用户角色，如果没有则默认为teacher
+       
+      return this.roles.id || "student";
     },
   },
   created() {

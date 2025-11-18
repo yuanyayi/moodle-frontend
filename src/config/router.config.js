@@ -53,7 +53,14 @@ export const asyncRouterMap = [
             component: () => import("@/views/live/liveClass/watchLive"),
             hidden: true,
           },
-          //
+          // 直播统计
+          {
+            path: "/live/anaylsis/",
+            name: "anaylsis",
+            meta: { title: "直播统计" },
+            component: () => import("@/views/anaylsis/"),
+          },
+          // 人脸识别记录
           {
             path: "/live/distinguish",
             name: "distinguishList",

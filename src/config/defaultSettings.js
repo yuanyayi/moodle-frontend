@@ -23,7 +23,7 @@ export default {
   menu: {
     locale: true
   },
-  title: '风尚教学平台',
+  title: '杏林智慧教学直播平台',
   pwa: false,
   iconfontUrl: '',
   production: process.env.NODE_ENV === 'production' && process.env.VUE_APP_PREVIEW !== 'true'

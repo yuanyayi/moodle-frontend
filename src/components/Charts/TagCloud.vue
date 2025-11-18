@@ -1,5 +1,5 @@
 <template>
-  <v-chart :width="width" :height="height" :padding="[0]" :data="data" :scale="scale">
+  <v-chart :width="width" :height="height" :padding="[0]" :data="data" :scale="scale" :forceFit="forceFit">
     <v-tooltip :show-title="false" />
     <v-coord type="rect" direction="TL" />
     <v-point position="x*y" color="category" shape="cloud" tooltip="value*category" />
@@ -51,6 +51,10 @@ export default {
     width: {
       type: Number,
       default: 640
+    },
+    forceFit: {
+      type: Boolean,
+      default: false
     }
   },
   data () {

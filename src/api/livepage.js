@@ -60,9 +60,17 @@ export function renameLiveRecord(id, name) {
   });
 }
 
-export function deleteLiveRecord(id){
+export function deleteLiveRecord(id) {
   return axios({
     url: `/deleteLiveRecord/${id}`,
     method: "post",
-  })
+  });
+}
+
+export function updateOpen(liveRecordId, open) {
+  return axios({
+    url: `/${liveRecordId}/updateOpen`,
+    method: "post",
+    params: { open },
+  });
 }
