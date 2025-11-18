@@ -21,13 +21,14 @@
         </a-col>
       </a-row>
     </a-card>
-    <a-card :bordered="false" title="互动行为数据">
+    <a-card :bordered="false">
+      <template v-slot:title>互动行为数据 <a-button @click="exportExcel">导出数据</a-button> </template>
       <bar :data="barData" />
     </a-card>
     <a-card :bordered="false" title="互动内容分析">
       <a-row>
         <a-col :span="12">
-          <tag-cloud :tag-list="tagList1" :height="200" :force-fit="true"  />
+          <tag-cloud :tag-list="tagList1" :height="200" :force-fit="true" />
         </a-col>
         <a-col :span="12">
           <tag-cloud :tag-list="tagList2" :height="200" :force-fit="true" />
@@ -41,6 +42,7 @@
 import { fetch1, fetch2, ciyun1, ciyun2 } from "@/api/analysis";
 import Bar from "@/components/Charts/Bar";
 import TagCloud from "@/components/Charts/TagCloud";
+import JsExportExcel from "js-export-excel";
 
 export default {
   name: "Anaylsis",
@@ -148,6 +150,25 @@ export default {
       if (str === "0.00%") return "a-grey";
       if (/^-/.test(str)) return "a-green";
       return "a-red";
+    },
+    exportExcel() {
+      const option = {
+        fileName: "互动行为数据",
+        datas: [
+          {
+            sheetData: this.barData.map(item => ({
+              类型: item.x,
+              数量: item.y,
+            })),
+            sheetName: "互动行为数据",
+            sheetFilter: ["类型", "数量"],
+            sheetHeader: ["类型", "数量"],
+          },
+        ],
+      };
+
+      const toExcel = new JsExportExcel(option);
+      toExcel.saveExcel();
     },
   },
 };

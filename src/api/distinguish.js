@@ -55,3 +55,21 @@ export function downloadExcel(live_external_id) {
     fileDownload(res.data.url);
   });
 }
+
+export function uploadFile(data){
+  return axios({
+    url: `/file/uploadFile`,
+    method: "post",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  })
+}
+
+export function studentAttendance(params){
+  return axios({
+    url: `/studentAttendance`,
+    params,
+  })
+}

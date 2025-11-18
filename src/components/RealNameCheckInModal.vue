@@ -5,8 +5,8 @@
         <a-input v-model:value="formData.name" placeholder="输入姓名" />
       </a-form-item>
 
-      <a-form-item label="学号" name="studentId" :rules="[{ required: true, message: '请输入学号' }]">
-        <a-input v-model:value="formData.studentId" placeholder="输入学号" />
+      <a-form-item label="学号" name="student_id" :rules="[{ required: true, message: '请输入学号' }]">
+        <a-input v-model:value="formData.student_id" placeholder="输入学号" />
       </a-form-item>
 
       <a-form-item label="拍摄签到">
@@ -31,6 +31,7 @@
 <script>
 import { ref, reactive, watch, onUnmounted } from "vue";
 import { message } from "ant-design-vue";
+import { uploadFile, studentAttendance } from "@/api/distinguish";
 
 export default {
   name: "RealNameCheckInModal",
@@ -54,9 +55,10 @@ export default {
     const isModalVisible = ref(false);
     const formData = reactive({
       name: "",
-      studentId: "",
+      student_id: "",
     });
     const photoUrl = ref(null);
+    const serverPhoto = ref(null); // 用于存储服务器返回的照片URL和路径
     let stream = null;
 
     // 初始化摄像头
@@ -103,17 +105,32 @@ export default {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       // 转换为图片URL
-      canvas.toBlob(blob => {
+      canvas.toBlob(async blob => {
         if (blob) {
           const url = URL.createObjectURL(blob);
           photoUrl.value = url;
+
+          // 创建FormData对象用于上传
+          const formData = new FormData();
+          formData.append("file", blob, "checkin-photo.png");
+
+          try {
+            // 上传照片到服务器
+            const response = await uploadFile(formData);
+            console.log("照片上传成功:", response);
+            // 存储服务器返回的照片URL和路径
+            if (response.data) serverPhoto.value = { url: response.data.url, path: response.data.path };
+          } catch (error) {
+            console.error("照片上传失败:", error);
+            message.error("照片上传失败");
+          }
         }
       }, "image/png");
     };
 
     // 提交表单
     const handleSubmit = () => {
-      if (!formData.name || !formData.studentId) {
+      if (!formData.name || !formData.student_id) {
         message.error("请填写完整信息");
         return;
       }
@@ -123,9 +140,23 @@ export default {
         return;
       }
 
+      // 构造发送数据
+      let sendData = {
+        user_id: props.userId,
+        live_config_id: props.liveConfigId,
+        ...formData,
+        ...serverPhoto.value,
+      };
+
       // 这里可以添加实际的提交逻辑
-      console.log("提交表单:", formData, photoUrl.value);
-      emit("submit", { ...formData, photoUrl: photoUrl.value });
+      console.log("提交表单:", sendData);
+      studentAttendance(sendData).then(res => {
+        if (res.status) {
+          message.error(res.msg || "获取数据失败，请稍后再试。");
+          return;
+        }
+        emit("submit", sendData);
+      });
     };
 
     // 同步 visible 属性
@@ -141,7 +172,7 @@ export default {
           // 当模态框关闭时，停止摄像头并重置表单
           stopCamera();
           formData.name = "";
-          formData.studentId = "";
+          formData.student_id = "";
           photoUrl.value = null;
 
           // 清理图片URL对象以释放内存
@@ -167,6 +198,7 @@ export default {
       isModalVisible,
       formData,
       photoUrl,
+      serverPhoto,
       takePhoto,
       handleSubmit,
     };
@@ -193,7 +225,7 @@ export default {
 }
 
 .camera-preview::before {
-  content: "摄像头画面";
+  content: "";
   color: #999;
   position: absolute;
   bottom: 10px;
@@ -221,8 +253,8 @@ export default {
 }
 
 .photo-container img {
-  width: 150px;
-  height: auto;
+  width: 100%;
+  height: 100%;
   border-radius: 8px;
 }
 </style>

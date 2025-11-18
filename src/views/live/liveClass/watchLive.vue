@@ -4,13 +4,7 @@
     <CountdownModal ref="countdownModal" v-if="countdownTimestamp" :countdownTimestamp="countdownTimestamp" @cutout="handleEnterLive" @countdown-finished="handleCountdownFinished" />
 
     <!-- 真人签到弹窗 -->
-    <RealNameCheckInModal 
-      :visible="checkInModalVisible"
-      :user-id="1"
-      :live-config-id="liveConfigId"
-      @submit="handleCheckInSubmit"
-      @cancel="hideCheckInModal"
-    />
+    <RealNameCheckInModal :visible="checkInModalVisible" :user-id="1" :live-config-id="liveConfigId" @submit="handleCheckInSubmit" @cancel="hideCheckInModal" />
 
     <!-- <div class="volcLiveApp" v-if="mode === 'live'">
       <div v-if="role === 'student' && mode !== 'replay'">
@@ -39,8 +33,10 @@
           :user-id="1"
           :live-config-id="liveConfigId"
           @photoCaptured="handlePhotoCaptured"
+          @photoCaptureError="handlePhotoCaptureError"
           @autoCaptureStarted="handleAutoCaptureStarted"
-          @autoCaptureStopped="handleAutoCaptureStopped" />
+          @autoCaptureStopped="handleAutoCaptureStopped"
+          @autoCaptureError="handleAutoCaptureError" />
       </div>
       <div style="flex: 1">
         <iframe :src="liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *;"></iframe>
@@ -83,7 +79,7 @@ export default {
       // 添加新组件的属性
       checkInModalVisible: false,
       // 签到状态
-      isCheckedIn: false,
+      isCheckedIn: true,
     };
   },
   computed: {
@@ -101,12 +97,10 @@ export default {
   },
   mounted() {
     // this.mode === "live" ? this.initLive() :
-    // DEBUG:
-    // this.initReplay();
+    this.initReplay();
     // 显示倒计时弹窗
-    // this.showCountdownModal();
+    this.showCountdownModal();
     // 学生端，真人签到弹窗
-    // 检查是否已签到，未签到则显示签到弹窗
     if (this.role === "student" && this.mode === "live") {
       this.checkAndShowCheckInModal();
     }
@@ -194,6 +188,16 @@ export default {
 
     handleAutoCaptureStopped() {
       console.log("自动抓拍已停止");
+    },
+
+    handlePhotoCaptureError(error) {
+      console.error("拍照过程中发生错误:", error);
+      // 只在控制台输出错误，不触发页面跳转
+    },
+
+    handleAutoCaptureError(error) {
+      console.error("自动抓拍过程中发生错误:", error);
+      // 只在控制台输出错误，不触发页面跳转
     },
 
     uploadPhoto(imageUrl) {
@@ -336,3 +340,4 @@ export default {
     border: none;
   }
 }
+</style>

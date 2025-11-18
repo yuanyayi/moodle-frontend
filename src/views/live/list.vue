@@ -120,10 +120,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['roles']),
+    ...mapGetters(["roles"]),
     role() {
       // 从store中获取用户角色，如果没有则默认为student
-       
       return this.roles.id || "student";
     },
   },
@@ -228,7 +227,8 @@ export default {
     readFromList,
     getStatusByTime(detail) {
       const now = new moment();
-      if (now.isBefore(moment(detail.start_time).add(-5, "minutes"))) {
+      let diffMinutes = role === "teacher" ? -30 : -10;
+      if (now.isBefore(moment(detail.start_time).add(diffMinutes, "minutes"))) {
         return "未开始";
       } else if (now.isBefore(moment(detail.start_time))) {
         return "直播准备";

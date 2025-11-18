@@ -216,7 +216,12 @@ export default {
         });
       } catch (error) {
         console.error("拍照或上传失败:", error);
+        // 不要使用$message.error，因为这可能会导致页面跳转
+        // 只在控制台打印错误日志
         this.$message.error(`操作失败: ${error.message || "未知错误"}`);
+        
+        // 触发错误事件，让父组件处理
+        this.$emit("photoCaptureError", error);
       }
     },
 
@@ -290,7 +295,10 @@ export default {
           // 如果是权限问题，停止自动抓拍并显示错误
           if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") {
             this.stopAutoCapture();
-            this.$message.error("摄像头权限问题，自动抓拍已停止，请重新授予权限");
+            // 不使用$message.error，避免页面跳转
+            console.error("摄像头权限问题，自动抓拍已停止，请重新授予权限");
+            // 触发事件通知父组件
+            this.$emit("autoCaptureError", "摄像头权限问题，自动抓拍已停止，请重新授予权限");
           }
         }
       }, this.AUTO_CAPTURE_INTERVAL);
@@ -503,5 +511,4 @@ export default {
       width: 100%;
     }
   }
-}
-</style>
+}</style>
