@@ -1,4 +1,5 @@
 import { axios } from "@/utils/request";
+import { fileDownload } from "@/utils/common";
 
 export function getDistinguishList(params) {
   return axios({
@@ -38,7 +39,19 @@ export function uploadStudentPhoto(formData) {
     method: "post",
     data: formData,
     headers: {
-      "Content-Type": "multipart/form-data"
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+
+export function downloadExcel(live_external_id) {
+  return axios({
+    url: `/downloadLivedistinguish/${live_external_id}`,
+  }).then(res => {
+    if (res.status) {
+      this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+      return;
     }
+    fileDownload(res.data.url);
   });
 }

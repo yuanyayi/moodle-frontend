@@ -29,6 +29,9 @@
     </div>
 
     <!-- 学生考勤列表 -->
+    <div style="text-align: right; margin-bottom: 12px">
+      <a-button @click="downloadExcel(live_id)" icon="download">导出数据</a-button>
+    </div>
     <div class="student-list-section">
       <a-table :columns="columns" :data-source="studentList" :pagination="pagination" :loading="loading" :row-key="record => record.student_id" @change="handleTableChange"> </a-table>
     </div>
@@ -37,7 +40,7 @@
 
 <script>
 import { formatTime, readFromList } from "@/utils/common";
-import { getStudentAttendanceList } from "@/api/distinguish";
+import { getStudentAttendanceList, downloadExcel } from "@/api/distinguish";
 import { getLiveMaps } from "@/api/live";
 
 export default {
@@ -181,6 +184,7 @@ export default {
       }
     },
 
+    downloadExcel,
     // ---------- Filters ---------- //
     formatTime,
   },
