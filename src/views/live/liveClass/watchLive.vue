@@ -1,7 +1,14 @@
 <template>
   <div id="watchLivePage">
     <!-- 倒计时弹窗 -->
-    <countdown-modal ref="countdownModal" v-if="countdownTimestamp" :countdownTimestamp="countdownTimestamp" @cutout="handleEnterLive" @countdown-finished="handleCountdownFinished" />
+    <CountdownModal ref="countdownModal" v-if="countdownTimestamp" :countdownTimestamp="countdownTimestamp" @cutout="handleEnterLive" @countdown-finished="handleCountdownFinished" />
+
+    <!-- 真人签到弹窗 -->
+    <RealNameCheckInModal 
+      :visible="checkInModalVisible"
+      @submit="handleCheckInSubmit"
+      @cancel="hideCheckInModal"
+    />
 
     <!-- <div class="volcLiveApp" v-if="mode === 'live'">
       <div v-if="role === 'student' && mode !== 'replay'">
@@ -25,7 +32,7 @@
     <div style="display: flex; flex-flow: row nowrap">
       <div v-if="role === 'student' && mode !== 'replay'" style="flex: 0 0 auto">
         <!-- TODO: 拍照接口调用，右侧iframe自动跳系统首页 -->
-        <camera-capture
+        <CameraCapture
           ref="cameraCapture"
           :user-id="1"
           :live-config-id="liveConfigId"
@@ -37,7 +44,7 @@
         <iframe :src="liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *;"></iframe>
       </div>
     </div>
-    <video-notes :vid="liveConfigId" :showEditor="role === 'student'" style="background-color: #fff" />
+    <VideoNotes :vid="liveConfigId" :showEditor="role === 'student'" style="background-color: #fff" />
   </div>
 </template>
 
@@ -93,9 +100,8 @@ export default {
     // DEBUG:
     // this.initReplay();
     // 显示倒计时弹窗
-    this.showCountdownModal();
+    // this.showCountdownModal();
     // 学生端，真人签到弹窗
-    console.log(this.role === "student" && this.mode === "live");
     this.role === "student" && this.mode === "live" && this.showCheckInModal();
   },
   methods: {

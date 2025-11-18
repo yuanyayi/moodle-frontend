@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    v-model:visible="isModalVisible"
+    :visible="isModalVisible"
     title="真人签到"
     :width="400"
     @ok="handleSubmit"
@@ -49,12 +49,19 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue';
+import { ref, reactive, watch } from 'vue';
 import { message } from 'ant-design-vue';
 
 export default {
   name: 'RealNameCheckInModal',
-  setup() {
+  props: {
+    visible: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ['submit', 'cancel'],
+  setup(props, { emit }) {
     const isModalVisible = ref(false);
     const formData = reactive({
       name: '',
@@ -65,6 +72,7 @@ export default {
     
     // 拍照处理
     const takePhoto = () => {
+      // 通过 ref 获取 CameraCapture 实例
       if (window.cameraCapture && window.cameraCapture.takePhoto) {
         window.cameraCapture.takePhoto();
       }
@@ -89,16 +97,20 @@ export default {
       
       // 这里可以添加实际的提交逻辑
       console.log('提交表单:', formData, photoUrl.value);
-      isModalVisible.value = false;
-      // 可以触发事件通知父组件
       emit('submit', { ...formData, photoUrl: photoUrl.value });
+      emit('cancel'); // 关闭弹窗
     };
     
     // 取消
     const handleCancel = () => {
-      isModalVisible.value = false;
+      emit('cancel');
     };
     
+    // 同步 visible 属性
+    watch(() => props.visible, (val) => {
+      isModalVisible.value = val;
+    });
+
     return {
       isModalVisible,
       formData,
@@ -109,8 +121,7 @@ export default {
       handleSubmit,
       handleCancel
     };
-  },
-  emits: ['submit']
+  }
 };
 </script>
 
