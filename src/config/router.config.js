@@ -28,20 +28,20 @@ export const asyncRouterMap = [
             path: "list",
             name: "liveList",
             component: () => import("@/views/live/list"),
-            meta: { title: "直播列表" },
+            meta: { title: "直播列表", permission: ["live"] },
           },
           {
             path: "/live/replay/:configId([1-9]\\d*)+",
             name: "replayList",
             component: () => import("@/views/live/liveClass/replayList"),
-            meta: { title: "直播回放" },
+            meta: { title: "直播回放", permission: ["live"] },
             hidden: true,
           },
           {
             // 课程开播
             path: "/live/broadcast/:liveConfigId([1-9]\\d*)+/",
             name: "broadcast",
-            meta: { title: "课程开播页" },
+            meta: { title: "课程开播页", permission: ["live"] },
             component: () => import("@/views/live/liveClass/broadcast"),
             hidden: true,
           },
@@ -49,7 +49,7 @@ export const asyncRouterMap = [
             // 课程观播
             path: "/live/watch/:liveConfigId([1-9]\\d*)+/",
             name: "watch",
-            meta: { title: "课程直播页" },
+            meta: { title: "课程直播页", permission: ["live"] },
             component: () => import("@/views/live/liveClass/watchLive"),
             hidden: true,
           },
@@ -57,27 +57,27 @@ export const asyncRouterMap = [
           {
             path: "/live/anaylsis/",
             name: "anaylsis",
-            meta: { title: "直播统计" },
+            meta: { title: "直播统计", permission: ["anaylsis"] },
             component: () => import("@/views/anaylsis/"),
           },
           // 人脸识别记录
           {
             path: "/live/distinguish",
             name: "distinguishList",
-            meta: { title: "人脸识别记录" },
+            meta: { title: "人脸识别记录", permission: ["distinguish"] },
             component: () => import("@/views/distinguish/list"),
           },
           {
             path: "/live/distinguish/detail/:id([1-9]\\d*)+/",
             name: "distinguishDetail",
-            meta: { title: "班级记录" },
+            meta: { title: "班级记录", permission: ["distinguish"] },
             component: () => import("@/views/distinguish/detail"),
             hidden: true,
           },
           {
             path: "/live/distinguish/detail/student/:id([1-9]\\d*)+/", // attendance_status_id
             name: "studentDetail",
-            meta: { title: "学生记录" },
+            meta: { title: "学生记录", permission: ["distinguish"] },
             component: () => import("@/views/distinguish/studentDetail"),
             hidden: true,
           },

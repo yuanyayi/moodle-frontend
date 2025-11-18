@@ -6,7 +6,7 @@
     <a-tab-pane key="2" tab="笔记">
       <div class="notes-container">
         <!-- 富文本编辑器 -->
-        <div class="editor-section">
+        <div class="editor-section" v-if="showEditor">
           <quill-editor v-model="editorContent" @change="onEditorChange" ref="noteEditor" class="custom-quill-editor" />
           <div style="text-align: right">
             <a-button type="primary" @click="saveNote" :loading="saving" class="save-button"> 保存笔记 </a-button>
@@ -54,7 +54,7 @@ import { formatDate } from "@/utils/common";
 
 export default {
   name: "VideoNotes",
-  props: { vid: { type: Number, required: true } },
+  props: { vid: { type: Number, required: true }, showEditor: { type: Boolean, default: false } },
   components: {
     QuillEditor,
     Empty,

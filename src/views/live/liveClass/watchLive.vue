@@ -1,6 +1,6 @@
 <template>
   <div id="watchLivePage">
-    <div class="volcLiveApp" v-if="mode === 'live'">
+    <!-- <div class="volcLiveApp" v-if="mode === 'live'">
       <div v-if="role === 'student' && mode !== 'replay'">
         <camera-capture
           ref="cameraCapture"
@@ -18,10 +18,23 @@
         </div>
         <div id="menu2" class="menu-bottom"></div>
       </div>
+    </div> -->
+    <div style="display: flex; flex-flow: row nowrap">
+      <div v-if="role === 'student' && mode !== 'replay'" style="flex: 0 0 auto">
+        <!-- TODO: 拍照接口调用，右侧iframe自动跳系统首页 -->
+        <camera-capture
+          ref="cameraCapture"
+          :user-id="1"
+          :live-config-id="liveConfigId"
+          @photoCaptured="handlePhotoCaptured"
+          @autoCaptureStarted="handleAutoCaptureStarted"
+          @autoCaptureStopped="handleAutoCaptureStopped" />
+      </div>
+      <div style="flex: 1">
+        <iframe :src="liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *;"></iframe>
+      </div>
     </div>
-
-    <iframe v-else :src="liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *;"></iframe>
-    <video-notes :vid="liveConfigId" style="background-color: #fff" />
+    <video-notes :vid="liveConfigId" :showEditor="role === 'student'" style="background-color: #fff" />
   </div>
 </template>
 
@@ -53,15 +66,19 @@ export default {
     mode() {
       return this.$route.query.mode || "live"; // "replay"
     },
-    ...mapGetters(['roles']),
+    ...mapGetters(["roles"]),
     role() {
       // 从store中获取用户角色，如果没有则默认为teacher
-       
+
       return this.roles.id || "student";
     },
   },
   mounted() {
-    this.mode === "live" ? this.initLive() : this.initReplay();
+    // this.mode === "live" ? this.initLive() :
+    this.initReplay();
+    // <!-- TODO:倒计时弹窗，进入直播 -->
+    // TODO：学生端，倒计时前，进入直播间-真人签到。文件上传接口
+
   },
   methods: {
     initLive() {
@@ -221,7 +238,7 @@ export default {
   .player-iframe {
     width: 100%;
     // height: calc(100vh - 202px);
-    aspect-ratio: 16 / 11;
+    aspect-ratio: 16 / 10;
     min-height: 415px;
     border: none;
   }

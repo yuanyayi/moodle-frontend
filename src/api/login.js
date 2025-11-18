@@ -506,62 +506,49 @@ export function getInfo() {
       "Content-Type": "application/json;charset=UTF-8",
     },
   }).then(res => {
+    // 在这里判断角色和权限
+    let permissionList = {
+      0: ["live", "distinguish", "anaylsis"], // 0:管理员
+      1: ["live", "anaylsis"], // 1:老师
+      2: ["live"], // 2:学生
+      3: ["distinguish", "anaylsis"], // 3:教务
+    }[res.data.role];
+    let permissions = permissionList.map(per => {
+      return {
+        roleId: ["admin", "teacher", "student", "dean"][res.data.role],
+        ...[
+          {
+            permissionId: "live",
+            permissionName: "直播列表",
+            dataAccess: null,
+          },
+          {
+            permissionId: "anaylsis",
+            permissionName: "直播统计",
+            dataAccess: null,
+          },
+          {
+            permissionId: "distinguish",
+            permissionName: "人脸识别",
+            dataAccess: null,
+          },
+        ].find(item => item.permissionId === per),
+      };
+    });
     return {
       status: 0,
       msg: "获取用户信息成功",
       result: {
         id: res.data.user_id,
         name: res.data.nick_name,
-        username: ["admin", "teacher", "student"][res.data.role],
+        username: ["admin", "teacher", "student", "dean"][res.data.role],
         avatar: "/avatar2.jpg",
-        roleId: ["admin", "teacher", "student"][res.data.role],
+        roleId: ["admin", "teacher", "student", "dean"][res.data.role],
         role: {
-          id: ["admin", "teacher", "student"][res.data.role],
-          name: ["管理员", "教师", "学生"][res.data.role],
-          permissions: [
-            {
-              permissionId: "dashboard",
-              permissionName: "仪表盘",
-              dataAccess: null,
-            },
-            {
-              roleId: "admin",
-              permissionId: "order",
-              permissionName: "订单管理",
-              actions:
-                '[{"action":"add","defaultCheck":false,"describe":"新增"},{"action":"query","defaultCheck":false,"describe":"查询"},{"action":"get","defaultCheck":false,"describe":"详情"},{"action":"update","defaultCheck":false,"describe":"修改"},{"action":"delete","defaultCheck":false,"describe":"删除"}]',
-              actionEntitySet: [
-                {
-                  action: "add",
-                  describe: "新增",
-                  defaultCheck: false,
-                },
-                {
-                  action: "query",
-                  describe: "查询",
-                  defaultCheck: false,
-                },
-                {
-                  action: "get",
-                  describe: "详情",
-                  defaultCheck: false,
-                },
-                {
-                  action: "update",
-                  describe: "修改",
-                  defaultCheck: false,
-                },
-                {
-                  action: "delete",
-                  describe: "删除",
-                  defaultCheck: false,
-                },
-              ],
-              actionList: ["add", "query", "get", "update", "delete"],
-              dataAccess: null,
-            },
-          ],
-          permissionList: ["dashboard", "exception", "result", "profile", "table", "form", "order", "permission", "role", "table", "user", "support"],
+          id: ["admin", "teacher", "student", "dean"][res.data.role],
+          name: ["管理员", "教师", "学生", "教务"][res.data.role],
+          permissions: permissions,
+          permissionList: permissionList,
         },
       },
     };
