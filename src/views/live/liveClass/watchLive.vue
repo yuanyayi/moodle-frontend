@@ -6,6 +6,8 @@
     <!-- 真人签到弹窗 -->
     <RealNameCheckInModal 
       :visible="checkInModalVisible"
+      :user-id="1"
+      :live-config-id="liveConfigId"
       @submit="handleCheckInSubmit"
       @cancel="hideCheckInModal"
     />
@@ -80,6 +82,8 @@ export default {
       photoUrl: null,
       // 添加新组件的属性
       checkInModalVisible: false,
+      // 签到状态
+      isCheckedIn: false,
     };
   },
   computed: {
@@ -102,7 +106,10 @@ export default {
     // 显示倒计时弹窗
     // this.showCountdownModal();
     // 学生端，真人签到弹窗
-    this.role === "student" && this.mode === "live" && this.showCheckInModal();
+    // 检查是否已签到，未签到则显示签到弹窗
+    if (this.role === "student" && this.mode === "live") {
+      this.checkAndShowCheckInModal();
+    }
   },
   methods: {
     initLive() {
@@ -230,6 +237,16 @@ export default {
       // 这里可以添加倒计时结束的处理逻辑
     },
 
+    // 检查并显示签到弹窗
+    checkAndShowCheckInModal() {
+      // 检查页面内的签到状态
+      if (!this.isCheckedIn) {
+        // 未签到，显示签到弹窗
+        this.showCheckInModal();
+      }
+      // 已签到则不显示弹窗
+    },
+
     // 显示真人签到弹窗
     showCheckInModal() {
       this.checkInModalVisible = true;
@@ -243,6 +260,8 @@ export default {
     // 处理提交
     handleCheckInSubmit(data) {
       console.log("收到签到数据:", data);
+      // 更新页面内的签到状态
+      this.isCheckedIn = true;
       // 这里可以添加实际的提交逻辑
       this.hideCheckInModal();
     },
@@ -317,4 +336,3 @@ export default {
     border: none;
   }
 }
-</style>
