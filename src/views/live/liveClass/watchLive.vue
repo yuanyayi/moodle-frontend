@@ -1,5 +1,8 @@
 <template>
   <div id="watchLivePage">
+    <!-- 倒计时弹窗 -->
+    <countdown-modal ref="countdownModal" v-if="countdownTimestamp" :countdownTimestamp="countdownTimestamp" @cutout="handleEnterLive" @countdown-finished="handleCountdownFinished" />
+
     <!-- <div class="volcLiveApp" v-if="mode === 'live'">
       <div v-if="role === 'student' && mode !== 'replay'">
         <camera-capture
@@ -40,15 +43,19 @@
 
 <script>
 import CameraCapture from "@/components/CameraCapture.vue";
-import { prepareLivePage, prepareReplay } from "@/api/livepage";
+import { prepareLivePage, prepareReplay, getLiveCountdownTime } from "@/api/livepage";
 import VideoNotes from "@/components/VideoNotes.vue";
 import { mapGetters } from "vuex";
+import CountdownModal from "@/components/CountdownModal";
+import RealNameCheckInModal from "@/components/RealNameCheckInModal.vue";
 
 export default {
   name: "watchLive",
   components: {
     CameraCapture,
     VideoNotes,
+    CountdownModal,
+    RealNameCheckInModal,
   },
   data() {
     return {
@@ -57,6 +64,15 @@ export default {
       liveToken: "",
       webSDK: null,
       content: "",
+      countdownTimestamp: 0, // 默认倒计时时间
+      isCheckInDialogVisible: false,
+      formData: {
+        name: "",
+        studentId: "",
+      },
+      photoUrl: null,
+      // 添加新组件的属性
+      checkInModalVisible: false,
     };
   },
   computed: {
@@ -68,17 +84,19 @@ export default {
     },
     ...mapGetters(["roles"]),
     role() {
-      // 从store中获取用户角色，如果没有则默认为teacher
-
+      // 从store中获取用户角色
       return this.roles.id || "student";
     },
   },
   mounted() {
     // this.mode === "live" ? this.initLive() :
-    this.initReplay();
-    // <!-- TODO:倒计时弹窗，进入直播 -->
-    // TODO：学生端，倒计时前，进入直播间-真人签到。文件上传接口
-
+    // DEBUG:
+    // this.initReplay();
+    // 显示倒计时弹窗
+    this.showCountdownModal();
+    // 学生端，真人签到弹窗
+    console.log(this.role === "student" && this.mode === "live");
+    this.role === "student" && this.mode === "live" && this.showCheckInModal();
   },
   methods: {
     initLive() {
@@ -151,7 +169,9 @@ export default {
     // 摄像头事件处理
     handlePhotoCaptured(photoData) {
       console.log("照片已捕获:", photoData);
-      // 这里可以添加上传照片的逻辑
+      // 更新照片URL
+      this.photoUrl = photoData.url;
+      // 触发上传
       this.uploadPhoto(photoData.url);
     },
 
@@ -171,6 +191,54 @@ export default {
     // 编辑器内容变化监听
     handleContentChange(html) {
       console.log("编辑器内容变化:", html);
+    },
+
+    // 显示倒计时弹窗
+    showCountdownModal() {
+      // 这里可以调用接口获取倒计时时间
+      getLiveCountdownTime(this.liveConfigId)
+        .then(res => {
+          this.countdownTimestamp = new Date().getTime() + 400000;
+          // if (res.status) {
+          //   this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+          //   return;
+          // }
+          // this.countdownTimestamp = res.data;
+          this.$refs.countdownModal.show();
+        })
+        .catch(() => {
+          // 出错时使用默认时间
+          this.$refs.countdownModal.show();
+        });
+    },
+
+    // 处理进入直播
+    handleEnterLive() {
+      console.log("用户点击了进入直播按钮");
+      // 这里可以添加进入直播间的逻辑
+    },
+
+    // 处理倒计时结束
+    handleCountdownFinished() {
+      console.log("倒计时结束");
+      // 这里可以添加倒计时结束的处理逻辑
+    },
+
+    // 显示真人签到弹窗
+    showCheckInModal() {
+      this.checkInModalVisible = true;
+    },
+
+    // 隐藏真人签到弹窗
+    hideCheckInModal() {
+      this.checkInModalVisible = false;
+    },
+
+    // 处理提交
+    handleCheckInSubmit(data) {
+      console.log("收到签到数据:", data);
+      // 这里可以添加实际的提交逻辑
+      this.hideCheckInModal();
     },
   },
   destroyed() {

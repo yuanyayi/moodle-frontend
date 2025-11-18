@@ -74,3 +74,9 @@ export function updateOpen(liveRecordId, open) {
     params: { open },
   });
 }
+
+export function getLiveCountdownTime(id) {
+  return axios({
+    url: `/nextLiveTime/${id}`,
+  });
+}
