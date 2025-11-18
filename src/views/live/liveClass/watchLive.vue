@@ -4,13 +4,13 @@
     <CountdownModal ref="countdownModal" v-if="countdownTimestamp" :countdownTimestamp="countdownTimestamp" @cutout="handleEnterLive" @countdown-finished="handleCountdownFinished" />
 
     <!-- 真人签到弹窗 -->
-    <RealNameCheckInModal :visible="checkInModalVisible" :user-id="1" :live-config-id="liveConfigId" @submit="handleCheckInSubmit" @cancel="hideCheckInModal" />
+    <RealNameCheckInModal :visible="checkInModalVisible" :user-id="userId" :live-config-id="liveConfigId" @submit="handleCheckInSubmit" @cancel="hideCheckInModal" />
 
     <!-- <div class="volcLiveApp" v-if="mode === 'live'">
       <div v-if="role === 'student' && mode !== 'replay'">
         <camera-capture
           ref="cameraCapture"
-          :user-id="1"
+          :user-id="userId"
           :live-config-id="liveConfigId"
           @photoCaptured="handlePhotoCaptured"
           @autoCaptureStarted="handleAutoCaptureStarted"
@@ -27,10 +27,9 @@
     </div> -->
     <div style="display: flex; flex-flow: row nowrap">
       <div v-if="role === 'student' && mode !== 'replay'" style="flex: 0 0 auto">
-        <!-- TODO: 拍照接口调用，右侧iframe自动跳系统首页 -->
         <CameraCapture
           ref="cameraCapture"
-          :user-id="1"
+          :user-id="userId"
           :live-config-id="liveConfigId"
           @photoCaptured="handlePhotoCaptured"
           @photoCaptureError="handlePhotoCaptureError"
@@ -89,10 +88,14 @@ export default {
     mode() {
       return this.$route.query.mode || "live"; // "replay"
     },
-    ...mapGetters(["roles"]),
+    ...mapGetters(["roles", "userInfo"]),
     role() {
       // 从store中获取用户角色
       return this.roles.id || "student";
+    },
+    userId() {
+      // 从store中获取用户ID
+      return this.userInfo.id || 1; // 默认为1是为了防止出现未定义的情况
     },
   },
   mounted() {
@@ -107,7 +110,7 @@ export default {
   },
   methods: {
     initLive() {
-      prepareLivePage(this.liveConfigId).then(res => {
+      prepareLivePage(this.liveConfigId, this.userId).then(res => {
         if (res.status) {
           this.$message.error(res.msg || "获取数据失败，请稍后再试。");
           return;
@@ -153,7 +156,7 @@ export default {
       });
     },
     initReplay() {
-      prepareReplay(this.liveConfigId).then(res => {
+      prepareReplay(this.liveConfigId, this.userId).then(res => {
         if (res.status) {
           this.$message.error(res.msg || "获取数据失败，请稍后再试。");
           return;

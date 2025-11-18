@@ -10,12 +10,11 @@
 <script>
 import { prepareBroadcast } from "@/api/livepage";
 import Empty from "@/components/Empty.vue";
+import { mapGetters } from "vuex";
 
 export default {
-  name: "broadcastLive",
-  components: {
-    Empty,
-  },
+  name: "broadcast",
+  components: { Empty },
   data() {
     return {
       broadcastUrl: "",
@@ -26,9 +25,14 @@ export default {
     liveConfigId() {
       return this.$route.params.liveConfigId;
     },
+    ...mapGetters(["userInfo"]),
+    userId() {
+      // 从store中获取用户ID
+      return this.userInfo.id || 1; // 默认为1是为了防止出现未定义的情况
+    },
   },
   mounted() {
-    prepareBroadcast(this.liveConfigId).then(res => {
+    prepareBroadcast(this.liveConfigId, this.userId).then(res => {
       if (res.status) {
         this.$message.error(res.msg || "获取数据失败，请稍后再试。");
         this.errorMsg = res.msg || "获取数据失败，请稍后再试。";

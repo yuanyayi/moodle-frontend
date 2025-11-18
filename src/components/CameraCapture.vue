@@ -80,6 +80,7 @@ export default {
     // 组件加载完成后启动自动抓拍
 
     this.startAutoCapture();
+    console.log("ready");
   },
   beforeDestroy() {
     this.stopAutoCapture();
@@ -160,6 +161,8 @@ export default {
       const video = this.$refs.cameraVideo;
       const ctx = canvas.getContext("2d");
 
+      console.log("拍照中...");
+
       try {
         // 绘制当前视频帧到canvas
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -218,8 +221,7 @@ export default {
         console.error("拍照或上传失败:", error);
         // 不要使用$message.error，因为这可能会导致页面跳转
         // 只在控制台打印错误日志
-        this.$message.error(`操作失败: ${error.message || "未知错误"}`);
-        
+
         // 触发错误事件，让父组件处理
         this.$emit("photoCaptureError", error);
       }
@@ -511,4 +513,5 @@ export default {
       width: 100%;
     }
   }
-}</style>
+}
+</style>
