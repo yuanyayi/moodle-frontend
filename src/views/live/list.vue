@@ -25,9 +25,9 @@
         <p v-else><b>直播时间:</b>{{ formatTime(detail.start_time) }} - {{ formatTime(detail.end_time) }}</p>
 
         <a-space>
-          <a-button v-if="detail.status === 1" type="primary" @click="gotoCourseLive(detail.id)">进入直播间</a-button>
-          <template v-if="role === 'teacher' || role === 'admin'">
-            <a-button v-if="['直播准备', '正在直播'].indexOf(detail.statusByTime) != -1" type="primary" @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
+          <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary" @click="gotoCourseLive(detail.id)">进入直播间</a-button>
+          <template v-if="role !== 'student'">
+            <a-button v-if="shouldShowEnterBroadcastutton(detail)" type="primary" @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
           </template>
           <a-button v-if="detail.replay && detail.status === 3" class="greenBtn" @click="gotoReplayList(detail.id)">直播回放</a-button>
 
@@ -245,6 +245,38 @@ export default {
     },
     getStatusColor(s) {
       return ["#1890FF", "#52c41a", "#---", "#afafaf"][s] || "#87d068";
+    },
+
+    shouldShowEnterLiveButton(detail) {
+      if (this.role === "teacher") return false;
+      const now = moment();
+      const startTime = moment(detail.start_time);
+      const endTime = moment(detail.end_time);
+
+      // 根据角色确定提前进入的时间
+      let minutesBeforeStart = 0;
+      if (this.role === "teacher") {
+        minutesBeforeStart = 30;
+      } else if (this.role === "student") {
+        minutesBeforeStart = 10;
+      } else {
+        // 其他角色默认按教师时间处理
+        minutesBeforeStart = 30;
+      }
+
+      const allowedStartTime = startTime.clone().subtract(minutesBeforeStart, "minutes");
+      return now.isBetween(allowedStartTime, endTime);
+    },
+    shouldShowEnterBroadcastutton(detail) {
+      const now = moment();
+      const startTime = moment(detail.start_time);
+      const endTime = moment(detail.end_time);
+
+      // 根据角色确定提前进入的时间
+      let minutesBeforeStart = 30;
+
+      const allowedStartTime = startTime.clone().subtract(minutesBeforeStart, "minutes");
+      return now.isBetween(allowedStartTime, endTime);
     },
   },
 };

@@ -123,8 +123,9 @@ export default {
     },
     fetch2() {
       fetch2().then(res => {
-        this.barData.forEach(el => {
+        this.barData = this.barData.map(el => {
           el.y = res.data[el.key];
+          return el;
         });
       });
     },

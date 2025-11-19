@@ -2,7 +2,9 @@
   <a-tabs default-active-key="2" @change="handleTabChange">
     <a-tab-pane key="1" tab="视频总结">
       <!-- 视频总结内容 -->
-      {{ summary }}
+      <pre style="padding: 20px">
+        {{ summary }}
+      </pre>
     </a-tab-pane>
     <a-tab-pane key="2" tab="笔记">
       <div class="notes-container">
@@ -74,6 +76,7 @@ export default {
       handler(newVal) {
         if (newVal) {
           this.fetchList();
+          this.fetchSummary();
         }
       },
       immediate: true,
@@ -91,7 +94,7 @@ export default {
     fetchSummary() {
       getSummary(this.vid).then(res => {
         if (res.status) {
-          this.$message.error(res.msg || "获取数据失败，请稍后再试。")
+          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
           return;
         }
         this.summary = res.data;

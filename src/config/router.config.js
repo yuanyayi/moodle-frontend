@@ -106,6 +106,14 @@ export const asyncRouterMap = [
           },
         ],
       },
+      {
+        // 设备测试页面
+        path: "/live/device-test",
+        name: "deviceTest",
+        meta: { title: "设备测试", permission: ["live"] },
+        component: () => import("@/views/live/deviceTest"),
+        hidden: true,
+      },
     ],
   },
   {

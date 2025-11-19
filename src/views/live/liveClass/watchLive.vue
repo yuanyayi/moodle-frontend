@@ -1,10 +1,21 @@
 <template>
   <div id="watchLivePage">
-    <!-- 倒计时弹窗 -->
-    <CountdownModal ref="countdownModal" v-if="countdownTimestamp" :countdownTimestamp="countdownTimestamp" @cutout="handleEnterLive" @countdown-finished="handleCountdownFinished" />
+    <!-- 倒计时弹窗，仅在直播模式下显示 -->
+    <CountdownModal
+      ref="countdownModal"
+      v-if="countdownTimestamp && mode === 'live'"
+      :countdownTimestamp="countdownTimestamp"
+      @cutout="handleEnterLive"
+      @countdown-finished="handleCountdownFinished" />
 
-    <!-- 真人签到弹窗 -->
-    <RealNameCheckInModal :visible="checkInModalVisible" :user-id="userId" :live-config-id="liveConfigId" @submit="handleCheckInSubmit" @cancel="hideCheckInModal" />
+    <!-- 真人签到弹窗，仅在直播模式且为学生角色时显示 -->
+    <RealNameCheckInModal
+      v-if="role === 'student' && mode === 'live'"
+      :visible="checkInModalVisible"
+      :user-id="userId"
+      :live-config-id="liveConfigId"
+      @submit="handleCheckInSubmit"
+      @cancel="hideCheckInModal" />
 
     <!-- <div class="volcLiveApp" v-if="mode === 'live'">
       <div v-if="role === 'student' && mode !== 'replay'">
@@ -41,13 +52,13 @@
         <iframe :src="liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *;"></iframe>
       </div>
     </div>
-    <VideoNotes :vid="liveConfigId" :showEditor="role === 'student'" style="background-color: #fff" />
+    <VideoNotes v-if="mode === 'replay'" :vid="liveConfigId" :showEditor="role === 'student'" style="background-color: #fff" />
   </div>
 </template>
 
 <script>
 import CameraCapture from "@/components/CameraCapture.vue";
-import { prepareLivePage, prepareReplay, getLiveCountdownTime } from "@/api/livepage";
+import { prepareLivePage2, prepareReplay, getLiveCountdownTime } from "@/api/livepage";
 import VideoNotes from "@/components/VideoNotes.vue";
 import { mapGetters } from "vuex";
 import CountdownModal from "@/components/CountdownModal";
@@ -99,22 +110,27 @@ export default {
     },
   },
   mounted() {
-    // this.mode === "live" ? this.initLive() :
-    this.initReplay();
-    // 显示倒计时弹窗
-    this.showCountdownModal();
-    // 学生端，真人签到弹窗
+    this.mode === "live" ? this.initLive() : this.initReplay();
+    // 仅在直播模式下显示倒计时弹窗
+    if (this.mode === "live") {
+      this.showCountdownModal();
+    }
+    // 学生端且在直播模式下，显示真人签到弹窗
     if (this.role === "student" && this.mode === "live") {
       this.checkAndShowCheckInModal();
     }
   },
   methods: {
     initLive() {
-      prepareLivePage(this.liveConfigId, this.userId).then(res => {
+      prepareLivePage2(this.liveConfigId, this.userId).then(res => {
         if (res.status) {
           this.$message.error(res.msg || "获取数据失败，请稍后再试。");
           return;
         }
+        const { activityId, viewUrl } = res.data;
+        this.liveUrl = viewUrl;
+
+        return;
         this.activityId = res.data.activityId;
         this.liveToken = res.data.liveToken;
 
@@ -215,15 +231,20 @@ export default {
 
     // 显示倒计时弹窗
     showCountdownModal() {
+      // 仅在直播模式下显示倒计时
+      if (this.mode !== "live") {
+        return;
+      }
+
       // 这里可以调用接口获取倒计时时间
       getLiveCountdownTime(this.liveConfigId)
         .then(res => {
-          this.countdownTimestamp = new Date().getTime() + 400000;
-          // if (res.status) {
-          //   this.$message.error(res.msg || "获取数据失败，请稍后再试。");
-          //   return;
-          // }
-          // this.countdownTimestamp = res.data;
+          if (res.status) {
+            this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+            return;
+          }
+          if (res.data <= new Date().getTime()) return;
+          this.countdownTimestamp = res.data;
           this.$refs.countdownModal.show();
         })
         .catch(() => {

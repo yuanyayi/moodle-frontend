@@ -1,5 +1,5 @@
 <template>
-  <a-modal :visible="isModalVisible" title="真人签到" :width="400" :footer="null" :closable="false" :z-index="1001">
+  <a-modal :visible="isModalVisible" title="真人签到" :width="400" :footer="null" :closable="false">
     <a-form :model="formData" layout="vertical">
       <a-form-item label="姓名" name="name" :rules="[{ required: true, message: '请输入姓名' }]">
         <a-input v-model:value="formData.name" placeholder="输入姓名" />
