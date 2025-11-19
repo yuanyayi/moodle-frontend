@@ -28,7 +28,7 @@ export default {
     ...mapGetters(["userInfo"]),
     userId() {
       // 从store中获取用户ID
-      return this.userInfo.id || 1; // 默认为1是为了防止出现未定义的情况
+      return String(this.userInfo.id || "1"); // 转换为字符串类型，默认为"1"
     },
   },
   mounted() {

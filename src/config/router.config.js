@@ -78,7 +78,7 @@ export const asyncRouterMap = [
           },
           // 直播统计
           {
-            path: "/live/anaylsis",
+            path: "/live/anaylsis/",
             name: "anaylsis",
             meta: { title: "直播统计", permission: ["anaylsis"] },
             component: () => import("@/views/anaylsis/"),

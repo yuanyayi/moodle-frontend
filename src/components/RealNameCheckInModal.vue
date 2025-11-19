@@ -38,11 +38,11 @@ export default {
   props: {
     visible: {
       type: Boolean,
-      default: false,
+      default: false
     },
     userId: {
-      type: Number,
-      default: 1,
+      type: String,
+      default: "1"
     },
     liveConfigId: {
       type: Number,

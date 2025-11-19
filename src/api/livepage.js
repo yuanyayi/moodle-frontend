@@ -3,7 +3,7 @@
 import { axios } from "@/utils/request";
 // import { obj2arr, fileDownload, baseUrl, encodeRequest } from '@/utils/common'
 
-export function prepareLivePage(liveConfigId, userId = 1, username = "trendy") {
+export function prepareLivePage(liveConfigId, userId = "1", username = "trendy") {
   return axios({
     url: `/getVolcLiveUrl`,
     params: { username, liveConfigId },
@@ -33,7 +33,7 @@ export function prepareLivePage(liveConfigId, userId = 1, username = "trendy") {
   });
 }
 
-export function prepareBroadcast(liveConfigId, userId = 1, username = "trendy") {
+export function prepareBroadcast(liveConfigId, userId = "1", username = "trending") {
   return axios({
     url: `/broadcastUrl`,
     params: { liveConfigId, userId, username },
@@ -45,7 +45,7 @@ export function getReplayList(liveConfigId) {
     url: `/liveRecordPage/${liveConfigId}`,
   });
 }
-export function prepareReplay(liveId, userId = 1, username = "trendy") {
+export function prepareReplay(liveId, userId = "1", username = "trending") {
   return axios({
     url: `/liveRecordDetail/${liveId}`,
     params: { liveId, userId, username },
