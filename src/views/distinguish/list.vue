@@ -44,8 +44,9 @@ export default {
           label: "直播开始时间",
         },
         course_id: {
-          type: "text",
+          type: "select",
           label: "相关课程",
+          list: [],
         },
       },
       queryParam: {
@@ -69,22 +70,22 @@ export default {
       // 表格列配置
       columns: [
         {
-          title: <div class="nowrap">班级名称</div>,
+          title: <div class='nowrap'>班级名称</div>,
           dataIndex: "course_name",
           key: "course_name",
         },
         {
-          title: <div class="nowrap">直播名称</div>,
+          title: <div class='nowrap'>直播名称</div>,
           dataIndex: "subject",
           key: "subject",
         },
         {
-          title: <div class="nowrap">主持人</div>,
+          title: <div class='nowrap'>主持人</div>,
           dataIndex: "teacher_name",
           key: "teacher_name",
         },
         {
-          title: <div class="nowrap">直播时间</div>,
+          title: <div class='nowrap'>直播时间</div>,
           dataIndex: "start_time",
           key: "start_time",
           customRender: val => {
@@ -92,12 +93,12 @@ export default {
           },
         },
         {
-          title: <div class="nowrap">人脸识别次数</div>,
+          title: <div class='nowrap'>人脸识别次数</div>,
           dataIndex: "count",
           key: "count",
         },
         {
-          title: <div class="nowrap">匹配成功次数</div>,
+          title: <div class='nowrap'>匹配成功次数</div>,
           dataIndex: "match_count",
           key: "match_count",
           customRender: (val, { count }) => {
@@ -108,7 +109,7 @@ export default {
           },
         },
         {
-          title: <div class="nowrap">操作</div>,
+          title: <div class='nowrap'>操作</div>,
           dataIndex: "id",
           key: "action",
           customRender: live_id => {
@@ -126,7 +127,7 @@ export default {
     ...mapGetters(["roles"]),
     role() {
       // 从store中获取用户角色，如果没有则默认为teacher
-       
+
       return this.roles.id || "student";
     },
   },
@@ -135,8 +136,9 @@ export default {
   },
   methods: {
     getMaps() {
-      getLiveMaps(["semester"]).then(map => {
+      getLiveMaps(["semester", "course"]).then(map => {
         this.queryField.semester_id.list = map.semesterMap;
+        this.queryField.course_id.list = map.courseMap;
       });
     },
     fetch() {

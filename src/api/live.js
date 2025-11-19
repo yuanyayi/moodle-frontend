@@ -94,3 +94,9 @@ export function createVideoNote(liveRecordId, note) {
     method: "post",
   });
 }
+
+export function getSummary(liveRecordId) {
+  return axios({
+    url: `/${liveRecordId}/summary`,
+  });
+}

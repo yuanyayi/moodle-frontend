@@ -12,7 +12,28 @@ NProgress.configure({ showSpinner: false }); // NProgress Configuration
 
 const allowList = ["login", "register", "registerResult"]; // no redirect allowList
 const loginRoutePath = "/user/login";
-const defaultRoutePath = "/dashboard/workplace";
+// 将默认路由路径改为函数，动态计算用户首页
+const getDefaultRoutePath = () => {
+  // 如果store还未初始化，或者用户没有角色信息，默认返回/live/list
+  if (!store || !store.getters.roles || !store.getters.roles.permissionList) {
+    return "/live/list";
+  }
+  
+  // 获取用户权限列表
+  const permissionList = store.getters.roles.permissionList || [];
+  
+  // 根据权限优先级顺序检查
+  if (permissionList.includes("live")) {
+    return "/live/list";
+  } else if (permissionList.includes("anaylsis")) {
+    return "/live/anaylsis";
+  } else if (permissionList.includes("distinguish")) {
+    return "/live/distinguish";
+  }
+  
+  // 默认返回/live/list
+  return "/live/list";
+};
 
 router.beforeEach((to, from, next) => {
   NProgress.start(); // start progress bar
@@ -23,7 +44,7 @@ router.beforeEach((to, from, next) => {
 
   if (token) {
     if (to.path === loginRoutePath) {
-      next({ path: defaultRoutePath });
+      next({ path: getDefaultRoutePath() });
       NProgress.done();
     } else {
       // check login user.roles is null

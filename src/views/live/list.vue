@@ -4,7 +4,7 @@
       <!-- 搜索功能 -->
       <SearchForm :queryField="queryField" :queryParam="queryParam" @queryFilter="queryFilter" @clearQuery="clearQuery"></SearchForm>
     </div>
-    <div style="padding-bottom: 12px">
+    <div v-if="role !== 'student'" style="padding-bottom: 12px">
       <a-button type="primary" @click="$refs.createModal.add()">新建直播</a-button>
     </div>
 
@@ -26,7 +26,9 @@
 
         <a-space>
           <a-button v-if="detail.status === 1" type="primary" @click="gotoCourseLive(detail.id)">进入直播间</a-button>
-          <a-button v-if="['直播准备', '正在直播'].indexOf(detail.statusByTime) != -1" type="primary" @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
+          <template v-if="role === 'teacher' || role === 'admin'">
+            <a-button v-if="['直播准备', '正在直播'].indexOf(detail.statusByTime) != -1" type="primary" @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
+          </template>
           <a-button v-if="detail.replay && detail.status === 3" class="greenBtn" @click="gotoReplayList(detail.id)">直播回放</a-button>
 
           <template v-if="role === 'teacher'">
@@ -227,7 +229,7 @@ export default {
     readFromList,
     getStatusByTime(detail) {
       const now = new moment();
-      let diffMinutes = role === "teacher" ? -30 : -10;
+      let diffMinutes = this.role === "teacher" ? -30 : -10;
       if (now.isBefore(moment(detail.start_time).add(diffMinutes, "minutes"))) {
         return "未开始";
       } else if (now.isBefore(moment(detail.start_time))) {

@@ -78,7 +78,7 @@ export default {
       // 添加新组件的属性
       checkInModalVisible: false,
       // 签到状态
-      isCheckedIn: true,
+      isCheckedIn: false,
     };
   },
   computed: {

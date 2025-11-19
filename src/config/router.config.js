@@ -13,7 +13,30 @@ export const asyncRouterMap = [
     name: "index",
     component: BasicLayout,
     meta: { title: "首页" },
-    redirect: "/live/list",
+    redirect: to => {
+      // 获取用户角色权限
+      const store = require('@/store').default;
+      
+      // 如果store还未初始化，或者用户没有角色信息，默认跳转到/live/list
+      if (!store || !store.getters.roles || !store.getters.roles.permissionList) {
+        return "/live/list";
+      }
+      
+      // 获取用户权限列表
+      const permissionList = store.getters.roles.permissionList || [];
+      
+      // 根据权限优先级顺序检查
+      if (permissionList.includes("live")) {
+        return "/live/list";
+      } else if (permissionList.includes("anaylsis")) {
+        return "/live/anaylsis";
+      } else if (permissionList.includes("distinguish")) {
+        return "/live/distinguish";
+      }
+      
+      // 默认跳转到/live/list
+      return "/live/list";
+    },
     children: [
       // 直播平台
       {
@@ -55,7 +78,7 @@ export const asyncRouterMap = [
           },
           // 直播统计
           {
-            path: "/live/anaylsis/",
+            path: "/live/anaylsis",
             name: "anaylsis",
             meta: { title: "直播统计", permission: ["anaylsis"] },
             component: () => import("@/views/anaylsis/"),

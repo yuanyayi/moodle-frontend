@@ -2,6 +2,7 @@
   <a-tabs default-active-key="2" @change="handleTabChange">
     <a-tab-pane key="1" tab="视频总结">
       <!-- 视频总结内容 -->
+      {{ summary }}
     </a-tab-pane>
     <a-tab-pane key="2" tab="笔记">
       <div class="notes-container">
@@ -48,7 +49,7 @@
 
 <script>
 import QuillEditor from "@/components/Editor/QuillEditor.vue";
-import { getVideoNoteList, createVideoNote } from "@/api/live";
+import { getVideoNoteList, createVideoNote, getSummary } from "@/api/live";
 import Empty from "@/components/Empty.vue";
 import { formatDate } from "@/utils/common";
 
@@ -61,6 +62,7 @@ export default {
   },
   data() {
     return {
+      summary: "",
       activeTab: "2",
       editorContent: "",
       saving: false,
@@ -84,6 +86,16 @@ export default {
 
     onEditorChange(html) {
       this.editorContent = html;
+    },
+
+    fetchSummary() {
+      getSummary(this.vid).then(res => {
+        if (res.status) {
+          this.$message.error(res.msg || "获取数据失败，请稍后再试。")
+          return;
+        }
+        this.summary = res.data;
+      });
     },
 
     fetchList() {
