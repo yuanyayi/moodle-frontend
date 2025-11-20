@@ -56,7 +56,7 @@ export default {
   name: "CameraCapture",
   props: {
     userId: {
-      type: Number,
+      type: String,
       required: true,
     },
     liveConfigId: {

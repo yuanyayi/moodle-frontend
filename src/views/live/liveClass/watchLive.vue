@@ -17,6 +17,10 @@
       @submit="handleCheckInSubmit"
       @cancel="hideCheckInModal" />
 
+    <!-- 设备测试弹窗，仅在直播模式且为学生角色时显示 -->
+    <LiveDeviceTestModal v-if="role === 'student' && mode === 'live'" :visible="deviceTestModalVisible" @confirm="handleDeviceConfirm" @cancel="handleDeviceCancel" />
+
+    <!-- 主要内容区域 -->
     <!-- <div class="volcLiveApp" v-if="mode === 'live'">
       <div v-if="role === 'student' && mode !== 'replay'">
         <camera-capture
@@ -49,7 +53,14 @@
           @autoCaptureError="handleAutoCaptureError" />
       </div>
       <div style="flex: 1">
-        <iframe :src="liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *;"></iframe>
+        <div class="player-header" v-if="mode === 'replay'">
+          <div class="title">{{ replayDetail.name }}的回放</div>
+          <div classs="info">
+            <span>观看人数:{{ replayDetail.view_number }}</span
+            ><span>点赞数：{{ replayDetail.like_number }}</span>
+          </div>
+        </div>
+        <iframe :src="liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *; camera; microphone;midi;"></iframe>
       </div>
     </div>
     <VideoNotes v-if="mode === 'replay'" :vid="liveConfigId" :showEditor="role === 'student'" style="background-color: #fff" />
@@ -63,6 +74,7 @@ import VideoNotes from "@/components/VideoNotes.vue";
 import { mapGetters } from "vuex";
 import CountdownModal from "@/components/CountdownModal";
 import RealNameCheckInModal from "@/components/RealNameCheckInModal.vue";
+import LiveDeviceTestModal from "@/components/LiveDeviceTestModal.vue";
 
 export default {
   name: "watchLive",
@@ -71,6 +83,7 @@ export default {
     VideoNotes,
     CountdownModal,
     RealNameCheckInModal,
+    LiveDeviceTestModal,
   },
   data() {
     return {
@@ -88,8 +101,11 @@ export default {
       photoUrl: null,
       // 添加新组件的属性
       checkInModalVisible: false,
+      deviceTestModalVisible: false, // 新增：设备测试弹窗可见性
       // 签到状态
       isCheckedIn: false,
+      view_number: 0,
+      replayDetail: {},
     };
   },
   computed: {
@@ -179,6 +195,7 @@ export default {
         }
         const { url } = res.data;
         this.liveUrl = url;
+        this.replayDetail = res.data;
       });
     },
     loadScript() {
@@ -262,7 +279,10 @@ export default {
     // 处理倒计时结束
     handleCountdownFinished() {
       console.log("倒计时结束");
-      // 这里可以添加倒计时结束的处理逻辑
+      // 倒计时结束后显示签到弹窗
+      if (this.role === "student" && this.mode === "live") {
+        this.checkAndShowCheckInModal();
+      }
     },
 
     // 检查并显示签到弹窗
@@ -292,6 +312,27 @@ export default {
       this.isCheckedIn = true;
       // 这里可以添加实际的提交逻辑
       this.hideCheckInModal();
+      // 签到完成后显示设备测试弹窗
+      this.showDeviceTestModal();
+    },
+
+    // 显示设备测试弹窗
+    showDeviceTestModal() {
+      this.deviceTestModalVisible = true;
+    },
+
+    // 处理设备测试确认
+    handleDeviceConfirm(deviceInfo) {
+      console.log("设备确认:", deviceInfo);
+      this.deviceTestModalVisible = false;
+      this.$message.success("设备测试完成！");
+    },
+
+    // 处理设备测试取消
+    handleDeviceCancel() {
+      console.log("设备测试取消");
+      this.deviceTestModalVisible = false;
+      this.$message.info("设备测试已取消");
     },
   },
   destroyed() {
@@ -362,6 +403,19 @@ export default {
     aspect-ratio: 16 / 10;
     min-height: 415px;
     border: none;
+  }
+
+  .player-header {
+    background: #fff;
+    font-size: 16px;
+    padding: 5px 10px;
+    span {
+      margin-right: 1em;
+    }
+    .info {
+      font-size: 14px;
+      color: #a4a4a4;
+    }
   }
 }
 </style>

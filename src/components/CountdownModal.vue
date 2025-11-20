@@ -23,7 +23,7 @@ export default {
     countdownTimestamp: {
       type: Number,
       default: null,
-      requied: true,
+      required: false,
     },
   },
   data() {
@@ -36,10 +36,19 @@ export default {
       countdownFinished: false,
     };
   },
+  watch: {
+    countdownTimestamp: {
+      handler(newValue) {
+        this.visible === true && this.startCountdown();
+      },
+      immediate: true,
+    },
+  },
   methods: {
     show() {
-      this.visible = true;
+      // 确保组件显示之前重置状态
       this.countdownFinished = false;
+      this.visible = true;
       this.startCountdown();
     },
 
@@ -51,17 +60,25 @@ export default {
     startCountdown() {
       this.stopCountdown(); // 先清除可能存在的定时器
 
+      // 在开始新的倒计时前先计算一次时间
       this.calculateRemainingTime();
-      this.timer = setInterval(() => {
-        this.calculateRemainingTime();
-      }, 1000);
+
+      // 只有在倒计时尚未结束时才启动定时器
+      if (!this.countdownFinished) {
+        this.timer = setInterval(() => {
+          this.calculateRemainingTime();
+        }, 1000);
+      }
     },
 
     calculateRemainingTime() {
+      // 如果没有提供倒计时时间，则默认30分钟后结束
+      const targetTime = this.countdownTimestamp;
       const now = Date.now();
-      const remaining = this.countdownTimestamp - now;
+      const remaining = targetTime - now;
 
       if (remaining <= 0) {
+        console.error("时间差错误。" + targetTime + "---" + now);
         // 倒计时结束
         this.stopCountdown();
         this.countdownFinished = true;

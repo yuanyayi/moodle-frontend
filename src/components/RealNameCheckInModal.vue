@@ -38,18 +38,17 @@ export default {
   props: {
     visible: {
       type: Boolean,
-      default: false
+      default: false,
     },
     userId: {
       type: String,
-      default: "1"
+      default: "1",
     },
     liveConfigId: {
       type: Number,
       default: 1,
     },
   },
-  emits: ["submit", "cancel"],
   setup(props, { emit }) {
     const videoElement = ref(null);
     const isModalVisible = ref(false);

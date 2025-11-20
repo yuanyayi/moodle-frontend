@@ -1,15 +1,15 @@
 <template>
   <div id="broadcastPage">
     <!-- 倒计时弹窗 -->
-    <CountdownModal 
-      ref="countdownModal" 
-      v-if="countdownTimestamp && !countdownFinished" 
-      :countdownTimestamp="countdownTimestamp" 
-      @enter-live="handleEnterLive" 
-      @countdown-finished="handleCountdownFinished"
-      :z-index="1001"
-    />
-    <iframe v-if="broadcastUrl" :src="broadcastUrl" width="100%" height="100%" frameborder="0" scrolling="no" allow="microphone;camera;midi;encrypted-media;display-capture;"></iframe>
+    <CountdownModal ref="countdownModal" :countdownTimestamp="countdownTimestamp" />
+    <iframe
+      v-if="broadcastUrl"
+      :src="broadcastUrl"
+      width="100%"
+      height="100%"
+      frameborder="0"
+      scrolling="no"
+      allow="microphone;camera;midi;encrypted-media;display-capture;fullscreen; clipboard-read *; clipboard-write *; "></iframe>
     <div v-else style="background-color: #fff; padding: 20px">
       <Empty :opt="{ description: errorMsg }" />
     </div>
@@ -55,14 +55,14 @@ export default {
             this.$message.error(res.msg || "获取直播信息失败，请稍后再试。");
             return;
           }
-          
+
           // 如果返回了倒计时时间，则显示倒计时弹窗
           if (res.data && res.data > Date.now()) {
             this.countdownTimestamp = res.data;
-            this.$refs.countdownModal.show();
+            this.$nextTick(this.$refs.countdownModal.show);
             return;
           }
-          
+
           // 如果没有倒计时或已过开播时间，直接加载开播页面
           this.loadBroadcastPage();
         })
@@ -71,7 +71,7 @@ export default {
           this.loadBroadcastPage();
         });
     },
-    
+
     loadBroadcastPage() {
       prepareBroadcast(this.liveConfigId, this.userId).then(res => {
         if (res.status) {
@@ -82,17 +82,6 @@ export default {
         this.broadcastUrl = res.data;
       });
     },
-    
-    // 处理进入直播
-    handleEnterLive() {
-      this.loadBroadcastPage();
-    },
-    
-    // 处理倒计时结束
-    handleCountdownFinished() {
-      this.countdownFinished = true;
-      this.loadBroadcastPage();
-    }
   },
 };
 </script>
