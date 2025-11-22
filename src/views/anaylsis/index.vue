@@ -28,10 +28,22 @@
     <a-card :bordered="false" title="互动内容分析">
       <a-row>
         <a-col :span="12">
-          <tag-cloud :tag-list="tagList1" :height="200" :force-fit="true" />
+          <!-- 修改: 添加 willReadFrequently 属性优化性能，并自定义tooltip显示originalValue -->
+          <tag-cloud 
+            :tag-list="tagList1" 
+            :height="200" 
+            :force-fit="true"
+            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }"
+          />
         </a-col>
         <a-col :span="12">
-          <tag-cloud :tag-list="tagList2" :height="200" :force-fit="true" />
+          <!-- 修改: 添加 willReadFrequently 属性优化性能，并自定义tooltip显示originalValue -->
+          <tag-cloud 
+            :tag-list="tagList2" 
+            :height="200" 
+            :force-fit="true"
+            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }"
+          />
         </a-col>
       </a-row>
     </a-card>
@@ -131,21 +143,45 @@ export default {
     },
     fetch3() {
       ciyun1().then(res => {
-        this.tagList1 = res.list.map(el => {
-          return {
-            name: el.label,
-            value: el.size,
-          };
-        });
+        // 调用新方法调整权重
+        this.tagList1 = this.adjustWeights(
+          res.list.map(el => {
+            return {
+              name: el.label,
+              value: el.size,
+              originalValue: el.size, // 保存原始值用于tooltip显示
+            };
+          })
+        );
       });
       ciyun2().then(res => {
-        this.tagList2 = res.list.map(el => {
-          return {
-            name: el.label,
-            value: el.size,
-          };
-        });
+        // 调用新方法调整权重
+        this.tagList2 = this.adjustWeights(
+          res.list.map(el => {
+            return {
+              name: el.label,
+              value: el.size,
+              originalValue: el.size, // 保存原始值用于tooltip显示
+            };
+          })
+        );
       });
+    },
+    // 新增方法：调整相同词频的权重
+    adjustWeights(list) {
+      if (list.length <= 1) return list;
+
+      // 创建新数组避免修改原数组
+      const adjustedList = list.map(item => ({ ...item }));
+
+      // 从第二个元素开始检查是否与前一个元素的originalValue相同
+      for (let i = 1; i < adjustedList.length; i++) {
+        if (adjustedList[i].originalValue === adjustedList[i - 1].originalValue) {
+          adjustedList[i].value = adjustedList[i - 1].value + 0.1;
+        }
+      }
+
+      return adjustedList;
     },
     getColorClassName(str) {
       if (str === "0.00%") return "a-grey";

@@ -2,7 +2,7 @@
   <v-chart :width="width" :height="height" :padding="[0]" :data="data" :scale="scale" :forceFit="forceFit">
     <v-tooltip :show-title="false" />
     <v-coord type="rect" direction="TL" />
-    <v-point position="x*y" color="category" shape="cloud" tooltip="value*category" />
+    <v-point position="x*y" color="category" shape="cloud" :tooltip="tooltipOptions" />
   </v-chart>
 </template>
 
@@ -55,12 +55,30 @@ export default {
     forceFit: {
       type: Boolean,
       default: false
+    },
+    options: {
+      type: Object,
+      default: () => ({})
     }
   },
   data () {
     return {
       data: [],
       scale
+    }
+  },
+  computed: {
+    // 自定义tooltip显示选项
+    tooltipOptions() {
+      return [
+        'name*value*originalValue',
+        (name, value, originalValue) => {
+          return {
+            name: name,
+            value: originalValue !== undefined ? originalValue : value
+          }
+        }
+      ]
     }
   },
   watch: {

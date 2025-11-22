@@ -45,31 +45,24 @@ export default {
   },
   mounted() {
     this.loadBroadcastData();
+    this.loadBroadcastPage();
   },
   methods: {
     loadBroadcastData() {
       // 先获取倒计时时间
-      getLiveCountdownTime(this.liveConfigId)
-        .then(res => {
-          if (res.status) {
-            this.$message.error(res.msg || "获取直播信息失败，请稍后再试。");
-            return;
-          }
+      getLiveCountdownTime(this.liveConfigId).then(res => {
+        if (res.status) {
+          this.$message.error(res.msg || "获取直播信息失败，请稍后再试。");
+          return;
+        }
 
-          // 如果返回了倒计时时间，则显示倒计时弹窗
-          if (res.data && res.data > Date.now()) {
-            this.countdownTimestamp = res.data;
-            this.$nextTick(this.$refs.countdownModal.show);
-            return;
-          }
-
-          // 如果没有倒计时或已过开播时间，直接加载开播页面
-          this.loadBroadcastPage();
-        })
-        .catch(() => {
-          // 获取倒计时失败，直接加载开播页面
-          this.loadBroadcastPage();
-        });
+        // 如果返回了倒计时时间，则显示倒计时弹窗
+        if (res.data && res.data > Date.now()) {
+          this.countdownTimestamp = res.data;
+          this.$nextTick(this.$refs.countdownModal.show);
+          return;
+        }
+      });
     },
 
     loadBroadcastPage() {

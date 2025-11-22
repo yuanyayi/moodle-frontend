@@ -104,6 +104,12 @@ export const asyncRouterMap = [
             component: () => import("@/views/distinguish/studentDetail"),
             hidden: true,
           },
+          {
+            path: "/live/logs", // attendance_status_id
+            name: "logsList",
+            meta: { title: "日志", permission: ["logs"] },
+            component: () => import("@/views/logs"),
+          },
         ],
       },
       {

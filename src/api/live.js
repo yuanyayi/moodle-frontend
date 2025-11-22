@@ -100,3 +100,9 @@ export function getSummary(liveRecordId) {
     url: `/${liveRecordId}/summary`,
   });
 }
+
+export function prepareSummary(liveRecordId) {
+  return axios({
+    url: `/${liveRecordId}/prepareSummary`,
+  });
+}

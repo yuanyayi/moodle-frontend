@@ -55,7 +55,7 @@
       <div style="flex: 1">
         <div class="player-header" v-if="mode === 'replay'">
           <div class="title">{{ replayDetail.name }}的回放</div>
-          <div classs="info">
+          <div class="info">
             <span>观看人数:{{ replayDetail.view_number }}</span
             ><span>点赞数：{{ replayDetail.like_number }}</span>
           </div>

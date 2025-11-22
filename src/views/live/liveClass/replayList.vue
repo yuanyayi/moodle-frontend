@@ -28,6 +28,7 @@
             <div class="content">
               <p style="font-size: 18px; font-weight: 500">
                 <EditText
+                  v-if="role !== 'student'"
                   :ref="`edit${index}`"
                   :value="detail.name"
                   trigger="icon"
@@ -40,6 +41,7 @@
                     <a-button class="operateBtn" icon="edit" size="small" ghost @click.stop="$refs[`edit${index}`][0].openEdit()" />
                   </template>
                 </EditText>
+                <template v-else>{{ detail.name }}</template>
               </p>
               <p style="display: flex; justify-content: space-between; align-items: center">
                 {{ detail.teacher_name }} {{ formatDate(+detail.start_time, "YYYY-MM-DD") }}
@@ -47,6 +49,10 @@
                   <a-switch v-model="detail.open" size="small" @change="e => handleSwitchChange(detail.id, e)" />
                   <a-button type="danger" icon="delete" size="small" ghost style="flex: none; border: none !important; box-shadow: none" @click.stop="deleteLiveRecord(detail.id)" />
                 </span>
+              </p>
+              <p v-if="role !== 'student'">
+                <a-button @click="prepareSummary(detail.id)">开始总结</a-button>
+                <a-button @click="getSummary(detail.id)">查看总结</a-button>
               </p>
             </div>
           </div>
@@ -64,7 +70,7 @@ import APagination from "ant-design-vue/es/pagination";
 import Empty from "@/components/Empty.vue";
 import DetailList from "@/components/DetailList";
 import { formatDate, readFromList } from "@/utils/common";
-import { getLiveConfigDetail, getLiveMaps } from "@/api/live";
+import { getLiveConfigDetail, getLiveMaps, prepareSummary, getSummary } from "@/api/live";
 import { getReplayList, renameLiveRecord, deleteLiveRecord, updateOpen } from "@/api/livepage";
 import EditText from "@/components/EditText";
 import { mapGetters } from "vuex";
@@ -221,6 +227,28 @@ export default {
           return;
         }
         this.fetch();
+      });
+    },
+
+    prepareSummary(id) {
+      prepareSummary(id).then(res => {
+        if (res.status) {
+          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+          return;
+        }
+        this.$message.success(res.msg || "AI总结中，请等待。");
+      });
+    },
+    getSummary(id) {
+      getSummary(id).then(res => {
+        if (res.status) {
+          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+          return;
+        }
+        this.$info({
+          title: "查看总结",
+          content: res.data,
+        });
       });
     },
   },
