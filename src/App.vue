@@ -9,6 +9,7 @@
 <script>
 import { domTitle, setDocumentTitle } from '@/utils/domUtil'
 import { i18nRender } from '@/locales'
+import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN';
 
 export default {
   data () {
@@ -21,7 +22,9 @@ export default {
       const { title } = this.$route.meta
       title && (setDocumentTitle(`${i18nRender(title)} - ${domTitle}`))
 
-      return this.$i18n.getLocaleMessage(this.$store.getters.lang).antLocale
+      // 获取当前语言的antd配置，如果获取不到则使用中文作为默认值
+      const antLocale = this.$i18n.getLocaleMessage(this.$store.getters.lang)?.antLocale;
+      return antLocale || zhCN;
     }
   }
 }

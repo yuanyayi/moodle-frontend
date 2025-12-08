@@ -2,7 +2,7 @@
   <a-card :bordered="false" class="live-list-container">
     <!-- 搜索区域 -->
     <div class="table-page-search-wrapper">
-      <SearchForm :queryField="queryField" :queryParam="queryParam" @queryFilter="queryFilter" @clearQuery="clearQuery"></SearchForm>
+      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter" @clearQuery="clearQuery"></SearchForm>
     </div>
 
     <!-- 数据表格 -->
@@ -16,7 +16,7 @@
 import SearchForm from "@/components/SearchForm.vue";
 import Empty from "@/components/Empty.vue";
 import { formatTime } from "@/utils/common";
-import { getLiveMaps } from "@/api/live";
+import { getLiveMaps, getCourseList } from "@/api/live";
 import { getDistinguishList } from "@/api/distinguish";
 import { mapGetters } from "vuex";
 
@@ -34,6 +34,7 @@ export default {
           type: "select",
           label: "学期",
           list: [],
+          onChange: this.getCoursesBySemester,
         },
         subject: {
           type: "text",
@@ -127,22 +128,34 @@ export default {
     ...mapGetters(["roles"]),
     role() {
       // 从store中获取用户角色，如果没有则默认为teacher
-
       return this.roles.id || "student";
     },
   },
   created() {
-    this.getMaps();
+    this.getMaps().then(() => {
+      this.fetch();
+    });
   },
   methods: {
     getMaps() {
-      getLiveMaps(["semester", "course"]).then(map => {
+      // 先获取学期和课程映射
+      return getLiveMaps(["semester"]).then(map => {
         this.queryField.semester_id.list = map.semesterMap;
         this.queryField.course_id.list = map.courseMap;
+
+        this.queryParam.semester_id = map.semesterMap[0].value;
+        // 在获取映射之后获取课程列表
+        return getCourseList(map.semesterMap[0].value).then(courseMap => {
+          this.queryField.course_id.list = courseMap.courseMap || [];
+        });
       });
     },
     fetch() {
       this.loading = true;
+      if (!this.queryParam.semester_id) {
+        this.$message.error("请选择学期！");
+        return;
+      }
       let queryParam = { ...this.queryParam };
       if (queryParam.start_time.length) {
         queryParam.start_time_begin = queryParam.start_time[0].format("x");
@@ -163,6 +176,32 @@ export default {
           this.loading = false;
         });
     },
+    // 添加根据学期ID获取课程列表的方法
+    getCoursesBySemester(semesterId) {
+      // 清空之前选择的课程
+      this.queryParam.course_id = undefined;
+
+      // 如果没有选择学期，则清空课程列表
+      if (!semesterId) {
+        this.queryField.course_id.list = [];
+        return;
+      }
+
+      // 根据选择的学期获取课程列表
+      getCourseList(semesterId)
+        .then(res => {
+          if (res && res.courseMap) {
+            this.queryField.course_id.list = res.courseMap;
+          } else {
+            this.queryField.course_id.list = [];
+          }
+        })
+        .catch(error => {
+          console.error("获取课程列表失败:", error);
+          this.$message.error("获取课程列表失败");
+          this.queryField.course_id.list = [];
+        });
+    },
     queryFilter() {
       this.listParam.page = 1;
       this.fetch();
@@ -170,7 +209,7 @@ export default {
     clearQuery() {
       this.listParam.page = 1;
       this.queryParam = {
-        semester_id: undefined,
+        semester_id: this.queryField.semester_id.list[0].value || undefined,
         status: -1,
         subject: undefined,
         start_time: [],

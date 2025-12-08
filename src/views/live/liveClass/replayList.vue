@@ -148,7 +148,7 @@ export default {
   },
   methods: {
     getMaps() {
-      getLiveMaps().then(map => {
+      getLiveMaps(["liveStatus", "repeat"]).then(map => {
         this.statusList = map.liveStatusMap;
         this.fieldsMap.repeat.list = map.repeatMap;
       });

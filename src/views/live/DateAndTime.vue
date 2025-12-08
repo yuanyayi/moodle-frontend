@@ -12,13 +12,12 @@ export default {
   props: {
     value: {
       type: [Date, String, Number, moment],
-      default: () => new moment(),
+      default: null
     },
   },
   data() {
     return {
-      // 可以在这里定义其他数据属性
-      selfValue: new moment(), // moment 整体时间，最终值
+      selfValue: null,
       tempValue: {
         // 给组件看的
         date: null,
@@ -30,26 +29,69 @@ export default {
     value: {
       immediate: true,
       handler(newVal) {
-        console.log("DateAndTime value:", newVal);
-        newVal = newVal || moment().add(11, "minutes");
-        this.selfValue = newVal;
-        this.tempValue = { date: newVal ? moment(newVal) : new moment(), time: newVal ? moment(newVal) : new moment() };
-        this.triggerChange(newVal || this.selfValue);
+        // 避免在值没有真正改变时触发更新
+        if (newVal && this.selfValue && moment(newVal).isSame(this.selfValue)) {
+          return;
+        }
+        
+        if (newVal) {
+          this.selfValue = moment(newVal);
+          this.tempValue = { 
+            date: moment(newVal), 
+            time: moment(newVal) 
+          };
+        } else {
+          this.selfValue = null;
+          this.tempValue = { 
+            date: null, 
+            time: null 
+          };
+        }
+        // 不再在watch中触发change事件，避免死循环
       },
     },
   },
   methods: {
-    // 可以在这里定义其他方法
     onDateChange(v) {
-      this.selfValue = v ? moment(v).set({ hour: this.selfValue.hour(), minute: this.selfValue.minute(), second: 0 }) : null;
+      if (v && this.tempValue.time) {
+        this.selfValue = moment(v).set({ 
+          hour: this.tempValue.time.hour(), 
+          minute: this.tempValue.time.minute(), 
+          second: 0 
+        });
+      } else if (v) {
+        this.selfValue = moment(v).set({ 
+          hour: 0, 
+          minute: 0, 
+          second: 0 
+        });
+      } else {
+        this.selfValue = null;
+      }
       this.triggerChange(this.selfValue);
     },
     onTimeChange(v) {
-      this.selfValue = v ? moment(this.selfValue).set({ hour: v.hour(), minute: v.minute(), second: 0 }) : null;
+      if (v && this.tempValue.date) {
+        this.selfValue = moment(this.tempValue.date).set({ 
+          hour: v.hour(), 
+          minute: v.minute(), 
+          second: 0 
+        });
+      } else if (v) {
+        // 只有时分，没有日期，使用今天日期
+        const today = moment().startOf('day');
+        this.selfValue = today.set({ 
+          hour: v.hour(), 
+          minute: v.minute(), 
+          second: 0 
+        });
+      } else {
+        this.selfValue = null;
+      }
       this.triggerChange(this.selfValue);
     },
     triggerChange(changedValue) {
-      console.log("DateAndTime changed:", changedValue.format());
+      // 只有当值真正改变时才触发change事件
       this.$emit("change", changedValue);
     },
   },

@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { createLiveConfig, getLiveMaps } from "@/api/live";
+import { createLiveConfig, getLiveMaps, getCourseList } from "@/api/live";
 import CFormItem from "@/components/CFormItem";
 import DateAndTime from "./DateAndTime";
 import moment from "moment";
@@ -31,12 +31,24 @@ export default {
       detail: { id: 0 },
       // 字段整理
       fieldsMap: {
+        semester_id: {
+          label: "学期",
+          type: "select",
+          list: [],
+          options: {
+            rules: [{ required: true }],
+          },
+          onChange: this.getCoursesBySemester,
+        },
         course_id: {
           label: "相关课程",
           type: "select",
           list: [],
           options: {
             rules: [{ required: true }],
+          },
+          props: {
+            placeholder: "请注意先选择学期",
           },
         },
         subject: {
@@ -52,6 +64,7 @@ export default {
           slotName: "start_time",
           options: {
             rules: [{ required: true }],
+            initialValue: moment().add(11, "minutes"),
           },
         },
         duration: {
@@ -81,7 +94,7 @@ export default {
             rules: [
               { required: true },
               {
-                validator: function(rule, value, callback) {
+                validator: function (rule, value, callback) {
                   let { start_time } = this.form.getFieldsValue(["start_time"]);
                   if (!start_time) {
                     callback("请先选择开始时间");
@@ -153,10 +166,37 @@ export default {
       }, 0);
     },
     getMaps() {
-      getLiveMaps(["repeat", "course"]).then(map => {
+      getLiveMaps(["semester", "repeat"]).then(map => {
+        this.fieldsMap.semester_id.list = map.semesterMap;
         this.fieldsMap.repeat.list = map.repeatMap;
-        this.fieldsMap.course_id.list = map.courseMap;
+        // this.fieldsMap.course_id.list = map.courseMap;
       });
+    },
+    // 添加根据学期ID获取课程列表的方法
+    getCoursesBySemester(semesterId) {
+      // 清空之前选择的课程
+      this.form.setFieldsValue({ course_id: undefined });
+
+      // 如果没有选择学期，则清空课程列表
+      if (!semesterId) {
+        this.fieldsMap.course_id.list = [];
+        return;
+      }
+
+      // 根据选择的学期获取课程列表
+      getCourseList(semesterId)
+        .then(res => {
+          if (res && res.courseMap) {
+            this.fieldsMap.course_id.list = res.courseMap;
+          } else {
+            this.fieldsMap.course_id.list = [];
+          }
+        })
+        .catch(error => {
+          console.error("获取课程列表失败:", error);
+          this.$message.error("获取课程列表失败");
+          this.fieldsMap.course_id.list = [];
+        });
     },
     lastStep() {
       const {

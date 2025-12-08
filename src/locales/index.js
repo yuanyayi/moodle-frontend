@@ -4,15 +4,15 @@ import storage from 'store'
 import moment from 'moment'
 
 // default lang
-import enUS from './lang/en-US'
+import zhCN from './lang/zh-CN'
 
 Vue.use(VueI18n)
 
-export const defaultLang = 'en-US'
+export const defaultLang = 'zh-CN'
 
 const messages = {
-  'en-US': {
-    ...enUS
+  'zh-CN': {
+    ...zhCN
   }
 }
 
@@ -38,6 +38,15 @@ export function loadLanguageAsync (lang = defaultLang) {
     storage.set('lang', lang)
     if (i18n.locale !== lang) {
       if (!loadedLanguages.includes(lang)) {
+        // 加载中文语言包时的特殊处理
+        if (lang === 'zh-CN') {
+          const locale = zhCN
+          i18n.setLocaleMessage(lang, locale)
+          loadedLanguages.push(lang)
+          moment.updateLocale(locale.momentName, locale.momentLocale)
+          return setI18nLanguage(lang)
+        }
+        
         return import(/* webpackChunkName: "lang-[request]" */ `./lang/${lang}`).then(msg => {
           const locale = msg.default
           i18n.setLocaleMessage(lang, locale)

@@ -12,37 +12,47 @@ export function fetchLiveList(params) {
 }
 
 /**
- *
+ * 获取映射数据
  */
-export function getLiveMaps(list = ["liveStatus", "repeat", "semester", "course", "attendanceStatus"], id = 1, courseName = "") {
+export function getLiveMaps(list = ["liveStatus", "repeat", "semester", "attendanceStatus"], id = 1) {
   const params = {};
   list.forEach(el => (params[el] = true));
-  let p2 = undefined;
-  if (list.includes("course")) {
-    p2 = axios({
-      url: `/selectCourse`,
-      params: { name: courseName },
-    });
-  }
-  return Promise.all([
-    axios({
-      url: `/mapping/${id}`,
-      params,
-    }),
-    p2,
-  ]).then(([r1, r2]) => {
-    if (r1.status) {
-      throw r1;
-    }
-    let res = r1;
-    if (r2 && r2.data) {
-      res.data.courseMap = r2.data;
+
+  return axios({
+    url: `/mapping/${id}`,
+    params,
+  }).then(res => {
+    if (res.status) {
+      throw res;
     }
     let map = {};
     for (let k in res.data) {
-      map[k] = obj2arr(res.data[k]);
+      if (k == "semesterMap") {
+        map[k] = obj2arr(res.data[k]).sort((e1, e2) => e2.value - e1.value);
+      } else {
+        map[k] = obj2arr(res.data[k]);
+      }
     }
     return map;
+  });
+}
+
+/**
+ * 根据名称和学期ID获取课程列表
+ */
+export function getCourseList(semester_id = 0, courseName = "") {
+  if (semester_id === 0) {
+    return console.error("请给出学期范围。courseName:" + courseName + ",semester_id:" + semester_id);
+  }
+
+  return axios({
+    url: `/selectCourse`,
+    params: { name: courseName, semester_id },
+  }).then(res => {
+    if (res && res.data) {
+      return { courseMap: obj2arr(res.data) };
+    }
+    return {};
   });
 }
 
