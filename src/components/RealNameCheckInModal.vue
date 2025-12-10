@@ -97,11 +97,30 @@ export default {
       }
 
       const video = videoElement.value;
+      // 确保视频元素已经准备好播放
+      if (video.readyState !== 4) { // HAVE_ENOUGH_DATA
+        message.error("视频尚未准备好，请稍后再试");
+        return;
+      }
+
       const canvas = document.createElement("canvas");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      canvas.width = video.videoWidth || video.width;
+      canvas.height = video.videoHeight || video.height;
+      
+      // 检查canvas上下文是否可用
       const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      if (!ctx) {
+        message.error("无法创建画布上下文");
+        return;
+      }
+      
+      try {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      } catch (e) {
+        console.error("绘制图像失败:", e);
+        message.error("拍照失败，请重试");
+        return;
+      }
 
       // 转换为图片URL
       canvas.toBlob(async blob => {
@@ -123,6 +142,8 @@ export default {
             console.error("照片上传失败:", error);
             message.error("照片上传失败");
           }
+        } else {
+          message.error("无法生成照片数据");
         }
       }, "image/png");
     };
