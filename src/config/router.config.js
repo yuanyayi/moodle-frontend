@@ -120,12 +120,12 @@ export const asyncRouterMap = [
         component: () => import("@/views/live/deviceTest"),
         hidden: true,
       },
-      {
-        path: "/flv",
-        name: "flvDemo",
-        meta: { title: "flv测试", permission: ["live"] },
-        component: () => import("@/views/live/FlvPlayerDemo"),
-      },
+      // {
+      //   path: "/flv",
+      //   name: "flvDemo",
+      //   meta: { title: "flv测试", permission: ["live"] },
+      //   component: () => import("@/views/live/FlvPlayerDemo"),
+      // },
     ],
   },
   {
