@@ -15,16 +15,16 @@ export const asyncRouterMap = [
     meta: { title: "首页" },
     redirect: to => {
       // 获取用户角色权限
-      const store = require('@/store').default;
-      
+      const store = require("@/store").default;
+
       // 如果store还未初始化，或者用户没有角色信息，默认跳转到/live/list
       if (!store || !store.getters.roles || !store.getters.roles.permissionList) {
         return "/live/list";
       }
-      
+
       // 获取用户权限列表
       const permissionList = store.getters.roles.permissionList || [];
-      
+
       // 根据权限优先级顺序检查
       if (permissionList.includes("live")) {
         return "/live/list";
@@ -33,7 +33,7 @@ export const asyncRouterMap = [
       } else if (permissionList.includes("distinguish")) {
         return "/live/distinguish";
       }
-      
+
       // 默认跳转到/live/list
       return "/live/list";
     },
@@ -119,6 +119,12 @@ export const asyncRouterMap = [
         meta: { title: "设备测试", permission: ["live"] },
         component: () => import("@/views/live/deviceTest"),
         hidden: true,
+      },
+      {
+        path: "/flv",
+        name: "flvDemo",
+        meta: { title: "flv测试", permission: ["live"] },
+        component: () => import("@/views/live/FlvPlayerDemo"),
       },
     ],
   },

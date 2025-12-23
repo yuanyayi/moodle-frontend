@@ -87,3 +87,10 @@ export function getLiveCountdownTime(id) {
     url: `/nextLiveTime/${id}`,
   });
 }
+
+export function getPutStreamUrl(liveConfigId) {
+  return axios({
+    url: `/pullStreamUrl/`,
+    params: { liveConfigId },
+  });
+}

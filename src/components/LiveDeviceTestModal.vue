@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, nextTick } from "vue";
+import { ref, onMounted, onUnmounted, nextTick, watch } from "vue";
 
 export default {
   name: "LiveDeviceTestModal",
@@ -156,6 +156,15 @@ export default {
 
         if (speakerDevices.value.length > 0 && !selectedSpeaker.value) {
           selectedSpeaker.value = speakerDevices.value[0].deviceId;
+        }
+
+        // 如果已经有设备且状态是pending，则更新为granted
+        if (cameraDevices.value.length > 0 && cameraStatus.value === "pending") {
+          cameraStatus.value = "granted";
+        }
+        
+        if (microphoneDevices.value.length > 0 && microphoneStatus.value === "pending") {
+          microphoneStatus.value = "granted";
         }
 
         updateDeviceReadyStatus();
@@ -392,9 +401,25 @@ export default {
         initMicrophone();
       } catch (error) {
         console.error("获取用户媒体权限失败:", error);
-        cameraStatus.value = error.name === "NotAllowedError" ? "denied" : "pending";
-        microphoneStatus.value = error.name === "NotAllowedError" ? "denied" : "pending";
+        // 即使出现错误，也尝试枚举设备以检查实际权限状态
         await enumerateDevices();
+        
+        // 检查是否真的没有权限，还是只是设备不存在
+        if (cameraDevices.value.length > 0) {
+          // 有摄像头设备，尝试初始化
+          await initCamera();
+        } else {
+          // 没有摄像头设备或者权限被拒绝
+          cameraStatus.value = error.name === "NotAllowedError" ? "denied" : "pending";
+        }
+        
+        if (microphoneDevices.value.length > 0) {
+          // 有麦克风设备，尝试初始化
+          await initMicrophone();
+        } else {
+          // 没有麦克风设备或者权限被拒绝
+          microphoneStatus.value = error.name === "NotAllowedError" ? "denied" : "pending";
+        }
       }
     };
 
@@ -412,12 +437,51 @@ export default {
       emit("cancel");
     };
 
+    // 强制刷新设备状态
+    const refreshDeviceStatus = async () => {
+      try {
+        // 先尝试获取媒体流以确保权限
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        });
+        
+        // 成功获取后停止所有轨道
+        stream.getTracks().forEach(track => track.stop());
+        
+        // 更新状态为已授权
+        cameraStatus.value = "granted";
+        microphoneStatus.value = "granted";
+        
+        // 重新枚举设备
+        await enumerateDevices();
+        
+        // 重新初始化设备
+        await initCamera();
+        await initMicrophone();
+      } catch (error) {
+        console.error("刷新设备状态失败:", error);
+        // 仍然尝试枚举设备
+        await enumerateDevices();
+      }
+    };
+
     // 组件挂载时
     onMounted(async () => {
       // 添加小延迟确保DOM完全渲染
       setTimeout(async () => {
         await requestUserMedia();
       }, 100);
+    });
+    
+    // 监听visible属性变化，当弹窗显示时刷新设备状态
+    watch(() => props.visible, async (newVal) => {
+      if (newVal) {
+        // 弹窗显示时，刷新设备状态
+        setTimeout(async () => {
+          await refreshDeviceStatus();
+        }, 100);
+      }
     });
 
     // 组件卸载时

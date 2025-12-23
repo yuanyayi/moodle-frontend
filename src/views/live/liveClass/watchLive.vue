@@ -18,7 +18,7 @@
       @cancel="hideCheckInModal" />
 
     <!-- 设备测试弹窗，仅在直播模式且为学生角色时显示 -->
-    <LiveDeviceTestModal v-if="role === 'student' && mode === 'live'" :visible="deviceTestModalVisible" @confirm="handleDeviceConfirm" @cancel="handleDeviceCancel" />
+    <!-- <LiveDeviceTestModal v-if="role === 'student' && mode === 'live'" :visible="deviceTestModalVisible" @confirm="handleDeviceConfirm" @cancel="handleDeviceCancel" /> -->
 
     <!-- 主要内容区域 -->
     <!-- <div class="volcLiveApp" v-if="mode === 'live'">
@@ -64,12 +64,13 @@
       </div>
     </div>
     <VideoNotes v-if="mode === 'replay'" :vid="liveConfigId" :showEditor="role === 'student'" style="background-color: #fff" />
+    
   </div>
 </template>
 
 <script>
 import CameraCapture from "@/components/CameraCapture.vue";
-import { prepareLivePage2, prepareReplay, getLiveCountdownTime } from "@/api/livepage";
+import { prepareLivePage2, prepareReplay, getLiveCountdownTime, getPutStreamUrl } from "@/api/livepage";
 import VideoNotes from "@/components/VideoNotes.vue";
 import { mapGetters } from "vuex";
 import CountdownModal from "@/components/CountdownModal";
@@ -313,7 +314,7 @@ export default {
       // 这里可以添加实际的提交逻辑
       this.hideCheckInModal();
       // 签到完成后显示设备测试弹窗
-      this.showDeviceTestModal();
+      // this.showDeviceTestModal();
     },
 
     // 显示设备测试弹窗
@@ -417,5 +418,6 @@ export default {
       color: #a4a4a4;
     }
   }
+  
 }
 </style>

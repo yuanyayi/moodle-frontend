@@ -13,6 +13,25 @@
     <div v-else style="background-color: #fff; padding: 20px">
       <Empty :opt="{ description: errorMsg }" />
     </div>
+    
+    <!-- 悬浮视频播放器 -->
+    <FloatingVideoPlayer 
+      v-if="showFloatingPlayer"
+      :liveConfigId="liveConfigId"
+      @close="showFloatingPlayer = false"
+    />
+    
+    <!-- 显示悬浮播放器的按钮 -->
+    <div class="floating-player-toggle">
+      <a-button 
+        type="primary" 
+        shape="circle" 
+        @click="showFloatingPlayer = true"
+        :style="{ position: 'fixed', right: '20px', top: '100px', zIndex: 999 }"
+      >
+        ▶️
+      </a-button>
+    </div>
   </div>
 </template>
 
@@ -21,16 +40,23 @@ import { prepareBroadcast, getLiveCountdownTime } from "@/api/livepage";
 import Empty from "@/components/Empty.vue";
 import CountdownModal from "@/components/CountdownModal.vue";
 import { mapGetters } from "vuex";
+import FloatingVideoPlayer from '@/components/FloatingVideoPlayer.vue'; // 导入悬浮播放器组件
 
 export default {
   name: "broadcast",
-  components: { Empty, CountdownModal },
+  components: { 
+    Empty, 
+    CountdownModal,
+    FloatingVideoPlayer, // 注册悬浮播放器组件
+  },
   data() {
     return {
       broadcastUrl: "",
       errorMsg: "",
       countdownTimestamp: 0,
       countdownFinished: false,
+      // 悬浮播放器相关
+      showFloatingPlayer: false,
     };
   },
   computed: {
@@ -83,5 +109,12 @@ export default {
 #broadcastPage {
   width: 100%;
   height: 80vh;
+  
+  .floating-player-toggle {
+    position: fixed;
+    right: 20px;
+    top: 100px;
+    z-index: 999;
+  }
 }
 </style>

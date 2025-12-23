@@ -169,6 +169,7 @@ export default {
         .then(res => {
           this.tableList = res.pageBean.list.map(el => {
             el.statusByTime = this.getStatusByTime(el);
+            !el.img && (el.img = "/defaultLive.jpg");
             return el;
           });
           this.pagination.current = res.pageBean.currentPage;
