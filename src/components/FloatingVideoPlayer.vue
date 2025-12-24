@@ -5,7 +5,7 @@
       right: `${position.right}px`,
       top: `${position.top}px`,
       width: isMinimized ? '200px' : '400px',
-      height: isMinimized ? '30px' : '300px',
+      height: isMinimized ? '30px' : 'auto',
       zIndex: zIndex,
     }">
     <div class="player-header" @mousedown="startDrag" @dblclick="toggleMinimize">
@@ -66,10 +66,19 @@ export default {
 
     document.addEventListener("mousemove", this.handleDrag);
     document.addEventListener("mouseup", this.stopDrag);
+
+    // 监听页面可见性变化
+    document.addEventListener("visibilitychange", this.handleVisibilityChange);
   },
   beforeDestroy() {
     document.removeEventListener("mousemove", this.handleDrag);
     document.removeEventListener("mouseup", this.stopDrag);
+    document.removeEventListener("visibilitychange", this.handleVisibilityChange);
+
+    // 在组件销毁时停止视频播放
+    if (this.$refs.flvPlayerRef) {
+      this.$refs.flvPlayerRef.pause();
+    }
   },
   methods: {
     async loadVideoUrl() {
@@ -93,6 +102,10 @@ export default {
     },
 
     closePlayer() {
+      // 在关闭前停止视频播放
+      if (this.$refs.flvPlayerRef) {
+        this.$refs.flvPlayerRef.pause();
+      }
       this.$emit("close");
     },
 
@@ -106,19 +119,27 @@ export default {
     },
     handleDrag(event) {
       if (!this.dragState.isDragging) return;
-
       const deltaX = event.clientX - this.dragState.startX;
       const deltaY = event.clientY - this.dragState.startY;
-
-      // 修复：鼠标移动方向与元素移动方向应保持一致
-      // 当鼠标向下移动时（deltaY > 0），元素也应该向下移动（top 值增大）
-      // 当鼠标向右移动时（deltaX > 0），由于使用的是 right 属性，元素应向左移动（right 值增大）
       this.position.top = this.dragState.startTop + deltaY;
       this.position.right = this.dragState.startRight - deltaX;
     },
     stopDrag() {
       this.dragState.isDragging = false;
       this.zIndex = 1000;
+    },
+
+    // 处理页面可见性变化 - 确保页面进入后台时继续播放
+    async handleVisibilityChange() {
+      console.log("visibilitychange,hidden: " + document.hidden);
+      // 只有当页面从不可见变为可见时，才尝试播放视频
+      if (!document.hidden && this.$refs.flvPlayerRef) {
+        await this.loadVideoUrl();
+        this.$nextTick(() => {
+          // 尝试播放视频，当页面回到前台时恢复播放
+          this.$refs.flvPlayerRef.play();
+        });
+      }
     },
   },
 };
@@ -173,7 +194,7 @@ export default {
 }
 
 .player-content {
-  height: 100%;
+  height: auto;
   padding: 5px;
 }
 
