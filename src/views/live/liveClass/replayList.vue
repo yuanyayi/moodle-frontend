@@ -174,11 +174,20 @@ export default {
         });
     },
     gotoReplay(liveConfigId) {
-      this.$router.push({
+      // this.$router.push({
+      //   name: "watch",
+      //   params: { liveConfigId },
+      //   query: { mode: "replay" },
+      // });
+      const routeData = this.$router.resolve({
         name: "watch",
         params: { liveConfigId },
         query: { mode: "replay" },
       });
+
+      // 对于 history 模式，需要构建完整 URL
+      const url = `${window.location.origin}${routeData.href}`;
+      window.open(url, "_blank");
     },
     handleOk() {
       this.fetch();

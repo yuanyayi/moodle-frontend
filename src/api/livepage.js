@@ -94,3 +94,50 @@ export function getPutStreamUrl(liveConfigId) {
     params: { liveConfigId },
   });
 }
+/**
+ * For teacher
+ * @param {Int} liveConfigId
+ * @param {Object} params
+ * @returns
+ */
+export function getFeedbackList(liveConfigId, params) {
+  return axios({
+    url: `/feedback/page`,
+    params: { liveConfigId, ...params },
+  });
+}
+
+/**
+ * For teacher
+ * @param {*} id
+ * @returns
+ */
+export function handleFeedback(id) {
+  return axios({
+    url: `/feedback/handle`,
+    params: { id },
+  });
+}
+
+/**
+ * For student
+ * @param {*} userId
+ * @param {*} liveConfigId
+ * @returns
+ */
+export function handUp(userId, liveConfigId) {
+  return axios({
+    url: `/feedback/submit`,
+    params: { userId, liveConfigId },
+  });
+}
+
+/**
+ * For student
+ */
+export function getFeedbackResult(userId, id) {
+  return axios({
+    url: `/feedback/result`,
+    params: { userId, id },
+  });
+}

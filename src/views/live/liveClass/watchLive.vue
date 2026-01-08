@@ -51,6 +51,12 @@
           @autoCaptureStarted="handleAutoCaptureStarted"
           @autoCaptureStopped="handleAutoCaptureStopped"
           @autoCaptureError="handleAutoCaptureError" />
+
+        <div style="text-align: center;display: inline-block;">
+          <span v-if="feedback.id && !feedback.handle" style="color: #f01c08"> 问题已反馈，等待处理 </span>
+          <span v-if="feedback.id && feedback.handle" style="color: #44d0c8"> 问题已处理 </span>
+          <a-button type="primary" ghost v-if="!feedback.id || feedback.handle" @click="handUp">{{ feedback.id ? "继续反馈" : "问题反馈" }}</a-button>
+        </div>
       </div>
       <div style="flex: 1">
         <div class="player-header" v-if="mode === 'replay'">
@@ -60,17 +66,16 @@
             ><span>点赞数：{{ replayDetail.like_number }}</span>
           </div>
         </div>
-        <iframe :src="liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *; camera; microphone;midi;"></iframe>
+        <iframe :src="isCheckedIn && liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *; camera; microphone;midi;"></iframe>
       </div>
     </div>
     <VideoNotes v-if="mode === 'replay'" :vid="liveConfigId" :showEditor="role === 'student'" style="background-color: #fff" />
-    
   </div>
 </template>
 
 <script>
 import CameraCapture from "@/components/CameraCapture.vue";
-import { prepareLivePage2, prepareReplay, getLiveCountdownTime, getPutStreamUrl } from "@/api/livepage";
+import { prepareLivePage2, prepareReplay, getLiveCountdownTime, handUp } from "@/api/livepage";
 import VideoNotes from "@/components/VideoNotes.vue";
 import { mapGetters } from "vuex";
 import CountdownModal from "@/components/CountdownModal";
@@ -107,6 +112,11 @@ export default {
       isCheckedIn: false,
       view_number: 0,
       replayDetail: {},
+      feedback: {
+        id: 0,
+        handle: false,
+      },
+      feedbackPollTimer: null, // 轮询定时器
     };
   },
   computed: {
@@ -135,6 +145,10 @@ export default {
     // 学生端且在直播模式下，显示真人签到弹窗
     if (this.role === "student" && this.mode === "live") {
       this.checkAndShowCheckInModal();
+    }
+    // 只有学生需要手动签到
+    if (this.role !== "student" || this.mode === "replay") {
+      this.isCheckedIn = true;
     }
   },
   methods: {
@@ -335,8 +349,57 @@ export default {
       this.deviceTestModalVisible = false;
       this.$message.info("设备测试已取消");
     },
+    handUp() {
+      handUp(this.userId, this.liveConfigId).then(res => {
+        if (res.status) {
+          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+          return;
+        }
+        this.feedback.id = res.data;
+        this.feedback.handle = false;
+        
+        // 如果有feedback.id且未处理，则启动轮询
+        if (this.feedback.id) {
+          this.startFeedbackPolling();
+        }
+      });
+    },
+    getFeedbackResult() {
+      getFeedbackResult(this.userId, this.feedback.id).then(res => {
+        if (!res.status) {
+          this.feedback.handle = res.data;
+          
+          // 如果反馈已处理，则停止轮询
+          if (this.feedback.handle) {
+            this.stopFeedbackPolling();
+          }
+        }
+      });
+    },
+    
+    // 启动反馈轮询
+    startFeedbackPolling() {
+      // 先停止可能存在的轮询
+      this.stopFeedbackPolling();
+      
+      this.getFeedbackResult();
+      // 启动新的轮询，每分钟执行一次
+      this.feedbackPollTimer = setInterval(() => {
+        this.getFeedbackResult();
+      }, 60000); // 60秒
+    },
+    
+    // 停止反馈轮询
+    stopFeedbackPolling() {
+      if (this.feedbackPollTimer) {
+        clearInterval(this.feedbackPollTimer);
+        this.feedbackPollTimer = null;
+      }
+    },
   },
   destroyed() {
+    // 组件销毁时停止轮询
+    this.stopFeedbackPolling();
     this.webSDK && this.webSDK.destroy();
   },
 };
@@ -418,6 +481,5 @@ export default {
       color: #a4a4a4;
     }
   }
-  
 }
 </style>

@@ -60,22 +60,22 @@ export const asyncRouterMap = [
             meta: { title: "直播回放", permission: ["live"] },
             hidden: true,
           },
-          {
-            // 课程开播
-            path: "/live/broadcast/:liveConfigId([1-9]\\d*)+/",
-            name: "broadcast",
-            meta: { title: "课程开播页", permission: ["live"] },
-            component: () => import("@/views/live/liveClass/broadcast"),
-            hidden: true,
-          },
-          {
-            // 课程观播
-            path: "/live/watch/:liveConfigId([1-9]\\d*)+/",
-            name: "watch",
-            meta: { title: "课程直播页", permission: ["live"] },
-            component: () => import("@/views/live/liveClass/watchLive"),
-            hidden: true,
-          },
+          // {
+          //   // 课程开播
+          //   path: "/live/broadcast/:liveConfigId([1-9]\\d*)+/",
+          //   name: "broadcast",
+          //   meta: { title: "课程开播页", permission: ["live"] },
+          //   component: () => import("@/views/live/liveClass/broadcast"),
+          //   hidden: true,
+          // },
+          // {
+          //   // 课程观播
+          //   path: "/live/watch/:liveConfigId([1-9]\\d*)+/",
+          //   name: "watch",
+          //   meta: { title: "课程直播页", permission: ["live"] },
+          //   component: () => import("@/views/live/liveClass/watchLive"),
+          //   hidden: true,
+          // },
           // 直播统计
           {
             path: "/live/anaylsis/",
@@ -127,6 +127,22 @@ export const asyncRouterMap = [
       //   component: () => import("@/views/live/FlvPlayerDemo"),
       // },
     ],
+  },
+  {
+    // 课程开播
+    path: "/live/broadcast/:liveConfigId([1-9]\\d*)+/",
+    name: "broadcast",
+    meta: { title: "课程开播页", permission: ["live"] },
+    component: () => import("@/views/live/liveClass/broadcast"),
+    hidden: true,
+  },
+  {
+    // 课程观播
+    path: "/live/watch/:liveConfigId([1-9]\\d*)+/",
+    name: "watch",
+    meta: { title: "课程直播页", permission: ["live"] },
+    component: () => import("@/views/live/liveClass/watchLive"),
+    hidden: true,
   },
   {
     path: "*",

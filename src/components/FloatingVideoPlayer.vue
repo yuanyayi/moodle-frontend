@@ -2,6 +2,7 @@
   <div
     class="floating-video-player"
     :style="{
+      position: `${position.position || 'fixed'}`,
       right: `${position.right}px`,
       top: `${position.top}px`,
       width: isMinimized ? '200px' : '400px',
@@ -9,7 +10,7 @@
       zIndex: zIndex,
     }">
     <div class="player-header" @mousedown="startDrag" @dblclick="toggleMinimize">
-      <span class="header-title">视频播放器</span>
+      <span class="header-title">视频播放器 </span>
       <div class="header-controls">
         <span @click="toggleMinimize" class="control-btn">{{ isMinimized ? "□" : "—" }}</span>
         <span @click="closePlayer" class="control-btn">×</span>
@@ -41,6 +42,10 @@ export default {
       type: [Number, String],
       required: true,
     },
+    positionOpt: {
+      type: [Object, String],
+      default: "fixed",
+    },
   },
   data() {
     return {
@@ -59,6 +64,29 @@ export default {
         startTop: 0,
       },
     };
+  },
+  watch: {
+    positionOpt: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal === "fixed") {
+          this.position = {
+            right: 20,
+            top: 100,
+          };
+        } else if (newVal === "relative") {
+          this.position = {
+            position: "relative",
+            right: 0,
+            top: 0,
+          };
+        } else if (typeof newVal === "object") {
+          this.position = {
+            ...newVal,
+          };
+        }
+      },
+    },
   },
   async mounted() {
     // 组件挂载时获取视频地址
@@ -147,7 +175,6 @@ export default {
 
 <style scoped>
 .floating-video-player {
-  position: fixed;
   border: 1px solid #d9d9d9;
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

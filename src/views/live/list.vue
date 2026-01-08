@@ -221,10 +221,18 @@ export default {
       this.fetch();
     },
     gotoCourseLive(liveConfigId) {
-      this.$router.push({
+      // this.$router.push({
+      //   name: "watch",
+      //   params: { liveConfigId },
+      // });
+       const routeData = this.$router.resolve({
         name: "watch",
         params: { liveConfigId },
       });
+
+      // 对于 history 模式，需要构建完整 URL
+      const url = `${window.location.origin}${routeData.href}`;
+      window.open(url, "_blank");
     },
     gotoReplayList(configId) {
       this.$router.push({
@@ -233,10 +241,18 @@ export default {
       });
     },
     gotoCourseBroadcast(liveConfigId) {
-      this.$router.push({
+      // this.$router.push({
+      //   name: "broadcast",
+      //   params: { liveConfigId },
+      // });
+       const routeData = this.$router.resolve({
         name: "broadcast",
         params: { liveConfigId },
       });
+
+      // 对于 history 模式，需要构建完整 URL
+      const url = `${window.location.origin}${routeData.href}`;
+      window.open(url, "_blank");
     },
     handleOk() {
       this.fetch();
