@@ -115,6 +115,7 @@ export function getFeedbackList(liveConfigId, params) {
 export function handleFeedback(id) {
   return axios({
     url: `/feedback/handle`,
+    method: "post",
     params: { id },
   });
 }
@@ -125,10 +126,11 @@ export function handleFeedback(id) {
  * @param {*} liveConfigId
  * @returns
  */
-export function handUp(userId, liveConfigId) {
+export function handUp(userId, liveConfigId, obtain = false) {
   return axios({
     url: `/feedback/submit`,
-    params: { userId, liveConfigId },
+    method: "post",
+    params: { userId, liveConfigId, obtain },
   });
 }
 
@@ -138,6 +140,7 @@ export function handUp(userId, liveConfigId) {
 export function getFeedbackResult(userId, id) {
   return axios({
     url: `/feedback/result`,
+    method: "post",
     params: { userId, id },
   });
 }

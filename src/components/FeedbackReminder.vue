@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { getFeedbackList, handleFeedback, getFeedbackResult } from "@/api/livepage";
+import { getFeedbackList, handleFeedback } from "@/api/livepage";
 
 export default {
   name: "FeedbackReminder",
@@ -67,19 +67,18 @@ export default {
       tableData: [],
       listParams: {
         page: 1,
-        pageSize: 10,
+        pageSize: 5,
       },
       pollTimer: null,
       previousCount: 0, // 记录上次的条目数
       shouldShake: false, // 控制是否震动
       pagination: {
         current: 1,
-        pageSize: 10,
+        pageSize: 5,
         total: 0,
         showQuickJumper: true,
         showTotal: total => `共 ${total} 条`,
       },
-      feedbackPollTimers: {}, // 存储每个反馈的轮询定时器
     };
   },
   watch: {
@@ -101,11 +100,6 @@ export default {
   beforeDestroy() {
     // 组件销毁时清除定时器
     this.stopPolling();
-    
-    // 清理所有反馈轮询定时器
-    Object.keys(this.feedbackPollTimers).forEach(feedbackId => {
-      this.stopFeedbackPolling(feedbackId);
-    });
   },
   methods: {
     fetch() {
@@ -130,13 +124,15 @@ export default {
           ...this.pagination,
           current: res.pageBean.currentPage || 1,
           total: res.pageBean.allRow || 0,
-          pageSize: res.pageBean.pageSize || 10,
         };
 
         // 检查条目数是否增加，如果是则触发震动效果
-        if (currentCount > this.previousCount) {
-          this.triggerShake();
-        }
+        // if (currentCount > this.previousCount) {
+        //   this.triggerShake();
+        // }
+
+        // 向父组件抛出当前计数
+        this.$emit('count-change', currentCount);
 
         // 更新之前的条目数
         this.previousCount = currentCount;
@@ -153,7 +149,7 @@ export default {
       // 设置定时器，每1分钟获取一次数据
       this.pollTimer = setInterval(() => {
         this.fetch();
-      }, 60000); // 1分钟 = 60000毫秒
+      }, 10000); 
     },
 
     stopPolling() {
@@ -177,7 +173,6 @@ export default {
       // 处理分页变化
       if (pagination) {
         this.listParams.page = pagination.current;
-        this.listParams.pageSize = pagination.pageSize;
         this.fetch();
       }
     },
@@ -191,57 +186,6 @@ export default {
         this.fetch();
       });
     },
-    
-    // 添加轮询检查特定反馈的处理状态
-    startFeedbackPolling(feedbackId) {
-      // 如果已经有轮询在进行，先清除它
-      if (this.feedbackPollTimers[feedbackId]) {
-        clearInterval(this.feedbackPollTimers[feedbackId]);
-      }
-      
-      // 创建新的轮询
-      this.feedbackPollTimers[feedbackId] = setInterval(() => {
-        this.checkFeedbackStatus(feedbackId);
-      }, 60000); // 每分钟检查一次
-    },
-    
-    // 停止轮询
-    stopFeedbackPolling(feedbackId) {
-      if (this.feedbackPollTimers[feedbackId]) {
-        clearInterval(this.feedbackPollTimers[feedbackId]);
-        delete this.feedbackPollTimers[feedbackId];
-      }
-    },
-    
-    // 检查反馈状态
-    async checkFeedbackStatus(feedbackId) {
-      try {
-        // 使用getFeedbackResult API检查特定反馈的状态
-        const res = await getFeedbackResult(this.userId, feedbackId);
-        
-        if (!res.status) {
-          const handleResult = res.data;
-          
-          // 更新表格数据中对应反馈的处理状态
-          const index = this.tableData.findIndex(item => item.id == feedbackId);
-          if (index !== -1) {
-            // 更新handle状态
-            this.$set(this.tableData[index], 'handle', handleResult);
-            
-            // 如果反馈已处理，则停止轮询
-            if (handleResult) {
-              this.stopFeedbackPolling(feedbackId);
-              this.$message.success('反馈已处理');
-            }
-          }
-        } else {
-          console.error(`获取反馈 ${feedbackId} 状态失败:`, res.msg);
-        }
-      } catch (error) {
-        console.error(`检查反馈 ${feedbackId} 状态失败:`, error);
-      }
-    },
-    
     // 允许父组件手动刷新数据
     refresh() {
       this.fetch();

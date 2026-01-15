@@ -10,7 +10,7 @@
       zIndex: zIndex,
     }">
     <div class="player-header" @mousedown="startDrag" @dblclick="toggleMinimize">
-      <span class="header-title">视频播放器 </span>
+      <span class="header-title">悬浮视窗</span>
       <div class="header-controls">
         <span @click="toggleMinimize" class="control-btn">{{ isMinimized ? "□" : "—" }}</span>
         <span @click="closePlayer" class="control-btn">×</span>
@@ -18,12 +18,15 @@
     </div>
 
     <div v-show="!isMinimized" class="player-content">
+      <div class="header-title">视频播放器</div>
       <FlvPlayer v-if="videoUrl" ref="flvPlayerRef" :src="videoUrl" width="100%" height="100%" :autoplay="true" :muted="true" />
       <div v-else class="loading-placeholder">
         <a-spin />
         <p>正在加载视频...</p>
       </div>
     </div>
+
+    <slot></slot>
   </div>
 </template>
 
@@ -45,6 +48,10 @@ export default {
     positionOpt: {
       type: [Object, String],
       default: "fixed",
+    },
+    open: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -84,6 +91,13 @@ export default {
           this.position = {
             ...newVal,
           };
+        }
+      },
+    },
+    open: {
+      async handler(newVal, oldVal) {
+        if (!oldVal && newVal) {
+          await this.loadVideoUrl();
         }
       },
     },

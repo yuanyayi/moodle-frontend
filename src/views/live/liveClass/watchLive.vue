@@ -52,7 +52,7 @@
           @autoCaptureStopped="handleAutoCaptureStopped"
           @autoCaptureError="handleAutoCaptureError" />
 
-        <div style="text-align: center;display: inline-block;">
+        <div style="text-align: center; font-size: 16px; padding: 20px 0">
           <span v-if="feedback.id && !feedback.handle" style="color: #f01c08"> 问题已反馈，等待处理 </span>
           <span v-if="feedback.id && feedback.handle" style="color: #44d0c8"> 问题已处理 </span>
           <a-button type="primary" ghost v-if="!feedback.id || feedback.handle" @click="handUp">{{ feedback.id ? "继续反馈" : "问题反馈" }}</a-button>
@@ -75,7 +75,7 @@
 
 <script>
 import CameraCapture from "@/components/CameraCapture.vue";
-import { prepareLivePage2, prepareReplay, getLiveCountdownTime, handUp } from "@/api/livepage";
+import { prepareLivePage2, prepareReplay, getLiveCountdownTime, handUp, getFeedbackResult } from "@/api/livepage";
 import VideoNotes from "@/components/VideoNotes.vue";
 import { mapGetters } from "vuex";
 import CountdownModal from "@/components/CountdownModal";
@@ -142,9 +142,12 @@ export default {
     if (this.mode === "live") {
       this.showCountdownModal();
     }
-    // 学生端且在直播模式下，显示真人签到弹窗
+    // 学生端且在直播模式下
     if (this.role === "student" && this.mode === "live") {
+      // 显示真人签到弹窗
       this.checkAndShowCheckInModal();
+      // 刷新feedback ID
+      this.handUp(true);
     }
     // 只有学生需要手动签到
     if (this.role !== "student" || this.mode === "replay") {
@@ -349,15 +352,16 @@ export default {
       this.deviceTestModalVisible = false;
       this.$message.info("设备测试已取消");
     },
-    handUp() {
-      handUp(this.userId, this.liveConfigId).then(res => {
+    handUp(obtain = false) {
+      obtain = typeof obtain === "boolean" ? obtain : false;
+      handUp(this.userId, this.liveConfigId, obtain).then(res => {
         if (res.status) {
           this.$message.error(res.msg || "获取数据失败，请稍后再试。");
           return;
         }
         this.feedback.id = res.data;
         this.feedback.handle = false;
-        
+
         // 如果有feedback.id且未处理，则启动轮询
         if (this.feedback.id) {
           this.startFeedbackPolling();
@@ -368,7 +372,7 @@ export default {
       getFeedbackResult(this.userId, this.feedback.id).then(res => {
         if (!res.status) {
           this.feedback.handle = res.data;
-          
+
           // 如果反馈已处理，则停止轮询
           if (this.feedback.handle) {
             this.stopFeedbackPolling();
@@ -376,19 +380,19 @@ export default {
         }
       });
     },
-    
+
     // 启动反馈轮询
     startFeedbackPolling() {
       // 先停止可能存在的轮询
       this.stopFeedbackPolling();
-      
+
       this.getFeedbackResult();
       // 启动新的轮询，每分钟执行一次
       this.feedbackPollTimer = setInterval(() => {
         this.getFeedbackResult();
-      }, 60000); // 60秒
+      }, 30000); 
     },
-    
+
     // 停止反馈轮询
     stopFeedbackPolling() {
       if (this.feedbackPollTimer) {

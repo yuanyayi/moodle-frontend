@@ -23,7 +23,7 @@
     </a-card>
     <a-card :bordered="false">
       <template v-slot:title>互动行为数据 <a-button @click="exportExcel">导出数据</a-button> </template>
-      <bar :data="barData" />
+      <bar :data="barData" width="100%"/>
     </a-card>
     <a-card :bordered="false" title="互动内容分析">
       <a-row>
