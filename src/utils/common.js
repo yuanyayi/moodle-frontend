@@ -314,9 +314,12 @@ export function formatDate(timestamp, type = "YYYY/MM/DD") {
   return timestamp ? moment(+timestamp).format(type) : "无";
 }
 
-export function formatTime(timestamp) {
+export function formatTime(timestamp, format = "YYYY/MM/DD HH:mm:ss") {
   try {
-    return timestamp ? moment(+timestamp).format("YYYY/MM/DD HH:mm:ss") : "无";
+    if (!timestamp) return "无";
+    // 检查是否为数字类型的时间戳
+    const isNumber = typeof timestamp === 'number' || !isNaN(Number(timestamp));
+    return isNumber ? moment(+timestamp).format(format) : moment(timestamp).format(format);
   } catch (err) {
     console.error("错误的时间戳格式：");
     console.error(err);

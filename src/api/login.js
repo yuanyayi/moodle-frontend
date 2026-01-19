@@ -508,10 +508,10 @@ export function getInfo() {
   }).then(res => {
     // 在这里判断角色和权限
     let permissionList = {
-      0: ["live", "distinguish", "anaylsis", "logs"], // 0:管理员
-      2: ["live", "anaylsis"], // 2:老师
-      1: ["live"], // 1:学生
-      3: ["distinguish", "anaylsis", "logs"], // 3:教务
+      0: ["live", "analysis", "distinguish", "logs"], // 0:管理员
+      1: ["live", "distinguish"], // 1:学生
+      2: ["live", "analysis"], // 2:老师
+      3: ["analysis"], // 3:教务
     }[res.data.role];
     let roleId = ["admin", "student", "teacher", "dean"][res.data.role];
     let permissions = permissionList.map(per => {
@@ -524,7 +524,7 @@ export function getInfo() {
             dataAccess: null,
           },
           {
-            permissionId: "anaylsis",
+            permissionId: "analysis",
             permissionName: "直播统计",
             dataAccess: null,
           },

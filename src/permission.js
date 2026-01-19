@@ -25,8 +25,8 @@ const getDefaultRoutePath = () => {
   // 根据权限优先级顺序检查
   if (permissionList.includes("live")) {
     return "/live/list";
-  } else if (permissionList.includes("anaylsis")) {
-    return "/live/anaylsis";
+  } else if (permissionList.includes("analysis")) {
+    return "/live/analysis";
   } else if (permissionList.includes("distinguish")) {
     return "/live/distinguish";
   }

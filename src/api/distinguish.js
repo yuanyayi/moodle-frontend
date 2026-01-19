@@ -73,3 +73,58 @@ export function studentAttendance(params){
     params,
   })
 }
+
+/**
+ * 学生人脸识别记录列表接口
+ */
+export function getStudentDistinguishList(params){
+  return axios({
+    url: `/student/distinguishPage`,
+    method: "get",
+    params,
+  })
+}
+
+/**
+ * 学生信息记录接口
+ */
+export function getStudentRecordPage(attendance_status_id, params){
+  return axios({
+    url: `/student/studentRecordPage/${attendance_status_id}`,
+    method: "get",
+    params,
+  })
+}
+
+// ---------- face record ---------- //
+/**
+ * 人脸识别记录列表接口
+ */
+export function fetchFaceRecordPage(params) {
+  return axios({
+    url: "/faceRecordPage",
+    method: "get",
+    params,
+  });
+}
+
+/**
+ * 人脸识别记录详情接口
+ */
+export function fetchFaceRecordDetail(id) {
+  return axios({
+    url: `/faceRecord/${id}`,
+    method: "get",
+  });
+}
+
+/**
+ * 人脸识别详细记录列表接口
+ */
+export function fetchFaceRecognitionList(params) {
+  return axios({
+    url: "/faceRecognitionList",
+    method: "get",
+    params,
+  });
+}

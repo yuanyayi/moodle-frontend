@@ -1,7 +1,7 @@
 <template>
-  <a-card :bordered="false" class="live-list-container">
-    <!-- 搜索区域 -->
+  <a-card :bordered="false" class="student-face-record-container">
     <div class="table-page-search-wrapper">
+      <!-- 搜索功能 -->
       <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter" @clearQuery="clearQuery"></SearchForm>
     </div>
 
@@ -17,11 +17,11 @@ import SearchForm from "@/components/SearchForm.vue";
 import Empty from "@/components/Empty.vue";
 import { formatTime } from "@/utils/common";
 import { getLiveMaps, getCourseList } from "@/api/live";
-import { getDistinguishList } from "@/api/distinguish";
+import { getStudentDistinguishList } from "@/api/distinguish";
 import { mapGetters } from "vuex";
 
 export default {
-  name: "liveList",
+  name: "studentFaceRecordList",
   components: {
     SearchForm,
     Empty,
@@ -36,14 +36,6 @@ export default {
           list: [],
           onChange: this.getCoursesBySemester,
         },
-        subject: {
-          type: "text",
-          label: "直播主题",
-        },
-        start_time: {
-          type: "dateRange",
-          label: "直播开始时间",
-        },
         course_id: {
           type: "select",
           label: "相关课程",
@@ -52,9 +44,6 @@ export default {
       },
       queryParam: {
         semester_id: undefined,
-        status: -1,
-        subject: undefined,
-        start_time: [],
         course_id: undefined,
       },
       listParam: {
@@ -67,18 +56,14 @@ export default {
         total: 0,
         pageSize: 10,
       },
-      repeatMap: [],
+      // 考勤状态映射
+      attendanceStatusMap: [],
       // 表格列配置
       columns: [
         {
-          title: <div class='nowrap'>班级名称</div>,
+          title: <div class='nowrap'>课程名称</div>,
           dataIndex: "course_name",
           key: "course_name",
-        },
-        {
-          title: <div class='nowrap'>直播名称</div>,
-          dataIndex: "subject",
-          key: "subject",
         },
         {
           title: <div class='nowrap'>主持人</div>,
@@ -102,11 +87,30 @@ export default {
           title: <div class='nowrap'>匹配成功次数</div>,
           dataIndex: "match_count",
           key: "match_count",
-          customRender: (val, { count }) => {
-            if (val / count < 0.8) {
-              return <span style='color:red'>{val}</span>;
+        },
+        {
+          title: <div class='nowrap'>考勤状态</div>,
+          dataIndex: "status",
+          key: "status",
+          customRender: val => {
+            // 从考勤状态映射中查找对应的中文名称
+            const statusItem = this.attendanceStatusMap.find(item => item.value === val);
+            const statusName = statusItem ? statusItem.label : val;
+            
+            // 根据状态设置不同的颜色
+            let color = '';
+            switch(val) {
+              case 1:
+                color = 'green';
+                break;
+              case 0:
+                color = 'red';
+                break;
+              default:
+                color = '';
             }
-            return val;
+            
+            return color ? <span style={`color:${color}`}>{statusName}</span> : statusName;
           },
         },
         {
@@ -115,7 +119,7 @@ export default {
           key: "action",
           customRender: live_id => {
             return (
-              <a-button size='small' onClick={() => this.gotoDetail(live_id)}>
+              <a-button size='small' type="link" onClick={() => this.gotoDetail(live_id)}>
                 查看详情
               </a-button>
             );
@@ -125,10 +129,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["roles"]),
+    ...mapGetters(["roles", "userInfo"]),
     role() {
-      // 从store中获取用户角色，如果没有则默认为teacher
       return this.roles.id || "student";
+    },
+    userId() {
+      return this.userInfo.id || 0;
     },
   },
   created() {
@@ -138,16 +144,19 @@ export default {
   },
   methods: {
     getMaps() {
-      // 先获取学期和课程映射
-      return getLiveMaps(["semester"]).then(map => {
+      // 先获取学期和考勤状态映射
+      return getLiveMaps(["semester", "attendanceStatus"]).then(map => {
         this.queryField.semester_id.list = map.semesterMap;
-        this.queryField.course_id.list = map.courseMap;
+        this.attendanceStatusMap = map.attendanceStatusMap || [];
 
-        this.queryParam.semester_id = map.semesterMap[0].value;
-        // 在获取映射之后获取课程列表
-        return getCourseList(map.semesterMap[0].value).then(courseMap => {
-          this.queryField.course_id.list = courseMap.courseMap || [];
-        });
+        if (map.semesterMap.length > 0) {
+          this.queryParam.semester_id = map.semesterMap[0].value;
+          // 在获取映射之后获取课程列表
+          return getCourseList(map.semesterMap[0].value).then(courseMap => {
+            this.queryField.course_id.list = courseMap.courseMap || [];
+          });
+        }
+        return Promise.resolve();
       });
     },
     fetch() {
@@ -157,13 +166,8 @@ export default {
         return;
       }
       let queryParam = { ...this.queryParam };
-      if (queryParam.start_time.length) {
-        queryParam.start_time_begin = queryParam.start_time[0].format("x");
-        queryParam.start_time_stop = queryParam.start_time[1].format("x");
-        delete queryParam.start_time;
-      }
 
-      getDistinguishList({
+      getStudentDistinguishList({
         ...this.listParam,
         ...queryParam,
       })
@@ -190,11 +194,7 @@ export default {
       // 根据选择的学期获取课程列表
       getCourseList(semesterId)
         .then(res => {
-          if (res && res.courseMap) {
-            this.queryField.course_id.list = res.courseMap;
-          } else {
-            this.queryField.course_id.list = [];
-          }
+          this.queryField.course_id.list = res.courseMap || [];
         })
         .catch(error => {
           console.error("获取课程列表失败:", error);
@@ -209,19 +209,10 @@ export default {
     clearQuery() {
       this.listParam.page = 1;
       this.queryParam = {
-        semester_id: this.queryField.semester_id.list[0].value || undefined,
-        status: -1,
-        subject: undefined,
-        start_time: [],
+        semester_id: this.queryField.semester_id.list[0]?.value || undefined,
         course_id: undefined,
       };
       this.fetch();
-    },
-    gotoDetail(live_id) {
-      this.$router.push({
-        name: "distinguishDetail",
-        params: { id: live_id },
-      });
     },
     handleTableChange(pagination, filters, sorter) {
       // 处理表格排序和筛选变化
@@ -229,8 +220,25 @@ export default {
       this.listParam.pageSize = pagination.pageSize;
       this.fetch();
     },
+    gotoDetail(live_id) {
+      // 跳转到学生人脸识别记录详情页
+      this.$router.push({
+        name: "studentFaceDetail",
+        params: { id: live_id },
+      });
+    },
     // ---------- Filters ---------- //
     formatTime,
   },
 };
 </script>
+
+<style scoped>
+.student-face-record-container {
+  padding: 16px;
+}
+
+.table-page-search-wrapper {
+  padding-bottom: 16px;
+}
+</style>

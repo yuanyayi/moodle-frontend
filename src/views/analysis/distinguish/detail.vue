@@ -152,8 +152,9 @@ export default {
     },
 
     gotoStudentDetail(attendance_status_id) {
+      // 直接跳转到analysis模块中的学生人脸识别记录详情页
       this.$router.push({
-        name: "studentDetail",
+        name: "studentFaceDetail",
         params: { id: attendance_status_id },
       });
     },

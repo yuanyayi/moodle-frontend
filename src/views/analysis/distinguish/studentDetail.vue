@@ -2,7 +2,7 @@
   <a-card :bordered="false" class="student-detail-container">
     <!-- 学生基本信息 -->
     <div class="student-info-section">
-      <h3>学生基本信息</h3>
+      <h3>学生信息</h3>
       <div class="info-row">
         <span class="label">学生ID：</span>
         <span class="value">{{ studentInfo.student_id }}</span>
@@ -10,6 +10,10 @@
       <div class="info-row">
         <span class="label">学生名称：</span>
         <span class="value">{{ studentInfo.student_name }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">考勤状态：</span>
+        <span class="value">{{ studentInfo.status === 1 ? '正常' : studentInfo.status === 0 ? '缺勤' : '未处理' }}</span>
       </div>
     </div>
 
@@ -26,24 +30,10 @@
 
     <!-- 抓取照片 -->
     <div class="captured-photos-section">
-      <h3>
-        抓取照片
-        <!-- 操作按钮 -->
-        <a-space style="margin-left: 100px">
-          <a-button @click="confirmAttendance" size="small">确认出勤</a-button>
-          <a-button @click="confirmAbsent" size="small">确认缺勤</a-button>
-          <a-tag color="red">异常处理完成，计算考勤</a-tag>
-        </a-space>
-      </h3>
+      <h3>抓取照片</h3>
       <div class="photos-container">
-        <div class="photo-item" v-for="(photo, index) in displayedPhotos" :key="index">
+        <div class="photo-item" v-for="(photo, index) in allPhotos" :key="index">
           <img :src="photo.url" alt="抓取照片" />
-          <div class="photo-info">
-            <span class="timestamp">{{ photo.timestamp }}</span>
-            <span class="status" :class="{ normal: photo.result == 1, abnormal: photo.result == 0 }">
-              {{ ["识别异常", "识别正常"][photo.result] }}
-            </span>
-          </div>
         </div>
       </div>
 
@@ -54,7 +44,7 @@
 </template>
 
 <script>
-import { getStudentDetail, updateAttendanceState } from "@/api/distinguish";
+import { getStudentRecordPage } from "@/api/distinguish";
 import { getLiveMaps } from "@/api/live";
 import { Pagination as APagination } from "ant-design-vue";
 
@@ -75,9 +65,6 @@ export default {
       studentInfo: {},
       systemPhotos: [],
       allPhotos: [],
-      currentPage: 1,
-      photosPerPage: 10,
-      totalPhotos: 0,
 
       attendanceStatusMap: [],
     };
@@ -96,7 +83,7 @@ export default {
     fetch() {
       this.loading = true;
 
-      getStudentDetail(this.attendanceStatusId, this.listParam)
+      getStudentRecordPage(this.attendanceStatusId, this.listParam)
         .then(res => {
           // 处理学生基本信息
           this.studentInfo = res.data || {};
@@ -125,27 +112,7 @@ export default {
       this.fetch();
     },
 
-    // 确认出勤
-    confirmAttendance() {
-      updateAttendanceState(this.attendanceStatusId, 1).then(res => {
-        if (res.status) {
-          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
-          return;
-        }
-        this.$message.success("已确认出勤");
-      });
-    },
 
-    // 确认缺勤
-    confirmAbsent() {
-      updateAttendanceState(this.attendanceStatusId, -1).then(res => {
-        if (res.status) {
-          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
-          return;
-        }
-        this.$message.success("已确认缺勤");
-      });
-    },
   },
   watch: {
     // 监听路由变化，重新加载数据
@@ -160,12 +127,7 @@ export default {
     attendanceStatusId() {
       return this.$route.params.id;
     },
-    // 计算当前页显示的照片
-    displayedPhotos() {
-      const startIndex = (this.currentPage - 1) * this.photosPerPage;
-      const endIndex = startIndex + this.photosPerPage;
-      return this.allPhotos.slice(startIndex, endIndex);
-    },
+
   },
 };
 </script>
