@@ -29,7 +29,7 @@ export const asyncRouterMap = [
       if (permissionList.includes("live")) {
         return "/live/list";
       } else if (permissionList.includes("analysis")) {
-        return "/live/analysis";
+        return "/analysis/overview";
       }
 
       // 默认跳转到/live/list
@@ -37,10 +37,11 @@ export const asyncRouterMap = [
     },
     children: [
       {
-        path: "/statistics",
+        path: "/analysis",
         name: "analysis",
         component: PageView,
         meta: { title: "直播统计", icon: "area-chart", permission: ["analysis", "overview", "course", "distinguish", "logs"] },
+        redirect: "/analysis/overview",
         children: [
           // 原直播统计改为直播概览
           {
@@ -63,7 +64,7 @@ export const asyncRouterMap = [
                 component: () => import("@/views/analysis/course"),
               },
               {
-                path: "course/:id([1-9]\\\\d*)",
+                path: "course/:id([1-9]\\d*)",
                 name: "courseDetail",
                 meta: { title: "课程详情", permission: ["analysis", "course"] },
                 hidden: true,
@@ -130,7 +131,7 @@ export const asyncRouterMap = [
         name: "live",
         component: PageView,
         redirect: "/live/list",
-        meta: { title: "直播列表", icon: "home-o" },
+        meta: { title: "直播列表", icon: "home-o", permission: ["live"] },
         children: [
           // 直播列表
           {
@@ -140,28 +141,15 @@ export const asyncRouterMap = [
             meta: { title: "直播列表", permission: ["live"] },
           },
           {
-            path: "/live/replay/:configId([1-9]\d*)+",
+            path: "replay/:configId([1-9]\\d*)/",
             name: "replayList",
             component: () => import("@/views/live/liveClass/replayList"),
             meta: { title: "直播回放", permission: ["live"] },
             hidden: true,
           },
-          {
-            // 课程开播
-            path: "/live/broadcast/:liveConfigId([1-9]\d*)+/",
-            name: "broadcast",
-            meta: { title: "课程开播页", permission: ["live"] },
-            component: () => import("@/views/live/liveClass/broadcast"),
-            hidden: true,
-          },
-          {
-            // 课程观播
-            path: "/live/watch/:liveConfigId([1-9]\d*)+/",
-            name: "watch",
-            meta: { title: "课程直播页", permission: ["live"] },
-            component: () => import("@/views/live/liveClass/watchLive"),
-            hidden: true,
-          },
+          // 课程开播
+          // 课程观播
+          // 两个页面需抛弃BaseLayout
         ],
       },
       // {
@@ -171,6 +159,22 @@ export const asyncRouterMap = [
       //   component: () => import("@/views/live/FlvPlayerDemo"),
       // },
     ],
+  },
+  {
+    // 课程开播
+    path: "/live/broadcast/:liveConfigId([1-9]\\d*)/",
+    name: "broadcast",
+    meta: { title: "课程开播页", permission: ["live"] },
+    component: () => import("@/views/live/liveClass/broadcast"),
+    hidden: true,
+  },
+  {
+    // 课程观播
+    path: "/live/watch/:liveConfigId([1-9]\\d*)/",
+    name: "watch",
+    meta: { title: "课程直播页", permission: ["live"] },
+    component: () => import("@/views/live/liveClass/watchLive"),
+    hidden: true,
   },
   {
     path: "*",

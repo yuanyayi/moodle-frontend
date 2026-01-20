@@ -14,7 +14,7 @@
             <span class="value">{{ liveInfo.subject }}</span>
           </div>
           <div class="info-item">
-            <span class="label">主持人：</span>
+            <span class="label">老师：</span>
             <span class="value">{{ liveInfo.teacher_name }}</span>
           </div>
           <div class="info-item">

@@ -49,7 +49,7 @@ export default {
             dataIndex: "subject",
           },
           {
-            title: "主持人",
+            title: "老师",
             dataIndex: "teacher_name",
           },
           {

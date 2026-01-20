@@ -15,14 +15,11 @@
             <video ref="videoElement" style="width: 100%; height: 100%; object-fit: cover" autoplay muted></video>
             <img v-if="photoUrl" :src="photoUrl" alt="拍摄的照片" class="captured-photo" />
           </div>
-          <div style="text-align: center; margin-top: 10px">
-            <a-button type="primary" icon="camera" @click="takePhoto">拍摄</a-button>
-          </div>
         </div>
       </a-form-item>
 
       <a-form-item>
-        <a-button type="primary" block @click="handleSubmit">签到</a-button>
+        <a-button type="primary" block @click="handleSubmit" :loading="loading">签到</a-button>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -58,6 +55,7 @@ export default {
     });
     const photoUrl = ref(null);
     const serverPhoto = ref(null); // 用于存储服务器返回的照片URL和路径
+    const loading = ref(false); // 签到按钮loading状态
     let stream = null;
 
     // 初始化摄像头
@@ -89,94 +87,118 @@ export default {
       }
     };
 
-    // 拍照处理
+    // 拍照处理 - 返回Promise
     const takePhoto = () => {
-      if (!videoElement.value || !stream) {
-        message.error("摄像头未准备就绪");
-        return;
-      }
-
-      const video = videoElement.value;
-      // 确保视频元素已经准备好播放
-      if (video.readyState !== 4) { // HAVE_ENOUGH_DATA
-        message.error("视频尚未准备好，请稍后再试");
-        return;
-      }
-
-      const canvas = document.createElement("canvas");
-      canvas.width = video.videoWidth || video.width;
-      canvas.height = video.videoHeight || video.height;
-      
-      // 检查canvas上下文是否可用
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        message.error("无法创建画布上下文");
-        return;
-      }
-      
-      try {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      } catch (e) {
-        console.error("绘制图像失败:", e);
-        message.error("拍照失败，请重试");
-        return;
-      }
-
-      // 转换为图片URL
-      canvas.toBlob(async blob => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          photoUrl.value = url;
-
-          // 创建FormData对象用于上传
-          const formData = new FormData();
-          formData.append("file", blob, "checkin-photo.png");
-
-          try {
-            // 上传照片到服务器
-            const response = await uploadFile(formData);
-            console.log("照片上传成功:", response);
-            // 存储服务器返回的照片URL和路径
-            if (response.data) serverPhoto.value = { url: response.data.url, path: response.data.path };
-          } catch (error) {
-            console.error("照片上传失败:", error);
-            message.error("照片上传失败");
-          }
-        } else {
-          message.error("无法生成照片数据");
+      return new Promise((resolve, reject) => {
+        if (!videoElement.value || !stream) {
+          const errorMsg = "摄像头未准备就绪";
+          message.error(errorMsg);
+          reject(new Error(errorMsg));
+          return;
         }
-      }, "image/png");
+
+        const video = videoElement.value;
+        // 确保视频元素已经准备好播放
+        if (video.readyState !== 4) { // HAVE_ENOUGH_DATA
+          const errorMsg = "视频尚未准备好，请稍后再试";
+          message.error(errorMsg);
+          reject(new Error(errorMsg));
+          return;
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth || video.width;
+        canvas.height = video.videoHeight || video.height;
+        
+        // 检查canvas上下文是否可用
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          const errorMsg = "无法创建画布上下文";
+          message.error(errorMsg);
+          reject(new Error(errorMsg));
+          return;
+        }
+        
+        try {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        } catch (e) {
+          console.error("绘制图像失败:", e);
+          const errorMsg = "拍照失败，请重试";
+          message.error(errorMsg);
+          reject(new Error(errorMsg));
+          return;
+        }
+
+        // 转换为图片URL
+        canvas.toBlob(async blob => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            photoUrl.value = url;
+
+            // 创建FormData对象用于上传
+            const formData = new FormData();
+            formData.append("file", blob, "checkin-photo.png");
+
+            try {
+              // 上传照片到服务器
+              const response = await uploadFile(formData);
+              console.log("照片上传成功:", response);
+              // 存储服务器返回的照片URL和路径
+              if (response.data) serverPhoto.value = { url: response.data.url, path: response.data.path };
+              resolve(response.data);
+            } catch (error) {
+              console.error("照片上传失败:", error);
+              const errorMsg = "照片上传失败";
+              message.error(errorMsg);
+              reject(new Error(errorMsg));
+            }
+          } else {
+            const errorMsg = "无法生成照片数据";
+            message.error(errorMsg);
+            reject(new Error(errorMsg));
+          }
+        }, "image/png");
+      });
     };
 
-    // 提交表单
-    const handleSubmit = () => {
+    // 提交表单（包含拍摄和上传逻辑）
+    const handleSubmit = async () => {
+      // 校验表单数据
       if (!formData.name || !formData.student_id) {
         message.error("请填写完整信息");
         return;
       }
 
-      if (!photoUrl.value) {
-        message.error("请拍摄照片");
-        return;
-      }
+      // 开始加载状态
+      loading.value = true;
 
-      // 构造发送数据
-      let sendData = {
-        user_id: props.userId,
-        live_config_id: props.liveConfigId,
-        ...formData,
-        ...serverPhoto.value,
-      };
+      try {
+        // 使用改造后的takePhoto方法拍摄照片并上传
+        await takePhoto();
 
-      // 这里可以添加实际的提交逻辑
-      console.log("提交表单:", sendData);
-      studentAttendance(sendData).then(res => {
+        // 构造发送数据
+        let sendData = {
+          user_id: props.userId,
+          live_config_id: props.liveConfigId,
+          ...formData,
+          ...serverPhoto.value,
+        };
+
+        // 提交表单数据
+        console.log("提交表单:", sendData);
+        const res = await studentAttendance(sendData);
         if (res.status) {
           message.error(res.msg || "获取数据失败，请稍后再试。");
           return;
         }
         emit("submit", sendData);
-      });
+      } catch (error) {
+        console.error("签到失败:", error);
+        // 错误信息已经在takePhoto方法中显示，这里不需要重复显示
+      } finally {
+        // 结束加载状态
+        loading.value = false;
+      }
     };
 
     // 同步 visible 属性
@@ -221,6 +243,7 @@ export default {
       serverPhoto,
       takePhoto,
       handleSubmit,
+      loading,
     };
   },
 };

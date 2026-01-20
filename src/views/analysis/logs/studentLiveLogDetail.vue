@@ -38,7 +38,8 @@
           :data-source="studentLogs"
           :loading="loading"
           row-key="id"
-          :pagination="false"
+          :pagination="pagination"
+          @change="handlePageChange"
         />
       </div>
     </a-card>
@@ -58,6 +59,15 @@ export default {
       studentLogs: [],
       loading: false,
       studentInfo: {},
+      listParam: {
+        page: 1,
+        pageSize: 10,
+      },
+      pagination: {
+        current: 1,
+        total: 0,
+        pageSize: 10,
+      },
       columns: [
         {
           title: "记录ID",
@@ -95,7 +105,7 @@ export default {
   methods: {
     fetchStudentLogs() {
       this.loading = true;
-      fetchOneLiveDetailByStudent(this.live_config_id, this.student_id).then((res) => {
+      fetchOneLiveDetailByStudent(this.live_config_id, this.student_id, this.listParam).then((res) => {
         if (res.status) {
           this.$message.error(res.msg || "获取数据失败，请稍后再试。");
           return;
@@ -104,12 +114,21 @@ export default {
         this.studentInfo = res.data || {};
         // 保存人脸识别记录
         this.studentLogs = res.pageBean.list || [];
+        // 更新分页信息
+        this.pagination.current = res.pageBean.currentPage || 1;
+        this.pagination.total = res.pageBean.allRow || 0;
       }).catch(error => {
         console.error("获取学生日志详情失败:", error);
         this.$message.error("获取学生日志详情失败");
       }).finally(() => {
         this.loading = false;
       });
+    },
+    // 处理分页变化
+    handlePageChange(pagination) {
+      this.listParam.page = pagination.current;
+      this.listParam.pageSize = pagination.pageSize;
+      this.fetchStudentLogs();
     },
     formatTime
   }

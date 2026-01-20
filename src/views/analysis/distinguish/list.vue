@@ -81,7 +81,7 @@ export default {
           key: "subject",
         },
         {
-          title: <div class='nowrap'>主持人</div>,
+          title: <div class='nowrap'>老师</div>,
           dataIndex: "teacher_name",
           key: "teacher_name",
         },

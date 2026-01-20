@@ -7,14 +7,8 @@
     <!-- <FeedbackReminder :liveConfigId="liveConfigId" style="margin-top: 20px" /> -->
     <!-- </div> -->
     <div style="flex: 1">
-      <iframe
-        v-if="broadcastUrl"
-        :src="broadcastUrl"
-        width="100%"
-        height="100%"
-        style="min-height: 100vh; min-width: 100vh"
-        frameborder="0"
-        scrolling="no"
+      <iframe v-if="broadcastUrl" :src="broadcastUrl" width="100%" height="100%"
+        style="min-height: 100vh; min-width: 100vh" frameborder="0" scrolling="no"
         allow="microphone;camera;midi;encrypted-media;display-capture;fullscreen; clipboard-read *; clipboard-write *; "></iframe>
       <div v-else style="background-color: #fff; padding: 20px">
         <Empty :opt="{ description: errorMsg }" />
@@ -22,16 +16,24 @@
     </div>
 
     <!-- 悬浮视窗 -->
-    <FloatingVideoPlayer v-show="showFloatingPlayer" :open="showFloatingPlayer" :liveConfigId="liveConfigId" @close="showFloatingPlayer = false">
-      <FeedbackReminder :liveConfigId="liveConfigId" style="margin-top: 20px" @count-change="handleFeedbackCountChange" />
+    <FloatingVideoPlayer v-show="showFloatingPlayer" :open="showFloatingPlayer" :liveConfigId="liveConfigId"
+      @close="showFloatingPlayer = false">
+      <FeedbackReminder :liveConfigId="liveConfigId" style="margin-top: 20px"
+        @count-change="handleFeedbackCountChange" />
     </FloatingVideoPlayer>
 
     <!-- 显示悬浮视窗的按钮 -->
     <div class="floating-player-toggle">
-      <a-button type="primary" shape="circle" @click="openFloatingPlayer" :style="{ position: 'fixed', right: '20px', top: '50px', zIndex: 999, width: '52px', height: '52px', lineHeight: '52px' }">
-        <a-badge :dot="feedbackCount - readedFeedbackCount > 0" :offset="[5, -2]" :numberStyle="{ width: '10px', height: '10px' }">
+      <a-button type="primary" shape="circle" @click="openFloatingPlayer"
+        :style="{ position: 'fixed', right: '20px', top: '50px', zIndex: 999, width: '52px', height: '52px', lineHeight: '52px' }">
+        <a-badge :dot="feedbackCount - readedFeedbackCount > 0" :offset="[5, -2]"
+          :numberStyle="{ width: '10px', height: '10px' }">
           <a-icon :component="nav06" :style="{ fontSize: '32px', verticalAlign: 'middle' }" />
         </a-badge>
+      </a-button>
+      <a-button type="primary" shape="circle" @click="goHome"
+        :style="{ position: 'fixed', right: '20px', top: '104px', zIndex: 999, width: '52px', height: '52px', lineHeight: '52px' }">
+        <a-icon type="home-o" :style="{ fontSize: '30px', verticalAlign: 'middle' }" />
       </a-button>
     </div>
 
@@ -122,6 +124,11 @@ export default {
     openFloatingPlayer() {
       this.showFloatingPlayer = true;
       this.readedFeedbackCount = this.feedbackCount;
+    },
+
+    // 点击返回首页按钮
+    goHome() {
+      this.$router.push({ name: "liveList" });
     },
   },
 };

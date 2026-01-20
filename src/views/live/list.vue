@@ -17,7 +17,7 @@
       <div class="content">
         <p style="font-size: 18px">{{ detail.subject }}</p>
         <p><b>相关课程：</b>{{ detail.course_name }}</p>
-        <p><b>主持人：</b>{{ detail.teacher_name }}</p>
+        <p><b>老师：</b>{{ detail.teacher_name }}</p>
         <p v-if="detail.repeat">
           <b>直播时间:</b>{{ readFromList(detail.repeat, repeatMap) }}{{ formatTime(detail.start_time, "YYYY-MM-DD HH:mm") }}
           <span style="color: #a1a1a1">下次直播：{{ formatTime(detail.next_start_time, "YYYY-MM-DD HH:mm") }}</span>

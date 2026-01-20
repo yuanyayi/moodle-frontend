@@ -30,7 +30,15 @@
 
     <!-- 抓取照片 -->
     <div class="captured-photos-section">
-      <h3>抓取照片</h3>
+      <h3>抓取照片
+        <!-- 操作按钮 -->
+        <a-space v-if="isNotStudent" style="margin-left: 100px">
+          <a-button @click="confirmAttendance" size="small">确认出勤</a-button>
+          <a-button @click="confirmAbsent" size="small">确认缺勤</a-button>
+          <a-tag color="red">异常处理完成，计算考勤</a-tag>
+        </a-space>
+      </h3>
+
       <div class="photos-container">
         <div class="photo-item" v-for="(photo, index) in allPhotos" :key="index">
           <img :src="photo.url" alt="抓取照片" />
@@ -44,9 +52,10 @@
 </template>
 
 <script>
-import { getStudentRecordPage } from "@/api/distinguish";
+import { getStudentRecordPage, updateAttendanceState } from "@/api/distinguish";
 import { getLiveMaps } from "@/api/live";
 import { Pagination as APagination } from "ant-design-vue";
+import { mapGetters } from "vuex";
 
 export default {
   name: "StudentDetail",
@@ -65,6 +74,9 @@ export default {
       studentInfo: {},
       systemPhotos: [],
       allPhotos: [],
+      currentPage: 1,
+      photosPerPage: 10,
+      totalPhotos: 0,
 
       attendanceStatusMap: [],
     };
@@ -112,7 +124,27 @@ export default {
       this.fetch();
     },
 
+    // 确认出勤
+    confirmAttendance() {
+      updateAttendanceState(this.attendanceStatusId, 1).then(res => {
+        if (res.status) {
+          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+          return;
+        }
+        this.$message.success("已确认出勤");
+      });
+    },
 
+    // 确认缺勤
+    confirmAbsent() {
+      updateAttendanceState(this.attendanceStatusId, -1).then(res => {
+        if (res.status) {
+          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+          return;
+        }
+        this.$message.success("已确认缺勤");
+      });
+    },
   },
   watch: {
     // 监听路由变化，重新加载数据
@@ -127,7 +159,21 @@ export default {
     attendanceStatusId() {
       return this.$route.params.id;
     },
-
+    // 计算当前页显示的照片
+    displayedPhotos() {
+      const startIndex = (this.currentPage - 1) * this.photosPerPage;
+      const endIndex = startIndex + this.photosPerPage;
+      return this.allPhotos.slice(startIndex, endIndex);
+    },
+    // 判断当前用户是否是学生
+    isNotStudent() {
+      // 根据用户角色或类型判断是否不是学生
+      // 假设用户信息中有role或userType字段，学生角色为'student'
+      const userInfo = this.userInfo;
+      // 如果用户信息中没有role或userType字段，或者role不是学生，就显示操作按钮
+      return !userInfo.role || userInfo.role !== 'student' || !userInfo.userType || userInfo.userType !== 'student';
+    },
+    ...mapGetters(['userInfo']),
   },
 };
 </script>

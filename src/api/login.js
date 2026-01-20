@@ -10,6 +10,8 @@ const userApi = {
   SendSmsErr: "/account/sms_err",
   // get my info
   UserMenu: "/user/nav",
+  // go to smart platform
+  ToSmart: "/login/toSmart",
 };
 
 /**
@@ -596,3 +598,14 @@ export function logout() {
 //     data: parameter,
 //   });
 // }
+
+/**
+ * go to smart platform
+ * @param parameter {*}
+ */
+export function toSmartPlatform() {
+  return request({
+    url: userApi.ToSmart,
+    method: "get"
+  });
+}

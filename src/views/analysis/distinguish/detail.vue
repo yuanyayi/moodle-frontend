@@ -4,22 +4,18 @@
     <div class="live-info-section">
       <div class="info-row">
         <span class="label">相关课程：</span>
-        <span class="value">{{ liveInfo.course_id }}</span>
-      </div>
-      <div class="info-row">
-        <span class="label">直播周期：</span>
-        <span class="value">{{ liveInfo.repeat === 1 ? "重复" : "不重复" }}</span>
+        <span class="value">{{ liveInfo.course_name }}</span>
       </div>
       <div class="info-row">
         <span class="label">直播主题：</span>
         <span class="value">{{ liveInfo.subject }}</span>
       </div>
       <div class="info-row">
-        <span class="label">下次直播时间：</span>
+        <span class="label">直播时间：</span>
         <span class="value">{{ formatTime(liveInfo.start_time, "YYYY-MM-DD HH:mm") }}</span>
       </div>
       <div class="info-row">
-        <span class="label">主持人：</span>
+        <span class="label">老师：</span>
         <span class="value">{{ liveInfo.teacher_name || "未知" }}</span>
       </div>
       <div class="info-row">

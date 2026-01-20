@@ -27,9 +27,10 @@ export function fetchLogsByLive(live_config_id, params) {
 /**
  * 学生日志详情 接口 对应学生日志详情页面
  */
-export function fetchOneLiveDetailByStudent(live_config_id, student_id) {
+export function fetchOneLiveDetailByStudent(live_config_id, student_id, params) {
   return axios({
     url: `/log/studentLogDetail/${live_config_id}/${student_id}`,
     method: "get",
+    params
   });
 }

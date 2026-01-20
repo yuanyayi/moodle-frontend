@@ -1,8 +1,7 @@
 <template>
   <div>
     <a-card :bordered="false">
-      <template v-slot:title
-        >课程详情数据 <span class="subTitle">更新至{{ statisticsDate }}</span>
+      <template v-slot:title>课程详情数据 <span class="subTitle">更新至{{ statisticsDate }}</span>
       </template>
       <a-row>
         <a-col v-for="item in headList" :span="6" :key="item.key">
@@ -24,36 +23,31 @@
     <a-card :bordered="false">
       <template v-slot:title>互动行为数据 <a-button @click="exportExcel">导出数据</a-button> </template>
       <!-- 修改: 添加无数据占位符 -->
-      <div v-if="barData.every(item => !item.y || item.y === 0)" style="height: 254px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9; margin: 0 0 32px 32px;">
+      <div v-if="barData.every(item => !item.y || item.y === 0)"
+        style="height: 254px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9; margin: 0 0 32px 32px;">
         <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
       </div>
-      <bar v-else :data="barData" width="100%"/>
+      <bar v-else :data="barData" width="100%" />
     </a-card>
     <a-card :bordered="false" title="互动内容分析">
       <a-row>
         <a-col :span="12">
           <!-- 修改: 添加无数据占位符 -->
-          <div v-if="tagList1.length === 0" style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
+          <div v-if="tagList1.length === 0"
+            style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
             <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
           </div>
-          <tag-cloud v-else
-            :tag-list="tagList1" 
-            :height="200" 
-            :force-fit="true"
-            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }"
-          />
+          <tag-cloud v-else :tag-list="tagList1" :height="200" :force-fit="true"
+            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
         </a-col>
         <a-col :span="12">
           <!-- 修改: 添加无数据占位符 -->
-          <div v-if="tagList2.length === 0" style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
+          <div v-if="tagList2.length === 0"
+            style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
             <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
           </div>
-          <tag-cloud v-else
-            :tag-list="tagList2" 
-            :height="200" 
-            :force-fit="true"
-            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }"
-          />
+          <tag-cloud v-else :tag-list="tagList2" :height="200" :force-fit="true"
+            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
         </a-col>
       </a-row>
     </a-card>
@@ -74,10 +68,10 @@ export default {
   },
   data() {
     return {
-      statisticsDate: "xxxx-xx-xx",
+      statisticsDate: new Date(Date.now() - 86400000).toISOString().split('T')[0],
       headList: [
         {
-          key: "liveUsers",
+          key: "uv",
           title: "直播人数",
           value: "0",
           day: "--",
@@ -85,12 +79,12 @@ export default {
           month: "--",
         },
         {
-          key: "totalUsers",
+          key: "totalUv",
           title: "累计总人数",
           value: "0",
         },
         {
-          key: "liveDuration",
+          key: "duration",
           title: "直播时长",
           value: "0",
           day: "--",
@@ -110,8 +104,8 @@ export default {
           y: 0,
         },
         {
-          x: `点赞数`,
-          key: "like",
+          x: `反馈数`,
+          key: "feedback",
           y: 0,
         },
         {
@@ -133,7 +127,6 @@ export default {
   methods: {
     fetch1() {
       fetch1(this.liveConfigId).then(res => {
-        this.statisticsDate = res.data.statisticsDate;
         this.headList.forEach(el => {
           el.value = res.data[el.key];
           if (el.day) {
@@ -228,12 +221,14 @@ export default {
   color: #a6a6a6;
   margin-left: 30px;
 }
+
 .statisticList {
   b {
     display: inline-block;
     width: 2em;
     color: #b6b6b6;
   }
+
   span {
     display: inline-block;
     width: 3em;

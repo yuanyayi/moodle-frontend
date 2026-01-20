@@ -1,21 +1,13 @@
 <template>
   <div id="watchLivePage">
     <!-- 倒计时弹窗，仅在直播模式下显示 -->
-    <CountdownModal
-      ref="countdownModal"
-      v-if="countdownTimestamp && mode === 'live'"
-      :countdownTimestamp="countdownTimestamp"
-      @cutout="handleEnterLive"
+    <CountdownModal ref="countdownModal" v-if="countdownTimestamp && mode === 'live'"
+      :countdownTimestamp="countdownTimestamp" @cutout="handleEnterLive"
       @countdown-finished="handleCountdownFinished" />
 
     <!-- 真人签到弹窗，仅在直播模式且为学生角色时显示 -->
-    <RealNameCheckInModal
-      v-if="role === 'student' && mode === 'live'"
-      :visible="checkInModalVisible"
-      :user-id="userId"
-      :live-config-id="liveConfigId"
-      @submit="handleCheckInSubmit"
-      @cancel="hideCheckInModal" />
+    <RealNameCheckInModal v-if="role === 'student' && mode === 'live'" :visible="checkInModalVisible" :user-id="userId"
+      :live-config-id="liveConfigId" @submit="handleCheckInSubmit" @cancel="hideCheckInModal" />
 
     <!-- 设备测试弹窗，仅在直播模式且为学生角色时显示 -->
     <!-- <LiveDeviceTestModal v-if="role === 'student' && mode === 'live'" :visible="deviceTestModalVisible" @confirm="handleDeviceConfirm" @cancel="handleDeviceCancel" /> -->
@@ -42,34 +34,34 @@
     </div> -->
     <div style="display: flex; flex-flow: row nowrap">
       <div v-if="role === 'student' && mode !== 'replay'" style="flex: 0 0 auto">
-        <CameraCapture
-          ref="cameraCapture"
-          :user-id="userId"
-          :live-config-id="liveConfigId"
-          @photoCaptured="handlePhotoCaptured"
-          @photoCaptureError="handlePhotoCaptureError"
-          @autoCaptureStarted="handleAutoCaptureStarted"
-          @autoCaptureStopped="handleAutoCaptureStopped"
+        <CameraCapture ref="cameraCapture" :user-id="userId" :live-config-id="liveConfigId"
+          @photoCaptured="handlePhotoCaptured" @photoCaptureError="handlePhotoCaptureError"
+          @autoCaptureStarted="handleAutoCaptureStarted" @autoCaptureStopped="handleAutoCaptureStopped"
           @autoCaptureError="handleAutoCaptureError" />
 
         <div style="text-align: center; font-size: 16px; padding: 20px 0">
+          <div style="margin-bottom:10px"><a-button @click="goHome"><a-icon type="home"
+                theme="filled" />返回直播平台</a-button></div>
           <span v-if="feedback.id && !feedback.handle" style="color: #f01c08"> 问题已反馈，等待处理 </span>
           <span v-if="feedback.id && feedback.handle" style="color: #44d0c8"> 问题已处理 </span>
-          <a-button type="primary" ghost v-if="!feedback.id || feedback.handle" @click="handUp">{{ feedback.id ? "继续反馈" : "问题反馈" }}</a-button>
+          <a-button type="primary" ghost v-if="!feedback.id || feedback.handle" @click="handUp" style="width:138px"><a-icon type="message" />{{
+            feedback.id ? "继续反馈"
+              : "问题反馈" }}</a-button>
         </div>
       </div>
       <div style="flex: 1">
         <div class="player-header" v-if="mode === 'replay'">
           <div class="title">{{ replayDetail.name }}的回放</div>
           <div class="info">
-            <span>观看人数:{{ replayDetail.view_number }}</span
-            ><span>点赞数：{{ replayDetail.like_number }}</span>
+            <span>观看人数:{{ replayDetail.view_number }}</span><span>点赞数：{{ replayDetail.like_number }}</span>
           </div>
         </div>
-        <iframe :src="isCheckedIn && liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *; camera; microphone;midi;"></iframe>
+        <iframe :src="isCheckedIn && liveUrl" class="player-iframe"
+          allow="fullscreen; clipboard-read *; clipboard-write *; camera; microphone;midi;"></iframe>
       </div>
     </div>
-    <VideoNotes v-if="mode === 'replay'" :vid="liveConfigId" :showEditor="role === 'student'" style="background-color: #fff" />
+    <VideoNotes v-if="mode === 'replay'" :vid="liveConfigId" :showEditor="role === 'student'"
+      style="background-color: #fff" />
   </div>
 </template>
 
@@ -390,7 +382,7 @@ export default {
       // 启动新的轮询，每分钟执行一次
       this.feedbackPollTimer = setInterval(() => {
         this.getFeedbackResult();
-      }, 30000); 
+      }, 30000);
     },
 
     // 停止反馈轮询
@@ -400,6 +392,10 @@ export default {
         this.feedbackPollTimer = null;
       }
     },
+
+    goHome() {
+      this.$router.push({ path: "/live/list" });
+    }
   },
   destroyed() {
     // 组件销毁时停止轮询
@@ -477,9 +473,11 @@ export default {
     background: #fff;
     font-size: 16px;
     padding: 5px 10px;
+
     span {
       margin-right: 1em;
     }
+
     .info {
       font-size: 14px;
       color: #a4a4a4;
