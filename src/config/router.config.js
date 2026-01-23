@@ -52,7 +52,7 @@ export const asyncRouterMap = [
           },
           // 分直播统计保持不变
           {
-            path: "detail",
+            path: "",
             name: "analysisDetail",
             meta: { title: "分直播统计", permission: ["analysis", "course", "distinguish", "logs"] },
             component: BlankLayout,
@@ -95,7 +95,7 @@ export const asyncRouterMap = [
                 component: () => import("@/views/analysis/distinguish/detail"),
               },
               {
-                path: "face_record/detail/student/:id([1-9]\\d*)",
+                path: "face_record/student/:id([1-9]\\d*)",
                 name: "studentFaceDetail",
                 meta: { title: "学生人脸识别记录", permission: ["analysis", "distinguish"] },
                 hidden: true,

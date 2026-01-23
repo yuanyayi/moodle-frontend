@@ -2,17 +2,12 @@
   <a-card :bordered="false">
     <div class="table-page-search-wrapper">
       <!-- 搜索功能 -->
-      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter" @clearQuery="clearQuery"></SearchForm>
+      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter"
+        @clearQuery="clearQuery"></SearchForm>
     </div>
 
-    <a-table
-      :columns="columns"
-      :data-source="tableList"
-      :pagination="pagination"
-      :loading="loading"
-      row-key="id"
-      @change="tableChangeHandler"
-    >
+    <a-table :columns="columns" :data-source="tableList" :pagination="pagination" :loading="loading" row-key="id"
+      @change="tableChangeHandler">
       <template v-for="col in ['action']" :slot="col" slot-scope="text, record">
         <template v-if="col === 'action'">
           <a-button type="link" @click="viewDetail(record.id)">查看详情</a-button>
@@ -109,7 +104,7 @@ export default {
       // 获取学期和课程映射
       return getStatisticsMaps(["semester"]).then(map => {
         this.queryField.semester_id.list = map.semesterMap;
-        
+
         if (map.semesterMap.length > 0) {
           this.queryParam.semester_id = map.semesterMap[0].value;
           // 获取课程列表
@@ -127,7 +122,7 @@ export default {
         return;
       }
       let queryParam = { ...this.queryParam };
-      
+
       fetchLiveStatPage({
         ...queryParam,
         ...this.listParam,
@@ -148,13 +143,13 @@ export default {
     getCoursesBySemester(semesterId) {
       // 清空之前选择的课程
       this.queryParam.course_id = undefined;
-      
+
       // 如果没有选择学期，则清空课程列表
       if (!semesterId) {
         this.queryField.course_id.list = [];
         return;
       }
-      
+
       // 根据选择的学期获取课程列表
       getCourseList(semesterId)
         .then(courseMap => {
@@ -179,16 +174,17 @@ export default {
       this.fetch();
     },
     tableChangeHandler(pagination) {
-      this.listParam = { 
-        page: pagination.current, 
-        pageSize: pagination.pageSize 
+      this.listParam = {
+        page: pagination.current,
+        pageSize: pagination.pageSize
       };
       this.fetch();
     },
     viewDetail(id) {
       // 跳转到详情页
       this.$router.push({
-        path: `/statistics/detail/course/${id}`,
+        name: "courseDetail",
+        params: { id }
       });
     },
     // ---------- Filters ---------- //

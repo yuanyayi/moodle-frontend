@@ -25,14 +25,14 @@
     <!-- 显示悬浮视窗的按钮 -->
     <div class="floating-player-toggle">
       <a-button type="primary" shape="circle" @click="openFloatingPlayer"
-        :style="{ position: 'fixed', right: '20px', top: '50px', zIndex: 999, width: '52px', height: '52px', lineHeight: '52px' }">
+        :style="{ position: 'fixed', right: '20px', top: '50px', zIndex: 999, width: '52px', height: '52px', lineHeight: '52px' }" title="打开悬浮视窗">
         <a-badge :dot="feedbackCount - readedFeedbackCount > 0" :offset="[5, -2]"
           :numberStyle="{ width: '10px', height: '10px' }">
           <a-icon :component="nav06" :style="{ fontSize: '32px', verticalAlign: 'middle' }" />
         </a-badge>
       </a-button>
       <a-button type="primary" shape="circle" @click="goHome"
-        :style="{ position: 'fixed', right: '20px', top: '104px', zIndex: 999, width: '52px', height: '52px', lineHeight: '52px' }">
+        :style="{ position: 'fixed', right: '20px', top: '104px', zIndex: 999, width: '52px', height: '52px', lineHeight: '52px' }" title="返回直播平台">
         <a-icon type="home-o" :style="{ fontSize: '30px', verticalAlign: 'middle' }" />
       </a-button>
     </div>

@@ -71,29 +71,23 @@ export default {
       statisticsDate: new Date(Date.now() - 86400000).toISOString().split('T')[0],
       headList: [
         {
-          key: "uv",
-          title: "直播人数",
-          value: "0",
-          day: "--",
-          week: "--",
-          month: "--",
-        },
-        {
-          key: "totalUv",
-          title: "累计总人数",
-          value: "0",
-        },
-        {
           key: "duration",
-          title: "直播时长",
+          title: "直播时长（分钟）",
           value: "0",
-          day: "--",
-          week: "--",
-          month: "--",
         },
         {
-          key: "totalDuration",
-          title: "累计直播时长",
+          key: "pv",
+          title: "观看次数（次）",
+          value: "0",
+        },
+        {
+          key: "uv",
+          title: "观看人数（人）",
+          value: "0",
+        },
+        {
+          key: "replayPv",
+          title: "回放次数（次）",
           value: "0",
         },
       ],

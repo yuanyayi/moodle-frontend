@@ -7,7 +7,7 @@
         <span class="value">{{ liveInfo.course_name }}</span>
       </div>
       <div class="info-row">
-        <span class="label">直播主题：</span>
+        <span class="label">直播名称：</span>
         <span class="value">{{ liveInfo.subject }}</span>
       </div>
       <div class="info-row">
@@ -203,7 +203,7 @@ export default {
   flex-flow: row wrap;
 
   .info-row {
-    flex: 50% 0 0;
+    flex: 33% 0 0;
     display: flex;
     margin-bottom: 12px;
 

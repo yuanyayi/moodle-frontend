@@ -13,7 +13,7 @@
       </div>
       <div class="info-row">
         <span class="label">考勤状态：</span>
-        <span class="value">{{ studentInfo.status === 1 ? '正常' : studentInfo.status === 0 ? '缺勤' : '未处理' }}</span>
+        <span class="value">{{ readFromList(studentInfo.status, attendanceStatusMap) }}</span>
       </div>
     </div>
 
@@ -56,6 +56,7 @@ import { getStudentRecordPage, updateAttendanceState } from "@/api/distinguish";
 import { getLiveMaps } from "@/api/live";
 import { Pagination as APagination } from "ant-design-vue";
 import { mapGetters } from "vuex";
+import { readFromList } from "@/utils/common";
 
 export default {
   name: "StudentDetail",
@@ -132,6 +133,7 @@ export default {
           return;
         }
         this.$message.success("已确认出勤");
+        this.fetch();
       });
     },
 
@@ -143,8 +145,11 @@ export default {
           return;
         }
         this.$message.success("已确认缺勤");
+        this.fetch();
       });
     },
+    // ---------- Filters ---------- //
+    readFromList,
   },
   watch: {
     // 监听路由变化，重新加载数据
@@ -167,11 +172,7 @@ export default {
     },
     // 判断当前用户是否是学生
     isNotStudent() {
-      // 根据用户角色或类型判断是否不是学生
-      // 假设用户信息中有role或userType字段，学生角色为'student'
-      const userInfo = this.userInfo;
-      // 如果用户信息中没有role或userType字段，或者role不是学生，就显示操作按钮
-      return !userInfo.role || userInfo.role !== 'student' || !userInfo.userType || userInfo.userType !== 'student';
+      return this.userInfo?.roleId !== 'student'
     },
     ...mapGetters(['userInfo']),
   },

@@ -36,14 +36,7 @@ export default {
           list: [],
           onChange: this.getCoursesBySemester,
         },
-        subject: {
-          type: "text",
-          label: "直播主题",
-        },
-        start_time: {
-          type: "dateRange",
-          label: "直播开始时间",
-        },
+       
         course_id: {
           type: "select",
           label: "相关课程",
@@ -53,8 +46,6 @@ export default {
       queryParam: {
         semester_id: undefined,
         status: -1,
-        subject: undefined,
-        start_time: [],
         course_id: undefined,
       },
       listParam: {
@@ -157,11 +148,7 @@ export default {
         return;
       }
       let queryParam = { ...this.queryParam };
-      if (queryParam.start_time.length) {
-        queryParam.start_time_begin = queryParam.start_time[0].format("x");
-        queryParam.start_time_stop = queryParam.start_time[1].format("x");
-        delete queryParam.start_time;
-      }
+
 
       getDistinguishList({
         ...this.listParam,
@@ -211,8 +198,6 @@ export default {
       this.queryParam = {
         semester_id: this.queryField.semester_id.list[0].value || undefined,
         status: -1,
-        subject: undefined,
-        start_time: [],
         course_id: undefined,
       };
       this.fetch();

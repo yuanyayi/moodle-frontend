@@ -4,9 +4,9 @@
       <!-- 搜索功能 -->
       <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter" @clearQuery="clearQuery"></SearchForm>
     </div>
-    <div v-if="role !== 'student'" style="padding-bottom: 12px">
+    <!-- <div v-if="role !== 'student'" style="padding-bottom: 12px">
       <a-button type="primary" @click="$refs.createModal.add()">新建直播</a-button>
-    </div>
+    </div> -->
 
     <Empty v-if="!tableList.length" />
     <div v-for="(detail, index) in tableList" class="tableItem">
@@ -31,10 +31,10 @@
           </template>
           <a-button v-if="detail.replay && detail.status === 3" class="greenBtn" @click="gotoReplayList(detail.id)">直播回放</a-button>
 
-          <template v-if="role === 'teacher'">
+          <!-- <template v-if="role === 'teacher'">
             <a-button type="info" @click="$refs.createModal.edit(detail)">编辑</a-button>
             <a-button type="danger" @click="removeLiveConfig(detail.id)">删除</a-button>
-          </template>
+          </template> -->
         </a-space>
       </div>
 
@@ -87,7 +87,7 @@ export default {
         },
         subject: {
           type: "text", // select
-          label: "直播主题",
+          label: "直播名称",
           list: [],
         },
         start_time: {

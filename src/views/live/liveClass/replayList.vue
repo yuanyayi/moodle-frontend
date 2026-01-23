@@ -1,17 +1,17 @@
 <template>
   <a-card :bordered="false" style="margin-bottom: 24px">
     <a-card title="直播基本信息" style="margin-bottom: 24px">
-      <a-descriptions :column="2" :bordered="false" :dataSource="detail" :size="'small'">
+      <a-descriptions :column="3" :bordered="false" :dataSource="detail" :size="'small'">
         <a-descriptions-item v-for="(desc, field) in fieldsMap" :key="field" :label="desc.label">
           <template v-if="['start_time', 'end_time'].indexOf(field) !== -1">
             {{ formatDate(detail[field], "YYYY-MM-DD HH:mm") }}
           </template>
-          <template v-else-if="field === 'repeat'">
+          <!-- <template v-else-if="field === 'repeat'">
             {{ readFromList(detail[field], desc.list) }}
           </template>
           <template v-else-if="field === 'replay'">
             {{ detail[field] ? "是" : "否" }}
-          </template>
+          </template> -->
           <template v-else>{{ detail[field] }}</template>
         </a-descriptions-item>
       </a-descriptions>
@@ -27,18 +27,14 @@
             </div>
             <div class="content">
               <p style="font-size: 18px; font-weight: 500">
-                <EditText
-                  v-if="role !== 'student'"
-                  :ref="`edit${index}`"
-                  :value="detail.name"
-                  trigger="icon"
-                  @change="
-                    val => {
-                      editName(detail.id, val);
-                    }
-                  ">
+                <EditText v-if="role !== 'student'" :ref="`edit${index}`" :value="detail.name" trigger="icon" @change="
+                  val => {
+                    editName(detail.id, val);
+                  }
+                ">
                   <template v-slot:addonAfter>
-                    <a-button class="operateBtn" icon="edit" size="small" ghost @click.stop="$refs[`edit${index}`][0].openEdit()" />
+                    <a-button class="operateBtn" icon="edit" size="small" ghost
+                      @click.stop="$refs[`edit${index}`][0].openEdit()" />
                   </template>
                 </EditText>
                 <template v-else>{{ detail.name }}</template>
@@ -47,7 +43,9 @@
                 {{ detail.teacher_name }} {{ formatDate(+detail.start_time, "YYYY-MM-DD") }}
                 <span v-if="role !== 'student'">
                   <a-switch v-model="detail.open" size="small" @change="e => handleSwitchChange(detail.id, e)" />
-                  <a-button type="danger" icon="delete" size="small" ghost style="flex: none; border: none !important; box-shadow: none" @click.stop="deleteLiveRecord(detail.id)" />
+                  <a-button type="danger" icon="delete" size="small" ghost
+                    style="flex: none; border: none !important; box-shadow: none"
+                    @click.stop="deleteLiveRecord(detail.id)" />
                 </span>
               </p>
               <p v-if="role !== 'student'">
@@ -98,12 +96,16 @@ export default {
       },
       detail: {},
       fieldsMap: {
-        course_id: {
+        course_name: {
           label: "相关课程",
           type: "text",
         },
         subject: {
-          label: "直播主题",
+          label: "直播名称",
+          type: "text",
+        },
+        teacher_name: {
+          label: "老师",
           type: "text",
         },
         start_time: {
@@ -111,23 +113,23 @@ export default {
           type: "slot",
           slotName: "start_time",
         },
-        duration: {
-          label: "时长",
-          type: "number",
-        },
-        repeat: {
-          label: "重复",
-          type: "select",
-          list: [],
-        },
+        // duration: {
+        //   label: "时长",
+        //   type: "number",
+        // },
+        // repeat: {
+        //   label: "重复",
+        //   type: "select",
+        //   list: [],
+        // },
         end_time: {
           label: "结束于",
           type: "date", // true
         },
-        replay: {
-          label: "回放",
-          type: "switch",
-        },
+        // replay: {
+        //   label: "回放",
+        //   type: "switch",
+        // },
       },
       statusList: [],
     };
@@ -148,9 +150,10 @@ export default {
   },
   methods: {
     getMaps() {
-      getLiveMaps(["liveStatus", "repeat"]).then(map => {
+      getLiveMaps(["liveStatus"]).then(map => {
         this.statusList = map.liveStatusMap;
-        this.fieldsMap.repeat.list = map.repeatMap;
+        // "repeat"
+        // this.fieldsMap.repeat.list = map.repeatMap;
       });
     },
     fetchDetail() {
@@ -173,15 +176,10 @@ export default {
           this.loading = false;
         });
     },
-    gotoReplay(liveConfigId) {
-      // this.$router.push({
-      //   name: "watch",
-      //   params: { liveConfigId },
-      //   query: { mode: "replay" },
-      // });
+    gotoReplay(liveId) {
       const routeData = this.$router.resolve({
         name: "watch",
-        params: { liveConfigId },
+        params: { liveConfigId: liveId },
         query: { mode: "replay" },
       });
 
@@ -272,12 +270,15 @@ export default {
   border: 1px solid #dedede;
   display: block;
   position: relative;
+
   &:hover {
     box-shadow: 2px 2px 3px #dedede;
   }
+
   p {
     margin-bottom: 0.3em;
   }
+
   .flag {
     margin-top: 10px;
     position: absolute;
@@ -285,6 +286,7 @@ export default {
     top: 0;
     padding: 0 7px;
   }
+
   .frame {
     flex: 0 0 auto;
     width: 100%;
@@ -294,12 +296,14 @@ export default {
     overflow: hidden;
     margin-right: 10px;
     background-color: #f0f0f0;
+
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       border-color: red;
     }
+
     .anticon {
       position: absolute;
       top: 50%;
@@ -309,6 +313,7 @@ export default {
       cursor: pointer;
     }
   }
+
   .content .operateBtn {
     color: grey;
     margin-left: 10px;
@@ -316,10 +321,12 @@ export default {
     box-shadow: none;
   }
 }
+
 .greenBtn {
   background-color: #52c41a;
   border-color: #52c41a;
   color: #fff;
+
   &:hover {
     background-color: #73d13d;
     border-color: #73d13d;

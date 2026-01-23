@@ -52,7 +52,7 @@ export default {
           },
         },
         subject: {
-          label: "直播主题",
+          label: "直播名称",
           type: "text",
           options: {
             rules: [{ required: true }],

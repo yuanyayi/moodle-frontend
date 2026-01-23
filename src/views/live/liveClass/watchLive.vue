@@ -12,6 +12,15 @@
     <!-- 设备测试弹窗，仅在直播模式且为学生角色时显示 -->
     <!-- <LiveDeviceTestModal v-if="role === 'student' && mode === 'live'" :visible="deviceTestModalVisible" @confirm="handleDeviceConfirm" @cancel="handleDeviceCancel" /> -->
 
+    <!-- 返回直播平台按钮 -->
+    <div class="floating-player-toggle" v-if="mode === 'replay'">
+      <a-button type="primary" shape="circle" @click="goReplay"
+        :style="{ position: 'fixed', right: '20px', top: '50px', zIndex: 999, width: '52px', height: '52px', lineHeight: '52px' }"
+        title="返回直播平台">
+        <a-icon type="home-o" :style="{ fontSize: '30px', verticalAlign: 'middle' }" />
+      </a-button>
+    </div>
+
     <!-- 主要内容区域 -->
     <!-- <div class="volcLiveApp" v-if="mode === 'live'">
       <div v-if="role === 'student' && mode !== 'replay'">
@@ -44,9 +53,10 @@
                 theme="filled" />返回直播平台</a-button></div>
           <span v-if="feedback.id && !feedback.handle" style="color: #f01c08"> 问题已反馈，等待处理 </span>
           <span v-if="feedback.id && feedback.handle" style="color: #44d0c8"> 问题已处理 </span>
-          <a-button type="primary" ghost v-if="!feedback.id || feedback.handle" @click="handUp" style="width:138px"><a-icon type="message" />{{
-            feedback.id ? "继续反馈"
-              : "问题反馈" }}</a-button>
+          <a-button type="primary" ghost v-if="!feedback.id || feedback.handle" @click="handUp"
+            style="width:138px"><a-icon type="message" />{{
+              feedback.id ? "继续反馈"
+                : "问题反馈" }}</a-button>
         </div>
       </div>
       <div style="flex: 1">
@@ -395,7 +405,13 @@ export default {
 
     goHome() {
       this.$router.push({ path: "/live/list" });
-    }
+    },
+    goReplay() {
+      this.$router.push({
+        name: "replayList",
+        params: { configId: this.replayDetail.live_config_id },
+      })
+    },
   },
   destroyed() {
     // 组件销毁时停止轮询
@@ -482,6 +498,13 @@ export default {
       font-size: 14px;
       color: #a4a4a4;
     }
+  }
+
+  .floating-player-toggle {
+    position: fixed;
+    right: 20px;
+    top: 50px;
+    z-index: 999;
   }
 }
 </style>
