@@ -35,13 +35,15 @@
         <a-space v-if="isNotStudent" style="margin-left: 100px">
           <a-button @click="confirmAttendance" size="small">确认出勤</a-button>
           <a-button @click="confirmAbsent" size="small">确认缺勤</a-button>
-          <a-tag color="red">异常处理完成，计算考勤</a-tag>
         </a-space>
       </h3>
 
       <div class="photos-container">
         <div class="photo-item" v-for="(photo, index) in allPhotos" :key="index">
           <img :src="photo.url" alt="抓取照片" />
+          <p :class="{ 'recognition-success': photo.result === 1, 'recognition-failed': photo.result === 0 }">
+            {{ photo.result === 1 ? '识别成功' : photo.result === 0 ? '识别失败' : '' }}
+          </p>
         </div>
       </div>
 
@@ -274,5 +276,16 @@ export default {
 .status.abnormal {
   background-color: #fff1e6;
   color: #ff4d4f;
+}
+
+/* 识别结果样式 */
+.recognition-success {
+  color: #52c41a;
+  text-align: center;
+}
+
+.recognition-failed {
+  color: #ff4d4f;
+  text-align: center;
 }
 </style>

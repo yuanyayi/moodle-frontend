@@ -1,7 +1,7 @@
 <template>
   <div :class="wrpCls">
     <a-button type="link" @click="goToSmartPlatform" style="color:#1890ff;">
-      <a-icon type="home-o" />返回智慧平台
+      <a-icon type="home-o" />返回教学平台
     </a-button>
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
     <!-- <select-lang :class="prefixCls" /> -->

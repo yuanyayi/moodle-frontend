@@ -1,0 +1,6 @@
+/Users/yuan/.nvm/versions/node/v18.19.1/lib
+├── @vue/cli@5.0.9
+├── corepack@0.22.0
+├── npm@10.2.4
+└── yarn@1.22.22
+

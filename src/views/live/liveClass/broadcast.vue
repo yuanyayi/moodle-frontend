@@ -7,7 +7,7 @@
     <!-- <FeedbackReminder :liveConfigId="liveConfigId" style="margin-top: 20px" /> -->
     <!-- </div> -->
     <div style="flex: 1">
-      <iframe v-if="broadcastUrl" :src="broadcastUrl" width="100%" height="100%"
+      <iframe v-if="broadcastUrl" :src="broadcastUrl+'?lang=zh-CN'" width="100%" height="100%"
         style="min-height: 100vh; min-width: 100vh" frameborder="0" scrolling="no"
         allow="microphone;camera;midi;encrypted-media;display-capture;fullscreen; clipboard-read *; clipboard-write *; "></iframe>
       <div v-else style="background-color: #fff; padding: 20px">
