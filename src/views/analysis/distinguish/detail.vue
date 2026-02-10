@@ -24,26 +24,51 @@
       </div>
     </div>
 
-    <!-- 学生考勤列表 -->
-    <div style="text-align: right; margin-bottom: 12px">
-      <a-button @click="downloadExcel(live_id)" icon="download">导出数据</a-button>
+    <!-- 搜索区域 -->
+    <div class="search-bar-wrapper">
+      <div class="table-page-search-wrapper">
+        <SearchForm :queryField="queryField" :queryParam="queryParam" @queryFilter="queryFilter"
+          @clearQuery="clearQuery"></SearchForm>
+      </div>
+      <a-button @click="handleDownloadExcel" icon="download">导出数据</a-button>
     </div>
+
+    <!-- 批量操作区域 -->
+    <div v-if="selectedRowKeys.length > 0" class="batch-actions">
+      <a-button type="link" @click="batchUpdate(1)">批量出勤</a-button>
+      <a-button type="link" @click="batchUpdate(-1)" class="danger">批量缺勤</a-button>
+      <a-button type="link" @click="clearSelection">取消选择</a-button>
+    </div>
+
+    <!-- 学生考勤列表 -->
     <div class="student-list-section">
-      <a-table :columns="columns" :data-source="studentList" :pagination="pagination" :loading="loading" :row-key="record => record.student_id" @change="handleTableChange"> </a-table>
+      <a-table :columns="columns" :data-source="studentList" :pagination="pagination" :loading="loading"
+        :row-key="record => record.id" :row-selection="rowSelection" @change="handleTableChange">
+      </a-table>
     </div>
   </a-card>
 </template>
 
 <script>
+import SearchForm from "@/components/SearchForm.vue";
 import { formatTime, readFromList } from "@/utils/common";
-import { getStudentAttendanceList, downloadExcel } from "@/api/distinguish";
+import { getStudentAttendanceList, downloadExcel, batchUpdateAttendanceState } from "@/api/distinguish";
 import { getLiveMaps } from "@/api/live";
 
 export default {
   name: "DistinguishDetail",
+  components: {
+    SearchForm,
+  },
   computed: {
     live_id() {
       return this.$route.params.id;
+    },
+    rowSelection() {
+      return {
+        selectedRowKeys: this.selectedRowKeys,
+        onChange: this.onSelectChange,
+      };
     },
   },
   data() {
@@ -51,6 +76,17 @@ export default {
       loading: false,
       liveInfo: {},
       studentList: [],
+      selectedRowKeys: [],
+      queryField: {
+        status: {
+          type: "select",
+          label: "考勤状态",
+          list: [],
+        },
+      },
+      queryParam: {
+        status: undefined,
+      },
       pagination: {
         current: 1,
         total: 0,
@@ -113,6 +149,7 @@ export default {
     getMaps() {
       getLiveMaps(["attendanceStatus"]).then(map => {
         this.attendanceStatusMap = map.attendanceStatusMap;
+        this.queryField.status.list = map.attendanceStatusMap;
       });
     },
     async fetch() {
@@ -122,6 +159,7 @@ export default {
         // 获取学生考勤列表
         const res = await getStudentAttendanceList({
           live_id: this.live_id,
+          status: this.queryParam.status,
           ...this.listParam,
         });
         // 获取直播详情
@@ -147,6 +185,41 @@ export default {
       this.fetch();
     },
 
+    onSelectChange(selectedRowKeys) {
+      this.selectedRowKeys = selectedRowKeys;
+    },
+
+    batchUpdate(status) {
+      batchUpdateAttendanceState(this.selectedRowKeys,
+        status,
+      )
+        .then(() => {
+          this.$message.success("批量更新成功");
+          this.selectedRowKeys = [];
+          this.fetch();
+        })
+        .catch(() => {
+          this.$message.error("批量更新失败");
+        });
+    },
+
+    clearSelection() {
+      this.selectedRowKeys = [];
+    },
+
+    queryFilter() {
+      this.listParam.page = 1;
+      this.fetch();
+    },
+
+    clearQuery() {
+      this.listParam.page = 1;
+      this.queryParam = {
+        status: undefined,
+      };
+      this.fetch();
+    },
+
     gotoStudentDetail(attendance_status_id) {
       // 直接跳转到analysis模块中的学生人脸识别记录详情页
       this.$router.push({
@@ -155,33 +228,10 @@ export default {
       });
     },
 
-    getAttendanceStatusClass(status) {
-      switch (status) {
-        case "present":
-          return "success";
-        case "absent":
-          return "danger";
-        case "pending":
-          return "warning";
-        default:
-          return "";
-      }
+    handleDownloadExcel() {
+      downloadExcel(this.live_id, this.queryParam.status);
     },
 
-    getAttendanceStatusText(status) {
-      switch (status) {
-        case "present":
-          return "出勤";
-        case "absent":
-          return "缺勤";
-        case "pending":
-          return "未处理";
-        default:
-          return status;
-      }
-    },
-
-    downloadExcel,
     // ---------- Filters ---------- //
     formatTime,
   },
@@ -217,6 +267,24 @@ export default {
       flex: 1;
       color: #333;
     }
+  }
+}
+
+.search-bar-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: top;
+
+  .table-page-search-wrapper {
+    flex: 1;
+  }
+}
+
+.batch-actions {
+  margin-bottom: 12px;
+
+  .ant-btn {
+    margin-right: 8px;
   }
 }
 

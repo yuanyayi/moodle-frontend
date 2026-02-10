@@ -32,6 +32,14 @@ export function updateAttendanceState(attendance_status_id, status) {
   });
 }
 
+export function batchUpdateAttendanceState(attendance_status_ids, status) {
+  return axios({
+    url: "/batchUpdateAttendanceState",
+    method: "post",
+    params: { attendance_status_ids: attendance_status_ids.join(','), status },
+  });
+}
+
 // 上传学生照片
 export function uploadStudentPhoto(formData) {
   return axios({
@@ -44,9 +52,10 @@ export function uploadStudentPhoto(formData) {
   });
 }
 
-export function downloadExcel(live_external_id) {
+export function downloadExcel(live_external_id, status) {
   return axios({
     url: `/downloadLivedistinguish/${live_external_id}`,
+    params: { status },
   }).then(res => {
     if (res.status) {
       this.$message.error(res.msg || "获取数据失败，请稍后再试。");
@@ -56,7 +65,7 @@ export function downloadExcel(live_external_id) {
   });
 }
 
-export function uploadFile(data){
+export function uploadFile(data) {
   return axios({
     url: `/file/uploadFile`,
     method: "post",
@@ -67,7 +76,7 @@ export function uploadFile(data){
   })
 }
 
-export function studentAttendance(params){
+export function studentAttendance(params) {
   return axios({
     url: `/studentAttendance`,
     params,
@@ -77,7 +86,7 @@ export function studentAttendance(params){
 /**
  * 学生人脸识别记录列表接口
  */
-export function getStudentDistinguishList(params){
+export function getStudentDistinguishList(params) {
   return axios({
     url: `/student/distinguishPage`,
     method: "get",
@@ -88,7 +97,7 @@ export function getStudentDistinguishList(params){
 /**
  * 学生信息记录接口
  */
-export function getStudentRecordPage(attendance_status_id, params){
+export function getStudentRecordPage(attendance_status_id, params) {
   return axios({
     url: `/student/studentRecordPage/${attendance_status_id}`,
     method: "get",
