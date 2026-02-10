@@ -1,8 +1,8 @@
 <template>
   <a-card :bordered="false" class="student-detail-container">
     <!-- 学生基本信息 -->
+    <h3>学生信息</h3>
     <div class="student-info-section">
-      <h3>学生信息</h3>
       <div class="info-row">
         <span class="label">学生ID：</span>
         <span class="value">{{ studentInfo.student_id }}</span>
@@ -17,26 +17,40 @@
       </div>
     </div>
 
+    <h3>识别记录
+      <!-- 操作按钮 -->
+      <a-space v-if="!isNotStudent" style="margin-left: 20px">
+        <a-button @click="showAppealModal = true" size="small" type="danger" ghost>申诉</a-button>
+      </a-space>
+    </h3>
+
+    <!-- 申诉弹窗 -->
+    <a-modal v-model="showAppealModal" title="申诉" @ok="handleAppeal" @cancel="showAppealModal = false" :okText="'提交'">
+      <a-form :form="appealForm" layout="vertical">
+        <a-form-item label="申诉理由">
+          <a-textarea v-decorator="['content', { rules: [{ required: true, message: '请输入申诉理由' }] }]" :rows="4"
+            placeholder="请输入申诉理由" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
     <!-- 系统照片 -->
     <div class="system-photos-section">
-      <h3>系统照片</h3>
+      <h4>系统照片</h4>
       <div class="photos-container">
         <div v-for="(photo, index) in systemPhotos" :key="photo" class="photo-item">
           <img :src="photo" :alt="'系统照片' + (index + 1)" />
           <p>{{ "系统照片" + (index + 1) }}</p>
         </div>
       </div>
-    </div>
 
-    <!-- 抓取照片 -->
-    <div class="captured-photos-section">
-      <h3>抓取照片
+      <!-- 抓取照片 -->
+      <h4>抓取照片
         <!-- 操作按钮 -->
         <a-space v-if="isNotStudent" style="margin-left: 100px">
           <a-button @click="confirmAttendance" size="small">确认出勤</a-button>
           <a-button @click="confirmAbsent" size="small">确认缺勤</a-button>
         </a-space>
-      </h3>
+      </h4>
 
       <div class="photos-container">
         <div class="photo-item" v-for="(photo, index) in allPhotos" :key="index">
@@ -54,7 +68,7 @@
 </template>
 
 <script>
-import { getStudentRecordPage, updateAttendanceState } from "@/api/distinguish";
+import { getStudentRecordPage, updateAttendanceState, studentAppeal } from "@/api/distinguish";
 import { getLiveMaps } from "@/api/live";
 import { Pagination as APagination } from "ant-design-vue";
 import { mapGetters } from "vuex";
@@ -82,6 +96,8 @@ export default {
       totalPhotos: 0,
 
       attendanceStatusMap: [],
+      showAppealModal: false,
+      appealForm: this.$form.createForm(this),
     };
   },
   created() {
@@ -150,6 +166,21 @@ export default {
         this.fetch();
       });
     },
+
+    handleAppeal() {
+      this.appealForm.validateFields((err, values) => {
+        if (!err) {
+          studentAppeal(this.attendanceStatusId, values.content,).then(() => {
+            this.$message.success("申诉已提交");
+            this.showAppealModal = false;
+            this.appealForm.resetFields();
+          }).catch(() => {
+            this.$message.error("申诉提交失败");
+          });
+        }
+      });
+    },
+
     // ---------- Filters ---------- //
     readFromList,
   },

@@ -40,6 +40,14 @@ export function batchUpdateAttendanceState(attendance_status_ids, status) {
   });
 }
 
+export function studentAppeal(attendance_status_id, content) {
+  return axios({
+    url: "/student/appeal/" + attendance_status_id,
+    method: "post",
+    params: { content },
+  });
+}
+
 // 上传学生照片
 export function uploadStudentPhoto(formData) {
   return axios({
