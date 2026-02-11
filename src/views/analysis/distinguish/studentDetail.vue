@@ -19,7 +19,7 @@
 
     <h3>识别记录
       <!-- 操作按钮 -->
-      <a-space v-if="!isNotStudent" style="margin-left: 20px">
+      <a-space v-if="!isNotStudent && studentInfo.can_appeal" style="margin-left: 20px">
         <a-button @click="showAppealModal = true" size="small" type="danger" ghost>申诉</a-button>
       </a-space>
     </h3>

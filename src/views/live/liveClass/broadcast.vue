@@ -85,6 +85,7 @@ export default {
   mounted() {
     this.loadBroadcastData();
     this.loadBroadcastPage();
+    window.addEventListener("beforeunload", this.handleBeforeUnload);
   },
   methods: {
     loadBroadcastData() {
@@ -128,8 +129,26 @@ export default {
 
     // 点击返回首页按钮
     goHome() {
-      this.$router.push({ name: "liveList" });
+      this.$confirm({
+        title: "确认离开 ",
+        content: "确定要离开课程直播页面吗？",
+        okText: "确定",
+        cancelText: "取消",
+        onOk: () => {
+          this.$router.push({ name: "liveList" });
+        },
+      });
     },
+
+    handleBeforeUnload(e) {
+      if (document.hidden) return;
+      e.preventDefault();
+      e.returnValue = "";
+      return "";
+    },
+  },
+  destroyed() {
+    window.removeEventListener("beforeunload", this.handleBeforeUnload);
   },
 };
 </script>

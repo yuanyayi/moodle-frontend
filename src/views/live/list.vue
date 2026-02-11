@@ -2,7 +2,8 @@
   <a-card :bordered="false" style="margin-bottom: 24px">
     <div class="table-page-search-wrapper">
       <!-- 搜索功能 -->
-      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter" @clearQuery="clearQuery"></SearchForm>
+      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter"
+        @clearQuery="clearQuery"></SearchForm>
     </div>
     <div style="padding-bottom: 12px">
       <a-button type="primary" @click="$refs.createModal.add()">新建直播</a-button>
@@ -19,17 +20,21 @@
         <p><b>相关课程：</b>{{ detail.course_name }}</p>
         <p><b>老师：</b>{{ detail.teacher_name }}</p>
         <p v-if="detail.repeat">
-          <b>直播时间:</b>{{ readFromList(detail.repeat, repeatMap) }}{{ formatTime(detail.start_time, "YYYY-MM-DD HH:mm") }}
+          <b>直播时间:</b>{{ readFromList(detail.repeat, repeatMap) }}{{ formatTime(detail.start_time, "YYYY-MM-DD HH:mm")
+          }}
           <span style="color: #a1a1a1">下次直播：{{ formatTime(detail.next_start_time, "YYYY-MM-DD HH:mm") }}</span>
         </p>
         <p v-else><b>直播时间:</b>{{ formatTime(detail.start_time) }} - {{ formatTime(detail.end_time) }}</p>
 
         <a-space>
-          <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary" @click="gotoCourseLive(detail.id)">进入直播间</a-button>
+          <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary"
+            @click="gotoCourseLive(detail.id)">进入直播间</a-button>
           <template v-if="role !== 'student'">
-            <a-button v-if="shouldShowEnterBroadcastutton(detail)" type="primary" @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
+            <a-button v-if="shouldShowEnterBroadcastutton(detail)" type="primary"
+              @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
           </template>
-          <a-button v-if="detail.replay && detail.status === 3" class="greenBtn" @click="gotoReplayList(detail.id)">直播回放</a-button>
+          <a-button v-if="detail.replay && detail.status === 3" class="greenBtn"
+            @click="gotoReplayList(detail.id)">直播回放</a-button>
 
           <!-- <template v-if="role === 'teacher'">
             <a-button type="info" @click="$refs.createModal.edit(detail)">编辑</a-button>
@@ -39,7 +44,8 @@
       </div>
 
       <div class="flag">
-        <a-button style="color: #fff" :style="{ backgroundColor: getStatusColor(detail.status) }">{{ getStatusText(detail.status) }}</a-button>
+        <a-button style="color: #fff" :style="{ backgroundColor: getStatusColor(detail.status) }">{{
+          getStatusText(detail.status) }}</a-button>
         <!-- <a-badge :color="getStatusColor(detail.status)" :text="getStatusText(detail.status)" size="large" /> -->
       </div>
     </div>
@@ -225,7 +231,7 @@ export default {
       //   name: "watch",
       //   params: { liveConfigId },
       // });
-       const routeData = this.$router.resolve({
+      const routeData = this.$router.resolve({
         name: "watch",
         params: { liveConfigId },
       });
@@ -245,7 +251,7 @@ export default {
       //   name: "broadcast",
       //   params: { liveConfigId },
       // });
-       const routeData = this.$router.resolve({
+      const routeData = this.$router.resolve({
         name: "broadcast",
         params: { liveConfigId },
       });
@@ -305,23 +311,7 @@ export default {
 
     shouldShowEnterLiveButton(detail) {
       if (this.role === "teacher") return false;
-      const now = moment();
-      const startTime = moment(detail.start_time);
-      const endTime = moment(detail.end_time);
-
-      // 根据角色确定提前进入的时间
-      let minutesBeforeStart = 0;
-      if (this.role === "teacher") {
-        minutesBeforeStart = 30;
-      } else if (this.role === "student") {
-        minutesBeforeStart = 10;
-      } else {
-        // 其他角色默认按教师时间处理
-        minutesBeforeStart = 30;
-      }
-
-      const allowedStartTime = startTime.clone().subtract(minutesBeforeStart, "minutes");
-      return now.isBetween(allowedStartTime, endTime);
+      return true;
     },
     shouldShowEnterBroadcastutton(detail) {
       const now = moment();
@@ -329,10 +319,11 @@ export default {
       const endTime = moment(detail.end_time);
 
       // 根据角色确定提前进入的时间
-      let minutesBeforeStart = 30;
+      // let minutesBeforeStart = 30;
 
-      const allowedStartTime = startTime.clone().subtract(minutesBeforeStart, "minutes");
-      return now.isBetween(allowedStartTime, endTime);
+      // const allowedStartTime = startTime.clone().subtract(minutesBeforeStart, "minutes");
+      // return now.isBetween(allowedStartTime, endTime);
+      return !now.isAfter(endTime);
     },
   },
 };
@@ -346,12 +337,15 @@ export default {
   border: 1px solid #dedede;
   display: flex;
   position: relative;
+
   &:hover {
     box-shadow: 2px 2px 3px #dedede;
   }
+
   p {
     margin-bottom: 0.3em;
   }
+
   .flag {
     margin-top: 10px;
     position: absolute;
@@ -359,6 +353,7 @@ export default {
     top: 0;
     padding: 0 7px;
   }
+
   .frame {
     flex: 0 0 auto;
     width: 200px;
@@ -368,12 +363,14 @@ export default {
     overflow: hidden;
     margin-right: 10px;
     background-color: #f0f0f0;
+
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       border-color: red;
     }
+
     .anticon {
       position: absolute;
       top: 50%;
@@ -384,10 +381,12 @@ export default {
     }
   }
 }
+
 .greenBtn {
   background-color: #52c41a;
   border-color: #52c41a;
   color: #fff;
+
   &:hover {
     background-color: #73d13d;
     border-color: #73d13d;
