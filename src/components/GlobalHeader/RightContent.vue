@@ -1,7 +1,8 @@
 <template>
   <div :class="wrpCls">
-    <a-button type="link" @click="goToSmartPlatform" style="color:#1890ff;">
-      <a-icon :component="backHome"/>返回教学平台
+    <a-button type="link" @click="goToSmartPlatform" style="color:#1890ff;" class="capsule-container">
+      <a-icon :component="backHome" style="font-size:18px; vertical-align: 
+      -4px;" />返回教学平台
     </a-button>
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
     <!-- <select-lang :class="prefixCls" /> -->
@@ -79,3 +80,26 @@ export default {
   },
 };
 </script>
+
+<style lang="less" scoped>
+.capsule-container {
+  height: 32px;
+  border-radius: 30px;
+  padding: 5px 12px;
+
+  background: rgba(255, 255, 255, 0.4);
+
+  box-sizing: border-box;
+  border: 1px solid #FFFFFF;
+
+
+  /* 文字样式 */
+  color: #1890ff;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.6);
+  }
+}
+</style>
