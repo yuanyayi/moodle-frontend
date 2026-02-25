@@ -67,6 +67,10 @@ export default {
 
         hideHintAlert: false,
         hideCopyButton: false,
+        // 禁用面包屑
+        breadcrumbRender: () => false,
+        // 禁用 footer
+        footerRender: () => false,
       },
       // 媒体查询
       query: {},
@@ -156,4 +160,7 @@ export default {
 
 <style lang="less">
 @import "./BasicLayout.less";
+.ant-breadcrumb + .ant-page-header-heading {
+  margin-top: 0;
+}
 </style>

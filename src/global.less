@@ -111,6 +111,7 @@ ol {
 .ant-layout {
   height: 100vh;
   overflow: auto;
+  background: linear-gradient(180deg, #ECF5FE 0%, #F5F6FA 100%);
 }
 
 // 侧边栏主容器 - 渐变背景 + 背景图片
@@ -135,25 +136,25 @@ ol {
   box-shadow: none;
 }
 
-// 头部 - 移除背景和阴影
-.ant-layout-header,
-.ant-pro-global-header,
-.ant-pro-global-header-index-head {
-  background: transparent;
-  box-shadow: none;
+// 头部 - 移除背景和阴影（增加层级提高优先级）
+.ant-layout.ant-layout-has-sider .ant-layout-header,
+.ant-layout.ant-layout-has-sider .ant-pro-global-header,
+.ant-layout.ant-layout-has-sider .ant-pro-global-header-index-head {
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 // 顶部菜单模式下的头部
-.ant-pro-top-menu {
-  background: transparent;
-  box-shadow: none;
+.ant-layout .ant-pro-top-menu {
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 // 菜单头部（Logo区域）
-.ant-pro-sider-menu-sider.light {
+.ant-layout .ant-pro-sider-menu-sider.light {
   .ant-pro-sider-menu-logo {
-    background: transparent;
-    box-shadow: none;
+    background: transparent !important;
+    box-shadow: none !important;
 
     h1 {
       color: #000000;
@@ -162,25 +163,25 @@ ol {
 }
 
 // 全局头部右侧内容
-.ant-pro-global-header-index-right {
-  background: transparent;
-  box-shadow: none;
+.ant-layout .ant-pro-global-header-index-right {
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 // 菜单项
-.ant-menu {
-  background: transparent;
-  box-shadow: none;
+.ant-layout .ant-menu {
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
-.ant-menu-item,
-.ant-menu-submenu-title,
-.ant-menu-submenu>.ant-menu {
-  background: transparent;
+.ant-layout .ant-menu-item,
+.ant-layout .ant-menu-submenu-title,
+.ant-layout .ant-menu-submenu>.ant-menu {
+  background: transparent !important;
 }
 
 // 菜单项选中状态样式 - 提高选择器优先级（仅普通item，不包括submenu title）
-.ant-layout-sider.light .ant-menu .ant-menu-item-selected {
+.ant-layout .ant-layout-sider.light .ant-menu .ant-menu-item-selected {
   background: #057CFB;
   color: #fff;
   margin-left: 12px !important;
@@ -189,7 +190,8 @@ ol {
   width: calc(100% - 24px);
 }
 
-.ant-menu-submenu-selected {
+.ant-layout .ant-menu-submenu-selected {
+
   .ant-menu-item-selected>a,
   .ant-menu-item-selected>a:hover {
     color: #fff;
@@ -197,7 +199,36 @@ ol {
 }
 
 // 移除可能存在的边框
-.ant-layout-sider,
-.ant-layout-header {
-  border: none;
+.ant-layout .ant-layout-sider,
+.ant-layout .ant-layout-header {
+  border: none !important;
+}
+
+// 页面头部 - 透明背景
+.ant-layout .ant-page-header,
+.ant-layout .ant-page-header.has-breadcrumb,
+.ant-layout .ant-page-header.ant-page-header-ghost {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+// ant-pro-page-header-wrap-page-header-warp - 透明背景
+.ant-layout .ant-pro-page-header-wrap-page-header-warp,
+.ant-pro-page-header-wrap-page-header-warp {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.ant-pro-global-header-index-right {
+  margin-right: 24px;
+}
+
+.ant-pro-page-header-wrap-children-content {
+  margin: 0 24px;
+  border-radius: 8px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 68, 255, 0.08);
+  z-index: 0;
+  .ant-card-body {
+    padding: 16px 24px;
+  }
 }
