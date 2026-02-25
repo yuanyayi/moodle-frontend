@@ -5,9 +5,10 @@
       <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter"
         @clearQuery="clearQuery"></SearchForm>
     </div>
-    <div style="padding-bottom: 12px">
+    <!-- 隐藏功能 -->
+    <!-- <div style="padding-bottom: 12px; text-align: right;">
       <a-button type="primary" @click="$refs.createModal.add()">新建直播</a-button>
-    </div>
+    </div> -->
 
     <Empty v-if="!tableList.length" />
     <div v-for="(detail, index) in tableList" class="tableItem">
