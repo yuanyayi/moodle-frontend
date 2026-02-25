@@ -85,9 +85,7 @@ export default {
   height: 32px;
   border-radius: 30px;
   padding: 5px 12px;
-
   background: rgba(255, 255, 255, 0.4);
-
   box-sizing: border-box;
   border: 1px solid #FFFFFF;
 
