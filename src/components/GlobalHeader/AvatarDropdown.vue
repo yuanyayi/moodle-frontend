@@ -2,7 +2,7 @@
   <!-- <a-dropdown v-if="currentUser && currentUser.name" placement="bottomRight"> -->
   <div v-if="currentUser && currentUser.name" placement="bottomRight">
     <span class="ant-pro-account-avatar">
-      <a-avatar size="small" src="https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png" class="antd-pro-global-header-index-avatar" />
+      <a-avatar size="small" :src="avatarSrc" class="antd-pro-global-header-index-avatar" />
       <span>{{ currentUser.name }}</span>
     </span>
     <!-- <template v-slot:overlay>
@@ -22,6 +22,7 @@
 
 <script>
 import { Modal } from "ant-design-vue";
+import { mapGetters } from "vuex";
 
 export default {
   name: "AvatarDropdown",
@@ -33,6 +34,19 @@ export default {
     menu: {
       type: Boolean,
       default: true,
+    },
+  },
+  computed: {
+    ...mapGetters(["userInfo"]),
+    avatarSrc() {
+      // 如果用户有自定义头像，使用自定义头像
+      if (this.currentUser && this.currentUser.avatar) {
+        return this.currentUser.avatar;
+      }
+      // 根据用户角色判断使用哪个默认头像
+      // 假设 identity 为 'student' 表示学生，其他为老师
+      const isStudent = this.userInfo && (this.userInfo.identity === 'student' || this.userInfo.role === 'student');
+      return isStudent ? '/defaultStudent.png' : '/defaultTeacher.png';
     },
   },
   methods: {
