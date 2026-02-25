@@ -174,18 +174,12 @@ ol {
   box-shadow: none !important;
 }
 
-.ant-layout .ant-menu-item,
-.ant-layout .ant-menu-submenu-title,
-.ant-layout .ant-menu-submenu>.ant-menu {
-  background: transparent !important;
-}
-
 // 菜单项选中状态样式 - 提高选择器优先级（仅普通item，不包括submenu title）
 .ant-layout .ant-layout-sider.light .ant-menu .ant-menu-item-selected {
   background: #057CFB;
   color: #fff;
   margin-left: 12px !important;
-  margin-right: 12px;
+  margin-right: 12px !important;
   border-radius: 10px;
   width: calc(100% - 24px);
 }
@@ -210,6 +204,7 @@ ol {
 .ant-layout .ant-page-header.ant-page-header-ghost {
   background: transparent !important;
   box-shadow: none !important;
+  padding: 10px 24px;
 }
 
 // ant-pro-page-header-wrap-page-header-warp - 透明背景
@@ -231,7 +226,7 @@ ol {
   box-shadow: 0px 8px 16px 0px rgba(0, 68, 255, 0.08);
   z-index: 0;
 
-  >div>.ant-card .ant-card-body {
+  >div>.ant-card>.ant-card-body {
     padding: 0;
   }
 }
