@@ -13,7 +13,7 @@ function resolve(dir) {
 function getGitHash() {
   try {
     return GitRevision.version();
-  } catch (e) {}
+  } catch (e) { }
   return "unknown";
 }
 
@@ -37,7 +37,7 @@ const vueConfig = {
 
   chainWebpack: config => {
     config.resolve.alias.set("@$", resolve("src"));
-    
+
     const svgRule = config.module.rule("svg");
     config.module.rules.delete("svg");
 
@@ -68,7 +68,14 @@ const vueConfig = {
     loaderOptions: {
       less: {
         modifyVars: {
-          "border-radius-base": "2px",
+          // 主色调（会影响主按钮）
+          "primary-color": "#057CFB",
+
+          // 按钮相关变量
+          "btn-primary-bg": "#057CFB",           // 主按钮背景色
+          // 或者覆盖按钮特定的悬浮变量
+          "btn-primary-hover-bg": "#1E69FF",
+          "btn-primary-hover-border": "#1E69FF",
         },
         javascriptEnabled: true,
       },

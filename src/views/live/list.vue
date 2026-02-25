@@ -10,43 +10,49 @@
     </div>
 
     <Empty v-if="!tableList.length" />
-    <div v-for="(detail, index) in tableList" class="tableItem">
-      <div class="frame">
-        <img v-show="detail.img" :src="detail.img" :alt="detail.subject" />
-        <a-icon type="play-circle" style="font-size: 50px" />
-      </div>
-      <div class="content">
-        <p style="font-size: 18px">{{ detail.subject }}</p>
-        <p><b>相关课程：</b>{{ detail.course_name }}</p>
-        <p><b>老师：</b>{{ detail.teacher_name }}</p>
-        <p v-if="detail.repeat">
-          <b>直播时间:</b>{{ readFromList(detail.repeat, repeatMap) }}{{ formatTime(detail.start_time, "YYYY-MM-DD HH:mm")
-          }}
-          <span style="color: #a1a1a1">下次直播：{{ formatTime(detail.next_start_time, "YYYY-MM-DD HH:mm") }}</span>
-        </p>
-        <p v-else><b>直播时间:</b>{{ formatTime(detail.start_time) }} - {{ formatTime(detail.end_time) }}</p>
+    <div class="table-list-container">
+      <div v-for="(detail, index) in tableList" class="tableItem" :key="index">
+        <div class="content">
+          <p class="title">{{ detail.subject }}</p>
+          <div class="info-item">
+            <span class="info-label">相关课程</span>
+            <span class="info-value">{{ detail.course_name }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">直播时间</span>
+            <span class="info-value" v-if="detail.repeat">
+              {{ readFromList(detail.repeat, repeatMap) }}{{ formatTime(detail.start_time, "YYYY-MM-DD HH:mm") }}
+            </span>
+            <span class="info-value" v-else>
+              {{ formatTime(detail.start_time) }} - {{ formatTime(detail.end_time) }}
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">老师</span>
+            <span class="info-value">{{ detail.teacher_name }}</span>
+          </div>
 
-        <a-space>
-          <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary"
-            @click="gotoCourseLive(detail.id)">进入直播间</a-button>
-          <template v-if="role !== 'student'">
-            <a-button v-if="shouldShowEnterBroadcastutton(detail)" type="primary"
-              @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
-          </template>
-          <a-button v-if="detail.replay && detail.status === 3" class="greenBtn"
-            @click="gotoReplayList(detail.id)">直播回放</a-button>
+          <a-space class="action-btns">
+            <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary"
+              @click="gotoCourseLive(detail.id)">进入直播间</a-button>
+            <template v-if="role !== 'student'">
+              <a-button v-if="shouldShowEnterBroadcastutton(detail)" type="primary"
+                @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
+            </template>
+            <a-button v-if="detail.replay && detail.status === 3" class="greenBtn"
+              @click="gotoReplayList(detail.id)">查看回放</a-button>
+          </a-space>
+        </div>
 
-          <!-- <template v-if="role === 'teacher'">
-            <a-button type="info" @click="$refs.createModal.edit(detail)">编辑</a-button>
-            <a-button type="danger" @click="removeLiveConfig(detail.id)">删除</a-button>
-          </template> -->
-        </a-space>
-      </div>
+        <div class="frame">
+          <img v-show="detail.img" :src="detail.img" :alt="detail.subject" />
+          <a-icon type="play-circle" class="play-icon" />
+        </div>
 
-      <div class="flag">
-        <a-button style="color: #fff" :style="{ backgroundColor: getStatusColor(detail.status) }">{{
-          getStatusText(detail.status) }}</a-button>
-        <!-- <a-badge :color="getStatusColor(detail.status)" :text="getStatusText(detail.status)" size="large" /> -->
+        <div class="flag">
+          <span class="status-tag" :style="{ backgroundColor: getStatusColor(detail.status) }">{{
+            getStatusText(detail.status) }}</span>
+        </div>
       </div>
     </div>
     <a-pagination style="float: right" v-bind="pagination" @change="paginationChangeHandler" />
@@ -330,54 +336,110 @@ export default {
 </script>
 
 <style lang="less" scope>
-.tableItem {
-  box-sizing: border-box;
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #dedede;
+.table-list-container {
   display: flex;
-  position: relative;
+  flex-wrap: wrap;
+  margin: 0 -10px;
 
-  &:hover {
-    box-shadow: 2px 2px 3px #dedede;
-  }
-
-  p {
-    margin-bottom: 0.3em;
-  }
-
-  .flag {
-    margin-top: 10px;
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 0 7px;
-  }
-
-  .frame {
-    flex: 0 0 auto;
-    width: 200px;
-    height: 140px;
-    text-align: center;
+  .tableItem {
+    box-sizing: border-box;
+    padding: 16px;
+    margin: 0 10px 20px;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    display: flex;
     position: relative;
-    overflow: hidden;
-    margin-right: 10px;
-    background-color: #f0f0f0;
+    width: calc(50% - 20px);
+    height: 180px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-color: red;
+    &:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     }
 
-    .anticon {
+    .frame {
+      flex: 0 0 auto;
+      width: 200px;
+      height: 100%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+      background-color: #f5f5f5;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .play-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        cursor: pointer;
+        font-size: 40px;
+        opacity: 0.9;
+      }
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding-right: 12px;
+
+      .title {
+        font-size: 16px;
+        font-weight: 500;
+        color: #262626;
+        margin-bottom: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 13px;
+
+        .info-label {
+          color: #8c8c8c;
+          margin-right: 8px;
+        }
+
+        .info-value {
+          color: #262626;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+
+      .action-btns {
+        margin-top: auto;
+        padding-top: 8px;
+      }
+    }
+
+    .flag {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: #fff;
-      cursor: pointer;
+      right: 16px;
+      bottom: 16px;
+
+      .status-tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #fff;
+      }
     }
   }
 }

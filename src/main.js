@@ -23,7 +23,6 @@ Vue.config.productionTip = false;
 Vue.use(VueAxios);
 // use pro-layout components
 Vue.component("pro-layout", ProLayout);
-Vue.component("page-container", PageHeaderWrapper);
 Vue.component("page-header-wrapper", PageHeaderWrapper);
 
 window.umi_plugin_ant_themeVar = themePluginConfig.theme;
