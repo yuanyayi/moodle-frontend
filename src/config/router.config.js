@@ -1,6 +1,6 @@
 // eslint-disable-next-line
 import { UserLayout, BasicLayout, BlankLayout, PageView } from "@/layouts";
-// import { bxAnaalyse } from "@/core/icons";
+import { list, liveAnaylse } from "@/core/icons";
 
 // const RouteView = {
 //   name: "RouteView",
@@ -40,7 +40,7 @@ export const asyncRouterMap = [
         path: "/analysis",
         name: "analysis",
         component: PageView,
-        meta: { title: "直播统计", icon: "area-chart", permission: ["analysis", "overview", "course", "distinguish", "logs"] },
+        meta: { title: "直播统计", icon: liveAnaylse, permission: ["analysis", "overview", "course", "distinguish", "logs"] },
         redirect: "/analysis/overview",
         children: [
           // 原直播统计改为直播概览
@@ -131,7 +131,7 @@ export const asyncRouterMap = [
         name: "live",
         component: PageView,
         redirect: "/live/list",
-        meta: { title: "直播列表", icon: "home-o", permission: ["live"] },
+        meta: { title: "直播列表", icon: list, permission: ["live"] },
         children: [
           // 直播列表
           {
