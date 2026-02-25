@@ -12,5 +12,13 @@ import docs from "@/assets/icons/docs.svg?inline";
 import liveOverall from "@/assets/icons/live-overall.svg?inline";
 import liveAnaylse from "@/assets/icons/live-anaylse.svg?inline";
 import list from "@/assets/icons/list.svg?inline";
+import backHome from "@/assets/icons/back-home.svg?inline";
+import backSystem from "@/assets/icons/backSystem.svg?inline";
+import feedback from "@/assets/icons/feedback.svg?inline";
+import studentView from "@/assets/icons/studentView.svg?inline";
+import detail1 from "@/assets/icons/detail1.svg?inline";
+import detail2 from "@/assets/icons/detail2.svg?inline";
+import detail3 from "@/assets/icons/detail3.svg?inline";
 
-export { bxAnaalyse, nav06, docs, liveOverall, liveAnaylse, list };
+
+export { bxAnaalyse, nav06, docs, liveOverall, liveAnaylse, list, backHome, backSystem, feedback, studentView, detail1, detail2, detail3 };
