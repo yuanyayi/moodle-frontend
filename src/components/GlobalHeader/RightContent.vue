@@ -1,7 +1,7 @@
 <template>
   <div :class="wrpCls">
     <a-button type="link" @click="goToSmartPlatform" style="color:#1890ff;">
-      <a-icon type="home-o" />返回教学平台
+      <a-icon :component="backHome"/>返回教学平台
     </a-button>
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
     <!-- <select-lang :class="prefixCls" /> -->
@@ -13,6 +13,7 @@ import AvatarDropdown from "./AvatarDropdown";
 // import SelectLang from "@/components/SelectLang";
 import { mapGetters } from "vuex";
 import { toSmartPlatform } from "@/api/login";
+import { backHome } from "@/core/icons";
 
 export default {
   name: "RightContent",
@@ -41,6 +42,7 @@ export default {
   data() {
     return {
       showMenu: true,
+      backHome,
     };
   },
   computed: {
