@@ -80,6 +80,7 @@ export default {
   font-weight: normal;
   line-height: 22px;
   color: #111111;
+  margin-bottom: 4px;
 }
 
 .stat-value-container {
