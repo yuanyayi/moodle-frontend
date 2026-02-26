@@ -129,28 +129,24 @@ export default {
           title: <div class='nowrap'>考勤状态</div>,
           dataIndex: "status",
           key: "status",
-          customRender: function(text) {
+          customRender: (text, record, index) => {
             const statusText = readFromList(text, this.attendanceStatusMap);
-            let icon = null;
+            let iconComponent = null;
             
             if (text === 0) { // 未处理
-              icon = this.$createElement('a-icon', {
-                props: { component: this.status0 },
-                style: { marginRight: '4px' }
-              });
+              iconComponent = status0;
             } else if (text === 1) { // 出勤
-              icon = this.$createElement('a-icon', {
-                props: { component: this.status1 },
-                style: { marginRight: '4px' }
-              });
+              iconComponent = status1;
             } else if (text === -1) { // 缺勤
-              icon = this.$createElement('a-icon', {
-                props: { component: this.statusMinus1 },
-                style: { marginRight: '4px' }
-              });
+              iconComponent = statusMinus1;
             }
             
-            return this.$createElement('span', [icon, statusText]);
+            return (
+              <span>
+                {iconComponent && <a-icon component={iconComponent} style={{ marginRight: '4px' }} />}
+                {statusText}
+              </span>
+            );
           },
         },
         {
