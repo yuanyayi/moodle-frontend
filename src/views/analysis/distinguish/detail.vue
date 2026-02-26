@@ -131,7 +131,7 @@ export default {
           key: "action",
           customRender: id => {
             return (
-              <a-button size='small' onClick={() => this.gotoStudentDetail(id)}>
+              <a-button size='small' type='link' onClick={() => this.gotoStudentDetail(id)}>
                 查看详情
               </a-button>
             );
@@ -245,10 +245,10 @@ export default {
 
 .live-info-section {
   padding: 24px;
-  background-color: #f8f9fa;
-  border: 1px solid #e8e8e8;
-  border-radius: 4px;
-  margin-bottom: 24px;
+  background: url('@/assets/bg/image@2x.png') right center / auto 100%, linear-gradient(180deg, #F3F7FF 0%, rgba(243, 247, 255, 0) 100%);
+  background-repeat: no-repeat;
+  border-radius: 16px;
+  margin-bottom: 16px;
   display: flex;
   flex-flow: row wrap;
 

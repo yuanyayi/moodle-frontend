@@ -106,7 +106,7 @@ export default {
           key: "action",
           customRender: live_id => {
             return (
-              <a-button size='small' onClick={() => this.gotoDetail(live_id)}>
+              <a-button type='link' size='small' onClick={() => this.gotoDetail(live_id)}>
                 查看详情
               </a-button>
             );
