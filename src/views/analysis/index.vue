@@ -19,7 +19,13 @@
         style="height: 254px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9; margin: 0 0 32px 32px;">
         <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
       </div>
-      <bar v-else :data="barData" width="100%" />
+      <bar 
+        v-else 
+        :data="barData" 
+        width="100%" 
+        :color="chartColor"
+        :barStyle="chartBarStyle"
+      />
     </a-card>
     <a-card :bordered="false" title="互动内容分析" style="margin-top: 20px;">
       <a-row>
@@ -63,6 +69,15 @@ export default {
   data() {
     return {
       statisticsDate: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+      // 图表颜色配置
+      chartColor: ['#057CFB', '#057CFB', '#057CFB'], // 统一使用主颜色
+      // 柱状图样式配置
+      chartBarStyle: {
+        fill: 'url(#barGradient)', // 使用渐变填充
+        stroke: '#057CFB',
+        lineWidth: 0,
+        radius: [8, 8, 0, 0], // 增加顶部圆角大小
+      },
       headList: [
         {
           key: "uv",

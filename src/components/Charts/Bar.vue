@@ -4,7 +4,15 @@
     <v-chart class="viserChart" height="254" :data="data" :forceFit="true" :padding="['auto', 'auto', '40', '50']">
       <v-tooltip />
       <v-axis />
-      <v-bar position="x*y" />
+      <v-bar 
+        position="x*y" 
+        :color="'#057CFB'"
+        :size="20"
+        :style="{
+          radius: [8, 8, 0, 0],
+          fill: 'l(0) 0:#057CFB 1:#057CFB80'
+        }"
+      />
     </v-chart>
   </div>
 </template>
