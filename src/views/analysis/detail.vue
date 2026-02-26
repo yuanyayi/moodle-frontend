@@ -1,37 +1,31 @@
 <template>
   <div>
-    <a-card :bordered="false">
-      <template v-slot:title>课程详情数据 <span class="subTitle">更新至{{ statisticsDate }}</span>
+    <a-row :gutter="16">
+      <a-col
+        style="text-align: right; font-size: 12px; font-weight: normal; line-height: 20px; color: #828290;">数据最新更新于：{{
+          statisticsDate }}</a-col>
+      <a-col v-for="(item, index) in headList" :span="6" :key="item.key">
+        <stat-card :title="item.title" :value="item.value" :unit="item.unit" :icon="`analysis${index + 1}`" />
+      </a-col>
+    </a-row>
+
+    <a-card :bordered="false" style="margin-top: 20px;">
+      <template v-slot:title>
+        <div style="display: flex; justify-content: space-between;">互动行为数据 <a-button icon="download"
+            @click="exportExcel">导出数据</a-button> </div>
       </template>
-      <a-row>
-        <a-col v-for="item in headList" :span="6" :key="item.key">
-          <a-statistic :title="item.title" :value="item.value" style="text-align: center" />
-          <div class="statisticList" v-if="item.day" style="text-align: center">
-            <div>
-              <b>日</b><span :class="getColorClassName(item.day)">{{ item.day }}</span>
-            </div>
-            <div>
-              <b>周</b><span :class="getColorClassName(item.week)">{{ item.week }}</span>
-            </div>
-            <div>
-              <b>月</b><span :class="getColorClassName(item.month)">{{ item.month }}</span>
-            </div>
-          </div>
-        </a-col>
-      </a-row>
-    </a-card>
-    <a-card :bordered="false">
-      <template v-slot:title>互动行为数据 <a-button @click="exportExcel">导出数据</a-button> </template>
       <!-- 修改: 添加无数据占位符 -->
       <div v-if="barData.every(item => !item.y || item.y === 0)"
         style="height: 254px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9; margin: 0 0 32px 32px;">
         <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
       </div>
-      <bar v-else :data="barData" width="100%" />
+      <gradient-bar v-else :data="barData" title="互动行为数据" />
     </a-card>
-    <a-card :bordered="false" title="互动内容分析">
+    <a-card :bordered="false" title="互动内容分析" style="margin-top: 20px;">
       <a-row>
         <a-col :span="12">
+          <div class="title5"><a-icon :component="ciyun1Icon" style="margin-right: 8px; font-size: 22px;" />老师互动内容词云
+          </div>
           <!-- 修改: 添加无数据占位符 -->
           <div v-if="tagList1.length === 0"
             style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
@@ -41,6 +35,8 @@
             :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
         </a-col>
         <a-col :span="12">
+          <div class="title5"><a-icon :component="ciyun2Icon" style="margin-right: 8px; font-size: 22px;" />学生互动内容词云
+          </div>
           <!-- 修改: 添加无数据占位符 -->
           <div v-if="tagList2.length === 0"
             style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
@@ -56,39 +52,50 @@
 
 <script>
 import { fetch1, fetch2, ciyun1, ciyun2 } from "@/api/analysis";
+import { ciyun1 as ciyun1Icon, ciyun2 as ciyun2Icon } from "@/core/icons";
 import Bar from "@/components/Charts/Bar";
+import GradientBar from "@/components/Charts/GradientBar";
 import TagCloud from "@/components/Charts/TagCloud";
+import StatCard from "./StatCard";
 import JsExportExcel from "js-export-excel";
 
 export default {
   name: "CourseDetail",
   components: {
     Bar,
+    GradientBar,
     TagCloud,
+    StatCard,
   },
   data() {
     return {
+      ciyun1Icon,
+      ciyun2Icon,
       statisticsDate: new Date(Date.now() - 86400000).toISOString().split('T')[0],
       headList: [
         {
           key: "duration",
-          title: "直播时长（分钟）",
+          title: "直播时长",
           value: "0",
+          unit: "分钟",
         },
         {
           key: "pv",
-          title: "观看次数（次）",
+          title: "观看次数",
           value: "0",
+          unit: "次",
         },
         {
           key: "uv",
-          title: "观看人数（人）",
+          title: "观看人数",
           value: "0",
+          unit: "人",
         },
         {
           key: "replayPv",
-          title: "回放次数（次）",
+          title: "回放次数",
           value: "0",
+          unit: "次",
         },
       ],
       barData: [
@@ -226,6 +233,16 @@ export default {
   span {
     display: inline-block;
     width: 3em;
+  }
+}
+
+.title5 {
+  font-weight: 500;
+  line-height: 22px;
+  color: #3D3D3D;
+
+  .anticon {
+    vertical-align: bottom;
   }
 }
 </style>

@@ -102,6 +102,8 @@ export default {
 }
 
 .stat-icon {
+  max-width: 120px;
+  max-height: 120px;
   flex: 1;
   display: flex;
   align-items: center;

@@ -24,30 +24,26 @@
     <a-card :bordered="false" title="互动内容分析" style="margin-top: 20px;">
       <a-row>
         <a-col :span="12">
+          <div class="title5"><a-icon :component="ciyun1Icon" style="margin-right: 8px; font-size: 22px;" />老师互动内容词云
+          </div>
           <!-- 修改: 添加无数据占位符 -->
           <div v-if="tagList1.length === 0"
             style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
             <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
           </div>
-          <template v-else>
-            <div class="title5"><a-icon :component="ciyun1Icon" style="margin-right: 8px; font-size: 22px;" />老师互动内容词云
-            </div>
-            <tag-cloud :tag-list="tagList1" :height="200" :force-fit="true"
-              :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
-          </template>
+          <tag-cloud v-else :tag-list="tagList1" :height="200" :force-fit="true"
+            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
         </a-col>
         <a-col :span="12">
+          <div class="title5"><a-icon :component="ciyun2Icon" style="margin-right: 8px; font-size: 22px;" />学生互动内容词云
+          </div>
           <!-- 修改: 添加无数据占位符 -->
           <div v-if="tagList2.length === 0"
             style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
             <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
           </div>
-          <template v-else>
-            <div class="title5"><a-icon :component="ciyun2Icon" style="margin-right: 8px; font-size: 22px;" />学生互动内容词云
-            </div>
-            <tag-cloud :tag-list="tagList2" :height="200" :force-fit="true"
-              :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
-          </template>
+          <tag-cloud v-else :tag-list="tagList2" :height="200" :force-fit="true"
+            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
         </a-col>
       </a-row>
     </a-card>
