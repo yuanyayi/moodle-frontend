@@ -19,13 +19,7 @@
         style="height: 254px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9; margin: 0 0 32px 32px;">
         <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
       </div>
-      <bar 
-        v-else 
-        :data="barData" 
-        width="100%" 
-        :color="chartColor"
-        :barStyle="chartBarStyle"
-      />
+      <gradient-bar v-else :data="barData" title="互动行为数据" />
     </a-card>
     <a-card :bordered="false" title="互动内容分析" style="margin-top: 20px;">
       <a-row>
@@ -35,8 +29,11 @@
             style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
             <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
           </div>
-          <tag-cloud v-else :tag-list="tagList1" :height="200" :force-fit="true"
-            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
+          <template v-else>
+            <div>老师互动内容词云</div>
+            <tag-cloud :tag-list="tagList1" :height="200" :force-fit="true"
+              :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
+          </template>
         </a-col>
         <a-col :span="12">
           <!-- 修改: 添加无数据占位符 -->
@@ -55,6 +52,7 @@
 <script>
 import { fetch1, fetch2, ciyun1, ciyun2 } from "@/api/analysis";
 import Bar from "@/components/Charts/Bar";
+import GradientBar from "@/components/Charts/GradientBar";
 import TagCloud from "@/components/Charts/TagCloud";
 import StatCard from "./StatCard";
 import JsExportExcel from "js-export-excel";
@@ -63,6 +61,7 @@ export default {
   name: "Anaylsis",
   components: {
     Bar,
+    GradientBar,
     TagCloud,
     StatCard,
   },
