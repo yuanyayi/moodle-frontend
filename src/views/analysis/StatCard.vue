@@ -49,7 +49,7 @@ export default {
   background-position: center;
   box-shadow: 0px 8px 16px 0px rgba(0, 68, 255, 0.08);
   border-radius: 8px;
-  padding: 8px 30px;
+  padding: 8px 20px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -57,9 +57,8 @@ export default {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   position: relative;
-
   border: 1px solid #fff;
 }
 
@@ -69,8 +68,7 @@ export default {
 }
 
 .stat-text {
-  flex: 1 0 auto;
-  padding-right: 20px;
+  flex: 0 0 7em;
 }
 
 .stat-title {
@@ -104,7 +102,7 @@ export default {
 }
 
 .stat-icon {
-  flex: 0 1 80px;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;

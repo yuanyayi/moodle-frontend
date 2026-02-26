@@ -21,26 +21,26 @@
       </div>
       <bar v-else :data="barData" width="100%" />
     </a-card>
-    <a-card :bordered="false" title="互动内容分析">
+    <a-card :bordered="false" title="互动内容分析" style="margin-top: 20px;">
       <a-row>
-        <a-col :span="12">
-          <!-- 修改: 添加无数据占位符 -->
-          <div v-if="tagList1.length === 0"
-            style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
-            <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
-          </div>
-          <tag-cloud v-else :tag-list="tagList1" :height="200" :force-fit="true"
-            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
-        </a-col>
-        <a-col :span="12">
-          <!-- 修改: 添加无数据占位符 -->
-          <div v-if="tagList2.length === 0"
-            style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
-            <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
-          </div>
-          <tag-cloud v-else :tag-list="tagList2" :height="200" :force-fit="true"
-            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
-        </a-col>
+        <a-col :span=" 12">
+      <!-- 修改: 添加无数据占位符 -->
+      <div v-if="tagList1.length === 0"
+        style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
+        <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
+      </div>
+      <tag-cloud v-else :tag-list="tagList1" :height="200" :force-fit="true"
+        :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
+      </a-col>
+      <a-col :span="12">
+        <!-- 修改: 添加无数据占位符 -->
+        <div v-if="tagList2.length === 0"
+          style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
+          <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
+        </div>
+        <tag-cloud v-else :tag-list="tagList2" :height="200" :force-fit="true"
+          :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
+      </a-col>
       </a-row>
     </a-card>
   </div>
