@@ -2,25 +2,25 @@
   <a-card :bordered="false" class="distinguish-detail-container">
     <!-- 直播基本信息 -->
     <div class="live-info-section">
-      <div class="info-row">
-        <span class="label">相关课程：</span>
-        <span class="value">{{ liveInfo.course_name }}</span>
+      <div class="title">{{ liveInfo.subject }}
+        <a-tag class="custom-tag">已开放回放</a-tag>
       </div>
-      <div class="info-row">
-        <span class="label">直播名称：</span>
-        <span class="value">{{ liveInfo.subject }}</span>
-      </div>
-      <div class="info-row">
-        <span class="label">直播时间：</span>
-        <span class="value">{{ formatTime(liveInfo.start_time, "YYYY-MM-DD HH:mm") }}</span>
-      </div>
-      <div class="info-row">
-        <span class="label">老师：</span>
-        <span class="value">{{ liveInfo.teacher_name || "未知" }}</span>
-      </div>
-      <div class="info-row">
-        <span class="label">直播回放：</span>
-        <span class="value">{{ liveInfo.replay ? "开放回放" : "未开放" }}</span>
+      <div>
+        <span class="info-item">
+          <a-icon :component="detail1" />
+          <span class="label">相关课程：</span>
+          <span class="value">{{ liveInfo.course_name }}</span>
+        </span>
+        <span class="info-item">
+          <a-icon :component="detail2" />
+          <span class="label">直播时间：</span>
+          <span class="value">{{ formatTime(liveInfo.start_time, "YYYY-MM-DD HH:mm") }}</span>
+        </span>
+        <span class="info-item">
+          <a-icon :component="detail3" />
+          <span class="label">老师：</span>
+          <span class="value">{{ liveInfo.teacher_name || "未知" }}</span>
+        </span>
       </div>
     </div>
 
@@ -54,6 +54,7 @@ import SearchForm from "@/components/SearchForm.vue";
 import { formatTime, readFromList } from "@/utils/common";
 import { getStudentAttendanceList, downloadExcel, batchUpdateAttendanceState } from "@/api/distinguish";
 import { getLiveMaps } from "@/api/live";
+import { detail1, detail2, detail3 } from "@/core/icons";
 
 export default {
   name: "DistinguishDetail",
@@ -73,6 +74,9 @@ export default {
   },
   data() {
     return {
+      detail1,
+      detail2,
+      detail3,
       loading: false,
       liveInfo: {},
       studentList: [],
@@ -252,13 +256,28 @@ export default {
   display: flex;
   flex-flow: row wrap;
 
-  .info-row {
-    flex: 33% 0 0;
-    display: flex;
-    margin-bottom: 12px;
+  .title {
+    width: 100%;
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .info-item {
+    margin-right: 20px;
+
+    >*+* {
+      margin-left: 8px;
+    }
+
+    .anticon {
+      vertical-align: middle;
+      font-size: 22px;
+    }
 
     .label {
-      width: 120px;
+      width: 100px;
       font-weight: 500;
       color: #666;
     }
@@ -316,6 +335,27 @@ export default {
     .ant-table-cell {
       padding: 12px 16px;
     }
+  }
+}
+
+// 自定义tag样式
+.custom-tag {
+  background-color: #fff;
+  border: 1px solid #52c41a;
+  color: #52c41a;
+  border-radius: 10px;
+  padding: 0 12px;
+  position: relative;
+  margin-left: 8px;
+  
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #52c41a;
+    margin-right: 6px;
   }
 }
 </style>
