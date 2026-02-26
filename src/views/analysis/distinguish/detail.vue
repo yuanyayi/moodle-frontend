@@ -2,9 +2,8 @@
   <a-card :bordered="false" class="distinguish-detail-container">
     <!-- 直播基本信息 -->
     <div class="live-info-section">
-      <div class="title">{{ liveInfo.subject }}
-        <a-tag class="custom-tag">已开放回放</a-tag>
-      </div>
+      <div class="title" style="line-height:26px">{{ liveInfo.subject }}<status-tag
+          :color="liveInfo.replay ? '#13C74F' : '#6E7079'" :text="liveInfo.replay ? '已开放回放' : '未开放回放'" /></div>
       <div>
         <span class="info-item">
           <a-icon :component="detail1" />
@@ -51,6 +50,7 @@
 
 <script>
 import SearchForm from "@/components/SearchForm.vue";
+import StatusTag from "@/components/Common/StatusTag.vue";
 import { formatTime, readFromList } from "@/utils/common";
 import { getStudentAttendanceList, downloadExcel, batchUpdateAttendanceState } from "@/api/distinguish";
 import { getLiveMaps } from "@/api/live";
@@ -60,6 +60,7 @@ export default {
   name: "DistinguishDetail",
   components: {
     SearchForm,
+    StatusTag,
   },
   computed: {
     live_id() {
@@ -338,24 +339,11 @@ export default {
   }
 }
 
-// 自定义tag样式
-.custom-tag {
-  background-color: #fff;
-  border: 1px solid #52c41a;
-  color: #52c41a;
-  border-radius: 10px;
-  padding: 0 12px;
-  position: relative;
-  margin-left: 8px;
-  
-  &::before {
-    content: '';
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #52c41a;
-    margin-right: 6px;
+.ant-table {
+  .ant-table-body {
+    .ant-table-cell {
+      padding: 12px 16px;
+    }
   }
 }
 </style>
