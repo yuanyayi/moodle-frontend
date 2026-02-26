@@ -30,7 +30,8 @@
             <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
           </div>
           <template v-else>
-            <div>老师互动内容词云</div>
+            <div class="title5"><a-icon :component="ciyun1Icon" style="margin-right: 8px; font-size: 22px;" />老师互动内容词云
+            </div>
             <tag-cloud :tag-list="tagList1" :height="200" :force-fit="true"
               :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
           </template>
@@ -41,8 +42,12 @@
             style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
             <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
           </div>
-          <tag-cloud v-else :tag-list="tagList2" :height="200" :force-fit="true"
-            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
+          <template v-else>
+            <div class="title5"><a-icon :component="ciyun2Icon" style="margin-right: 8px; font-size: 22px;" />学生互动内容词云
+            </div>
+            <tag-cloud :tag-list="tagList2" :height="200" :force-fit="true"
+              :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
+          </template>
         </a-col>
       </a-row>
     </a-card>
@@ -51,6 +56,7 @@
 
 <script>
 import { fetch1, fetch2, ciyun1, ciyun2 } from "@/api/analysis";
+import { ciyun1 as ciyun1Icon, ciyun2 as ciyun2Icon } from "@/core/icons";
 import Bar from "@/components/Charts/Bar";
 import GradientBar from "@/components/Charts/GradientBar";
 import TagCloud from "@/components/Charts/TagCloud";
@@ -67,6 +73,8 @@ export default {
   },
   data() {
     return {
+      ciyun1Icon,
+      ciyun2Icon,
       statisticsDate: new Date(Date.now() - 86400000).toISOString().split('T')[0],
       // 图表颜色配置
       chartColor: ['#057CFB', '#057CFB', '#057CFB'], // 统一使用主颜色
@@ -247,6 +255,16 @@ export default {
   span {
     display: inline-block;
     width: 3em;
+  }
+}
+
+.title5 {
+  font-weight: 500;
+  line-height: 22px;
+  color: #3D3D3D;
+
+  .anticon {
+    vertical-align: bottom;
   }
 }
 </style>

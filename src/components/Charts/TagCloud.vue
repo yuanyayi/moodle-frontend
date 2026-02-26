@@ -114,11 +114,12 @@ export default {
           padding: 0,
           timeInterval: 5000, // max execute time
           rotate () {
-            let random = ~~(Math.random() * 4) % 4
-            if (random === 2) {
-              random = 0
-            }
-            return random * 90 // 0, 90, 270
+            return 0
+            // let random = ~~(Math.random() * 4) % 4
+            // if (random === 2) {
+            //   random = 0
+            // }
+            // return random * 90 // 0, 90, 270
           },
           fontSize (d) {
             if (d.value) {
