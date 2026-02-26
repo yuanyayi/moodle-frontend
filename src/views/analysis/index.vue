@@ -3,20 +3,14 @@
     <a-card :bordered="false">
       <template v-slot:title>最新数据 <span class="subTitle">更新至{{ statisticsDate }}</span>
       </template>
-      <a-row>
-        <a-col v-for="item in headList" :span="6" :key="item.key">
-          <a-statistic :title="item.title" :value="item.value" style="text-align: center" />
-          <div class="statisticList" v-if="item.day" style="text-align: center">
-            <div>
-              <b>日</b><span :class="getColorClassName(item.day)">{{ item.day }}</span>
-            </div>
-            <div>
-              <b>周</b><span :class="getColorClassName(item.week)">{{ item.week }}</span>
-            </div>
-            <div>
-              <b>月</b><span :class="getColorClassName(item.month)">{{ item.month }}</span>
-            </div>
-          </div>
+      <a-row :gutter="[16, 16]">
+        <a-col v-for="(item, index) in headList" :span="6" :key="item.key">
+          <stat-card
+            :title="item.title"
+            :value="item.value"
+            :unit="item.unit"
+            :icon="`analysis${index + 1}`"
+          />
         </a-col>
       </a-row>
     </a-card>
@@ -58,6 +52,7 @@
 import { fetch1, fetch2, ciyun1, ciyun2 } from "@/api/analysis";
 import Bar from "@/components/Charts/Bar";
 import TagCloud from "@/components/Charts/TagCloud";
+import StatCard from "./StatCard";
 import JsExportExcel from "js-export-excel";
 
 export default {
@@ -65,6 +60,7 @@ export default {
   components: {
     Bar,
     TagCloud,
+    StatCard,
   },
   data() {
     return {
@@ -74,6 +70,7 @@ export default {
           key: "uv",
           title: "直播人数",
           value: "0",
+          unit: "人",
           day: "--",
           week: "--",
           month: "--",
@@ -82,11 +79,13 @@ export default {
           key: "totalUv",
           title: "累计总人数",
           value: "0",
+          unit: "人",
         },
         {
           key: "duration",
           title: "直播时长",
           value: "0",
+          unit: "min",
           day: "--",
           week: "--",
           month: "--",
@@ -95,6 +94,7 @@ export default {
           key: "totalDuration",
           title: "累计直播时长",
           value: "0",
+          unit: "min",
         },
       ],
       barData: [
@@ -104,13 +104,18 @@ export default {
           y: 0,
         },
         {
-          x: `反馈数`,
-          key: "feedback",
+          x: `点赞数`,
+          key: "like",
           y: 0,
         },
         {
-          x: `评论数`,
-          key: "comment",
+          x: `收藏数`,
+          key: "collection",
+          y: 0,
+        },
+        {
+          x: `分享数`,
+          key: "share",
           y: 0,
         },
       ],
@@ -119,118 +124,110 @@ export default {
     };
   },
   created() {
-    this.fetch1();
-    this.fetch2();
-    this.fetch3();
+    this.init();
   },
   methods: {
-    fetch1() {
-      fetch1().then(res => {
-        this.headList.forEach(el => {
-          el.value = res.data[el.key];
-          if (el.day) {
-            el.day = res.data[el.key + "DayGrowth"];
-            el.week = res.data[el.key + "WeekGrowth"];
-            el.month = res.data[el.key + "MonthGrowth"];
-          }
-        });
-      });
+    init() {
+      this.getAnalysisData();
+      this.getAnalysisData2();
+      this.getTagCloudData();
+      this.getTagCloudData2();
     },
-    fetch2() {
-      fetch2().then(res => {
-        this.barData = this.barData.map(el => {
-          el.y = res.data[el.key];
-          return el;
-        });
-      });
-    },
-    fetch3() {
-      ciyun1().then(res => {
-        // 调用新方法调整权重
-        this.tagList1 = this.adjustWeights(
-          res.list.map(el => {
-            return {
-              name: el.label,
-              value: el.size,
-              originalValue: el.size, // 保存原始值用于tooltip显示
-            };
-          })
-        );
-      });
-      ciyun2().then(res => {
-        // 调用新方法调整权重
-        this.tagList2 = this.adjustWeights(
-          res.list.map(el => {
-            return {
-              name: el.label,
-              value: el.size,
-              originalValue: el.size, // 保存原始值用于tooltip显示
-            };
-          })
-        );
-      });
-    },
-    // 新增方法：调整相同词频的权重
-    adjustWeights(list) {
-      if (list.length <= 1) return list;
-
-      // 创建新数组避免修改原数组
-      const adjustedList = list.map(item => ({ ...item }));
-
-      // 从第二个元素开始检查是否与前一个元素的originalValue相同
-      for (let i = 1; i < adjustedList.length; i++) {
-        if (adjustedList[i].originalValue === adjustedList[i - 1].originalValue) {
-          adjustedList[i].value = adjustedList[i - 1].value + 0.1;
-        }
+    getColorClassName(value) {
+      if (value === "--") {
+        return "statisticNoData";
       }
-
-      return adjustedList;
+      return value.charAt(0) === "-" ? "statisticDown" : "statisticUp";
     },
-    getColorClassName(str) {
-      if (str === "0.00%") return "a-grey";
-      if (/^-/.test(str)) return "a-green";
-      return "a-red";
+    async getAnalysisData() {
+      await fetch1().then((res) => {
+        if (res.status === 200) {
+          this.headList[0].value = res.data.uv;
+          this.headList[1].value = res.data.totalUv;
+          this.headList[2].value = res.data.duration;
+          this.headList[3].value = res.data.totalDuration;
+          this.headList[0].day = res.data.day;
+          this.headList[0].week = res.data.week;
+          this.headList[0].month = res.data.month;
+          this.headList[2].day = res.data.day;
+          this.headList[2].week = res.data.week;
+          this.headList[2].month = res.data.month;
+          this.barData[0].y = res.data.qa;
+          this.barData[1].y = res.data.like;
+          this.barData[2].y = res.data.collection;
+          this.barData[3].y = res.data.share;
+        } else {
+          this.$message.error(res.message);
+        }
+      });
+    },
+    async getAnalysisData2() {
+      await fetch2().then((res) => {
+        if (res.status === 200) {
+          console.log(res.data);
+        } else {
+          this.$message.error(res.message);
+        }
+      });
+    },
+    async getTagCloudData() {
+      await ciyun1().then((res) => {
+        if (res.status === 200) {
+          this.tagList1 = res.data;
+        } else {
+          this.$message.error(res.message);
+        }
+      });
+    },
+    async getTagCloudData2() {
+      await ciyun2().then((res) => {
+        if (res.status === 200) {
+          this.tagList2 = res.data;
+        } else {
+          this.$message.error(res.message);
+        }
+      });
     },
     exportExcel() {
-      const option = {
-        fileName: "互动行为数据",
-        datas: [
+      var option = {
+        filename: `互动行为数据_${this.statisticsDate}`,
+        sheets: [
           {
-            sheetData: this.barData.map(item => ({
-              类型: item.x,
-              数量: item.y,
-            })),
+            sheetData: this.barData,
             sheetName: "互动行为数据",
-            sheetFilter: ["类型", "数量"],
-            sheetHeader: ["类型", "数量"],
+            sheetHeader: ["数据类型", "key", "数量"],
+            columnWidths: [20, 10, 10],
           },
         ],
       };
-
-      const toExcel = new JsExportExcel(option);
+      var toExcel = new JsExportExcel(option);
       toExcel.saveExcel();
     },
   },
 };
 </script>
 
-<style lang="less" scoped>
+<style scoped>
 .subTitle {
   font-size: 14px;
-  color: #a6a6a6;
-  margin-left: 30px;
+  color: #999;
+  margin-left: 16px;
 }
 
 .statisticList {
-  b {
-    display: inline-block;
-    width: 2em;
-    color: #b6b6b6;
-  }
+  margin-top: 10px;
+  font-size: 12px;
+}
 
-  span {
-    display: inline-block;
-    width: 3em;
-  }
+.statisticUp {
+  color: #f5222d;
+}
+
+.statisticDown {
+  color: #52c41a;
+}
+
+.statisticNoData {
+  color: #999;
 }
 </style>
