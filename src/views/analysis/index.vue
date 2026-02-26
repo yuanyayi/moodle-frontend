@@ -1,21 +1,19 @@
 <template>
   <div>
-    <a-card :bordered="false">
-      <template v-slot:title>最新数据 <span class="subTitle">更新至{{ statisticsDate }}</span>
+    <a-row :gutter="16">
+      <a-col
+        style="text-align: right; font-size: 12px; font-weight: normal; line-height: 20px; color: #828290;">数据最新更新于：{{
+          statisticsDate }}</a-col>
+      <a-col v-for="(item, index) in headList" :span="6" :key="item.key">
+        <stat-card :title="item.title" :value="item.value" :unit="item.unit" :icon="`analysis${index + 1}`" />
+      </a-col>
+    </a-row>
+
+    <a-card :bordered="false" style="margin-top: 20px;">
+      <template v-slot:title>
+        <div style="display: flex; justify-content: space-between;">互动行为数据 <a-button icon="download"
+            @click="exportExcel">导出数据</a-button> </div>
       </template>
-      <a-row :gutter="[16, 16]">
-        <a-col v-for="(item, index) in headList" :span="6" :key="item.key">
-          <stat-card
-            :title="item.title"
-            :value="item.value"
-            :unit="item.unit"
-            :icon="`analysis${index + 1}`"
-          />
-        </a-col>
-      </a-row>
-    </a-card>
-    <a-card :bordered="false">
-      <template v-slot:title>互动行为数据 <a-button @click="exportExcel">导出数据</a-button> </template>
       <!-- 修改: 添加无数据占位符 -->
       <div v-if="barData.every(item => !item.y || item.y === 0)"
         style="height: 254px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9; margin: 0 0 32px 32px;">

@@ -1,16 +1,14 @@
 <template>
   <div class="stat-card">
-    <div class="stat-content">
-      <div class="stat-text">
-        <div class="stat-title">{{ title }}</div>
-        <div class="stat-value-container">
-          <span class="stat-value">{{ value }}</span>
-          <span class="stat-unit">{{ unit }}</span>
-        </div>
+    <div class="stat-text">
+      <div class="stat-title">{{ title }}</div>
+      <div class="stat-value-container">
+        <span class="stat-value">{{ value }}</span>
+        <span class="stat-unit">{{ unit }}</span>
       </div>
-      <div class="stat-icon">
-        <img :src="iconSrc" :alt="title" />
-      </div>
+    </div>
+    <div class="stat-icon">
+      <img :src="iconSrc" :alt="title" />
     </div>
   </div>
 </template>
@@ -51,27 +49,27 @@ export default {
   background-position: center;
   box-shadow: 0px 8px 16px 0px rgba(0, 68, 255, 0.08);
   border-radius: 8px;
-  padding: 20px;
+  padding: 8px 30px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   overflow: hidden;
-}
 
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0px 12px 20px 0px rgba(0, 68, 255, 0.12);
-}
-
-.stat-content {
   display: flex;
+  flex-flow: row nowrap;
   align-items: center;
   justify-content: space-between;
   position: relative;
-  z-index: 1;
+
+  border: 1px solid #fff;
+}
+
+.stat-card:hover {
+  box-shadow: 0px 12px 20px 0px rgba(0, 68, 255, 0.12);
+  cursor: pointer;
 }
 
 .stat-text {
-  flex: 1;
+  flex: 1 0 auto;
   padding-right: 20px;
 }
 
@@ -106,16 +104,10 @@ export default {
 }
 
 .stat-icon {
-  width: 80px;
-  height: 80px;
+  flex: 0 1 80px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0 8px 8px 0;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
 }
 
 .stat-icon img {
