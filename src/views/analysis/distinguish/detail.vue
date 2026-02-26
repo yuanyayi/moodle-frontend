@@ -54,7 +54,7 @@ import StatusTag from "@/components/Common/StatusTag.vue";
 import { formatTime, readFromList } from "@/utils/common";
 import { getStudentAttendanceList, downloadExcel, batchUpdateAttendanceState } from "@/api/distinguish";
 import { getLiveMaps } from "@/api/live";
-import { detail1, detail2, detail3 } from "@/core/icons";
+import { detail1, detail2, detail3, status1, status0, statusMinus1 } from "@/core/icons";
 
 export default {
   name: "DistinguishDetail",
@@ -78,6 +78,9 @@ export default {
       detail1,
       detail2,
       detail3,
+      status1,
+      status0,
+      statusMinus1,
       loading: false,
       liveInfo: {},
       studentList: [],
@@ -126,8 +129,28 @@ export default {
           title: <div class='nowrap'>考勤状态</div>,
           dataIndex: "status",
           key: "status",
-          customRender: text => {
-            return readFromList(text, this.attendanceStatusMap);
+          customRender: function(text) {
+            const statusText = readFromList(text, this.attendanceStatusMap);
+            let icon = null;
+            
+            if (text === 0) { // 未处理
+              icon = this.$createElement('a-icon', {
+                props: { component: this.status0 },
+                style: { marginRight: '4px' }
+              });
+            } else if (text === 1) { // 出勤
+              icon = this.$createElement('a-icon', {
+                props: { component: this.status1 },
+                style: { marginRight: '4px' }
+              });
+            } else if (text === -1) { // 缺勤
+              icon = this.$createElement('a-icon', {
+                props: { component: this.statusMinus1 },
+                style: { marginRight: '4px' }
+              });
+            }
+            
+            return this.$createElement('span', [icon, statusText]);
           },
         },
         {

@@ -21,6 +21,9 @@ import detail2 from "@/assets/icons/detail2.svg?inline";
 import detail3 from "@/assets/icons/detail3.svg?inline";
 import ciyun1 from "@/assets/icons/ciyun1.svg?inline";
 import ciyun2 from "@/assets/icons/ciyun2.svg?inline";
+import status1 from "@/assets/icons/status1.svg?inline";
+import status0 from "@/assets/icons/status0.svg?inline";
+import statusMinus1 from "@/assets/icons/status-1.svg?inline";
 
 
-export { bxAnaalyse, nav06, docs, liveOverall, liveAnaylse, list, backHome, backSystem, feedback, studentView, detail1, detail2, detail3, ciyun1, ciyun2 };
+export { bxAnaalyse, nav06, docs, liveOverall, liveAnaylse, list, backHome, backSystem, feedback, studentView, detail1, detail2, detail3, ciyun1, ciyun2, status1, status0, statusMinus1 };

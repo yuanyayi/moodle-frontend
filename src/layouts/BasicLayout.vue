@@ -13,13 +13,17 @@
     <template v-slot:rightContentRender>
       <right-content :top-menu="settings.layout === 'topmenu'" :is-mobile="isMobile" :theme="settings.theme" />
     </template>
-    <!-- custom footer / 自定义Footer -->
-    <template v-slot:footerRender>
-      <!-- <global-footer /> -->
-    </template>
+
     <router-view />
   </pro-layout>
 </template>
+
+<style scoped>
+/* 隐藏footer */
+:deep(.ant-layout-footer) {
+  display: none;
+}
+</style>
 
 <script>
 import { SettingDrawer, updateTheme } from "@ant-design-vue/pro-layout";
