@@ -46,7 +46,9 @@ export default {
 
 <style scoped>
 .stat-card {
-  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%), url(@/assets/icons/card@2x.png);
+  background-size: cover;
+  background-position: center;
   box-shadow: 0px 8px 16px 0px rgba(0, 68, 255, 0.08);
   border-radius: 8px;
   padding: 20px;
@@ -75,9 +77,9 @@ export default {
 
 .stat-title {
   font-size: 14px;
-  color: #666;
-  font-weight: 400;
-  margin-bottom: 8px;
+  font-weight: normal;
+  line-height: 22px;
+  color: #111111;
 }
 
 .stat-value-container {
@@ -87,15 +89,19 @@ export default {
 }
 
 .stat-value {
+  font-family: Rany;
   font-size: 24px;
-  font-weight: 600;
-  color: #333;
+  font-weight: 500;
+  line-height: 32px;
+  color: #111111;
 }
 
 .stat-unit {
+  font-family: Rany;
   font-size: 14px;
-  color: #666;
-  font-weight: 400;
+  font-weight: normal;
+  line-height: 22px;
+  color: #111111;
 }
 
 .stat-icon {
@@ -104,7 +110,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #F7FAFE;
   border-radius: 0 8px 8px 0;
   position: absolute;
   top: 0;
