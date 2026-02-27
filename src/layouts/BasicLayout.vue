@@ -1,5 +1,5 @@
 <template>
-  <pro-layout :menus="menus" :collapsed="collapsed" :mediaQuery="query" :isMobile="isMobile" :handleMediaQuery="handleMediaQuery" :handleCollapse="handleCollapse" :menuClick="menuClick" v-bind="settings">
+  <pro-layout :menus="menus" :collapsed="collapsed" :mediaQuery="query" :isMobile="isMobile" :handleMediaQuery="handleMediaQuery" :handleCollapse="handleCollapse" v-bind="settings">
     <!-- 1.0.0+ 版本 pro-layout 提供 API，
           我们推荐使用这种方式进行 LOGO 和 title 自定义
     -->
@@ -53,8 +53,8 @@ export default {
 
       // base
       menus: [],
-      // 侧栏收起状态 - 从 store 中恢复
-      collapsed: this.$store.state.app.sideCollapsed,
+      // 侧栏收起状态
+      collapsed: false,
       title: defaultSettings.title,
       settings: {
         // 布局类型
@@ -134,12 +134,6 @@ export default {
     },
     handleCollapse(val) {
       this.collapsed = val;
-    },
-    menuClick() {
-      // 仅在手机模式下点击菜单时收起侧边栏
-      if (this.isMobile) {
-        this.collapsed = true;
-      }
     },
     handleSettingChange({ type, value }) {
       console.log("type", type, value);
