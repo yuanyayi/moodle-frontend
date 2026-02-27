@@ -1,30 +1,26 @@
 <template>
   <div class="log-detail">
     <a-card :bordered="false">
-      <!-- 直播信息区域 -->
+      <!-- 直播基本信息 -->
       <div class="live-info-section">
-        <h3>直播信息</h3>
-        <div class="info-grid">
-          <div class="info-item">
+        <div class="title" style="line-height:26px">{{ liveInfo.subject }}<status-tag
+            :color="liveInfo.replay ? '#13C74F' : '#6E7079'" :text="liveInfo.replay ? '已开放回放' : '未开放回放'" /></div>
+        <div>
+          <span class="info-item">
+            <a-icon :component="detail1" />
             <span class="label">相关课程：</span>
             <span class="value">{{ liveInfo.course_name }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">直播名称：</span>
-            <span class="value">{{ liveInfo.subject }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">老师：</span>
-            <span class="value">{{ liveInfo.teacher_name }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">直播回放：</span>
-            <span class="value">{{ liveInfo.replay ? '开启回放' : '未开启回放' }}</span>
-          </div>
-          <div class="info-item">
+          </span>
+          <span class="info-item">
+            <a-icon :component="detail2" />
             <span class="label">直播时间：</span>
             <span class="value">{{ formatTime(liveInfo.start_time, "YYYY-MM-DD HH:mm") }}</span>
-          </div>
+          </span>
+          <span class="info-item">
+            <a-icon :component="detail3" />
+            <span class="label">老师：</span>
+            <span class="value">{{ liveInfo.teacher_name || "未知" }}</span>
+          </span>
         </div>
       </div>
 
@@ -51,11 +47,19 @@
 import { fetchLogsByLive } from "@/api/logs";
 import { formatTime } from "@/utils/common";
 import { mapGetters } from "vuex";
+import StatusTag from "@/components/Common/StatusTag.vue";
+import { detail1, detail2, detail3 } from "@/core/icons";
 
 export default {
   name: "LiveLogDetail",
+  components: {
+    StatusTag,
+  },
   data() {
     return {
+      detail1,
+      detail2,
+      detail3,
       liveConfigId: this.$route.params.live_config_id,
       liveInfo: {},
       loading: false,
@@ -161,32 +165,45 @@ export default {
 
 <style scoped>
 .live-info-section {
-  margin-bottom: 24px;
-}
-
-.live-info-section h3 {
-  font-size: 16px;
+  padding: 24px;
+  background: url('@/assets/bg/image@2x.png') right center / auto 100%, linear-gradient(180deg, #F3F7FF 0%, rgba(243, 247, 255, 0) 100%);
+  background-repeat: no-repeat;
+  border-radius: 16px;
   margin-bottom: 16px;
-  font-weight: bold;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
-  padding: 16px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-}
-
-.info-item {
   display: flex;
-  align-items: center;
-}
+  flex-flow: row wrap;
 
-.label {
-  font-weight: bold;
-  margin-right: 8px;
+  .title {
+    width: 100%;
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .info-item {
+    margin-right: 20px;
+
+    >*+* {
+      margin-left: 8px;
+    }
+
+    .anticon {
+      vertical-align: middle;
+      font-size: 22px;
+    }
+
+    .label {
+      width: 100px;
+      font-weight: 500;
+      color: #666;
+    }
+
+    .value {
+      flex: 1;
+      color: #333;
+    }
+  }
 }
 
 .student-records-section {
