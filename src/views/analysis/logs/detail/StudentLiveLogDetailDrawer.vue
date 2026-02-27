@@ -1,5 +1,5 @@
 <template>
-  <a-drawer title="学生直播日志详情" placement="right" :width="800" :visible="visible" :closable="true" :mask="true"
+  <a-drawer title="日志详情" placement="right" :width="800" :visible="visible" :closable="true" :mask="true"
     :mask-closable="true" @close="handleClose">
     <div v-if="loading" class="loading-container">
       <a-spin tip="加载中..." size="large" />
@@ -49,6 +49,9 @@ export default {
         current: 1,
         total: 0,
         pageSize: 10,
+        showSizeChanger: true,
+        pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: (total) => `共 ${total} 条数据`,
       },
       columns: [
         {
@@ -98,6 +101,7 @@ export default {
         this.studentLogs = res.pageBean.list || [];
         // 更新分页信息
         this.pagination.current = res.pageBean.currentPage || 1;
+        this.pagination.pageSize = res.pageBean.pageSize || 10;
         this.pagination.total = res.pageBean.allRow || 0;
       }).catch(error => {
         console.error("获取学生日志详情失败:", error);
@@ -117,10 +121,6 @@ export default {
 </script>
 
 <style scoped lang="less">
-.student-log-detail-content {
-  padding: 16px 0;
-}
-
 .info-section {
   margin-bottom: 24px;
   padding: 16px;
