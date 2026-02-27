@@ -45,12 +45,16 @@
         :row-key="record => record.id" :row-selection="rowSelection" @change="handleTableChange">
       </a-table>
     </div>
+
+    <!-- 学生详情抽屉 -->
+    <student-detail-drawer ref="studentDetailDrawer" />
   </a-card>
 </template>
 
 <script>
 import SearchForm from "@/components/SearchForm.vue";
 import StatusTag from "@/components/Common/StatusTag.vue";
+import StudentDetailDrawer from "./detail/StudentDetailDrawer.vue";
 import { formatTime, readFromList } from "@/utils/common";
 import { getStudentAttendanceList, downloadExcel, batchUpdateAttendanceState } from "@/api/distinguish";
 import { getLiveMaps } from "@/api/live";
@@ -61,6 +65,7 @@ export default {
   components: {
     SearchForm,
     StatusTag,
+    StudentDetailDrawer,
   },
   computed: {
     live_id() {
@@ -132,7 +137,7 @@ export default {
           customRender: (text, record, index) => {
             const statusText = readFromList(text, this.attendanceStatusMap);
             let iconComponent = null;
-            
+
             if (text === 0) { // 未处理
               iconComponent = status0;
             } else if (text === 1) { // 出勤
@@ -140,7 +145,7 @@ export default {
             } else if (text === -1) { // 缺勤
               iconComponent = statusMinus1;
             }
-            
+
             return (
               <span>
                 {iconComponent && <a-icon component={iconComponent} style={{ marginRight: '4px' }} />}
@@ -162,7 +167,7 @@ export default {
           },
         },
       ],
-      attendanceStatusMap: [],
+      attendanceStatusMap: []
     };
   },
   created() {
@@ -245,11 +250,7 @@ export default {
     },
 
     gotoStudentDetail(attendance_status_id) {
-      // 直接跳转到analysis模块中的学生人脸识别记录详情页
-      this.$router.push({
-        name: "studentFaceDetail",
-        params: { id: attendance_status_id },
-      });
+      this.$refs.studentDetailDrawer.show(attendance_status_id);
     },
 
     handleDownloadExcel() {
