@@ -71,9 +71,11 @@ export default {
     };
   },
   methods: {
-    show(liveConfigId, studentId) {
+    show(liveConfigId, studentId, studentInfo) {
       this.live_config_id = liveConfigId;
       this.student_id = studentId;
+      // 更新学生信息
+      this.studentInfo = studentInfo || {};
       this.visible = true;
       this.fetchStudentLogs();
     },
@@ -92,8 +94,6 @@ export default {
           this.$message.error(res.msg || "获取数据失败，请稍后再试。");
           return;
         }
-        // 保存学生信息
-        this.studentInfo = res.data || {};
         // 保存人脸识别记录
         this.studentLogs = res.pageBean.list || [];
         // 更新分页信息

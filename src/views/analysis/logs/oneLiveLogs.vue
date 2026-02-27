@@ -35,7 +35,7 @@
           @change="handleTableChange"
         >
           <template slot="action" slot-scope="text, record">
-            <a-button type="link" @click="viewDetail(record.student_id)">查看详情</a-button>
+            <a-button type="link" @click="viewDetail(record)">查看详情</a-button>
           </template>
         </a-table>
       </div>
@@ -149,9 +149,12 @@ export default {
       };
       this.fetchStudentRecords();
     },
-    viewDetail(studentId) {
-      // 打开学生直播日志详情抽屉
-      this.$refs.studentLiveLogDetailDrawer.show(this.liveConfigId, studentId);
+    viewDetail(record) {
+      // 打开学生直播日志详情抽屉，传递学生信息
+      this.$refs.studentLiveLogDetailDrawer.show(this.liveConfigId, record.student_id, {
+        student_name: record.student_name,
+        student_id: record.student_id
+      });
     },
     // 添加t方法解决国际化问题
     t(key) {
