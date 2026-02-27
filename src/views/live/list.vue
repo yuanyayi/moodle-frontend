@@ -20,7 +20,7 @@
           <p><a-icon :component="detail1" /><b>相关课程：</b>{{ detail.course_name }}</p>
           <p><a-icon :component="detail3" /><b>老师：</b>{{ detail.teacher_name }}</p>
 
-          <a-space style="margin-top:6px;">
+          <a-space style="margin-top:6px; min-height: 32px;">
             <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary" ghost
               @click="gotoCourseLive(detail.id)">进入直播间</a-button>
             <template v-if="role !== 'student'">
@@ -29,7 +29,7 @@
             </template>
             <a-button v-if="detail.replay && detail.status === 3" class="greenBtn"
               @click="gotoReplayList(detail.id)">直播回放</a-button>
-            <a-button style="visibility: hidden;">占位</a-button>
+            <span style="opacity: 0; pointer-events: none;">占位</span>
             <!-- <template v-if="role === 'teacher'">
               <a-button type="info" @click="$refs.createModal.edit(detail)">编辑</a-button>
               <a-button type="danger" @click="removeLiveConfig(detail.id)">删除</a-button>
