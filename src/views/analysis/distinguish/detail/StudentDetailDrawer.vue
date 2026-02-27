@@ -62,7 +62,7 @@
           </div>
 
           <!-- 分页导航 -->
-          <a-pagination v-bind="pagination" @change="pageChange" style="text-align: right" />
+          <a-pagination v-bind="pagination" @change="pageChange" style="text-align: right" :show-total="total => `共 ${total} 条数据`" size="small" />
         </div>
       </div>
     </div>
