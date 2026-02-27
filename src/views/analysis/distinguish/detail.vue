@@ -114,6 +114,9 @@ export default {
         current: 1,
         total: 0,
         pageSize: 20,
+        showSizeChanger: true,
+        pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: (total) => `共 ${total} 条数据`,
       },
       listParam: {
         page: 1,
@@ -205,12 +208,14 @@ export default {
         this.liveInfo = res.data;
 
         // 处理学生考勤数据
-        this.studentList = res.pageBean.list.map(item => ({
-          ...item,
-          attendance_status: item.attendance_status || "pending",
-        }));
+          this.studentList = res.pageBean.list.map(item => ({
+            ...item,
+            attendance_status: item.attendance_status || "pending",
+          }));
 
-        this.pagination.total = res.pageBean.allRow;
+          this.pagination.current = res.pageBean.currentPage || 1;
+          this.pagination.pageSize = res.pageBean.pageSize || 20;
+          this.pagination.total = res.pageBean.allRow;
       } catch (error) {
         console.error("获取数据失败:", error);
       } finally {

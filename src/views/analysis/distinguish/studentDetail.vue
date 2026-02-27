@@ -87,6 +87,9 @@ export default {
         current: 1,
         total: 0,
         pageSize: 20,
+        showSizeChanger: true,
+        pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: (total) => `共 ${total} 条数据`,
       },
       studentInfo: {},
       systemPhotos: [],
@@ -128,7 +131,8 @@ export default {
           // 更新总照片数
           this.pagination = {
             ...this.pagination,
-            page: res.pageBean.currentPage,
+            current: res.pageBean.currentPage,
+            pageSize: res.pageBean.pageSize || 20,
             total: res.pageBean.allRow,
           };
         })

@@ -37,6 +37,9 @@ export default {
         current: 1,
         total: 0,
         pageSize: 10,
+        showSizeChanger: true,
+        pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: (total) => `共 ${total} 条数据`,
       },
       columns: [
         {
@@ -73,6 +76,7 @@ export default {
         this.studentLogs = res.pageBean.list || [];
         // 更新分页信息
         this.pagination.current = res.pageBean.currentPage || 1;
+        this.pagination.pageSize = res.pageBean.pageSize || 10;
         this.pagination.total = res.pageBean.allRow || 0;
       }).catch(error => {
         console.error("获取学生日志详情失败:", error);

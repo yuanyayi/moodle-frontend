@@ -87,6 +87,9 @@ export default {
         current: 1,
         total: 0,
         pageSize: 20,
+        showSizeChanger: true,
+        pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: (total) => `共 ${total} 条数据`,
       },
       studentInfo: {},
       systemPhotos: [],
@@ -154,6 +157,7 @@ export default {
           this.pagination = {
             ...this.pagination,
             current: res.pageBean.currentPage,
+            pageSize: res.pageBean.pageSize || 20,
             total: res.pageBean.allRow,
           };
         })

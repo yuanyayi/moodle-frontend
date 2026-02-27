@@ -348,7 +348,6 @@ export default {
 .table-container {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   box-sizing: border-box;
 

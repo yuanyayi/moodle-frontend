@@ -85,6 +85,10 @@ export default {
       pagination: {
         current: 1,
         total: 0,
+        pageSize: 10,
+        showSizeChanger: true,
+        pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: (total) => `共 ${total} 条数据`,
       },
     };
   },
@@ -130,6 +134,7 @@ export default {
         .then(res => {
           this.tableList = res.pageBean?.list || [];
           this.pagination.current = res.pageBean?.currentPage || 1;
+          this.pagination.pageSize = res.pageBean?.pageSize || 10;
           this.pagination.total = res.pageBean?.allRow || 0;
         })
         .catch(error => {
