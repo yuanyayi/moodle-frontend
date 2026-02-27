@@ -1,6 +1,6 @@
 <template>
-  <a-drawer title="学生人脸识别记录" placement="right" :width="800" :visible="visible" :closable="true" :mask="true" :mask-closable="true"
-    @close="handleClose">
+  <a-drawer title="学生考勤详情" placement="right" :width="800" :visible="visible" :closable="true" :mask="true"
+    :mask-closable="true" @close="handleClose">
     <div v-if="loading" class="loading-container">
       <a-spin tip="加载中..." size="large" />
     </div>
@@ -17,11 +17,54 @@
         </div>
       </div>
 
-      <!-- 人脸识别记录 -->
+      <!-- 识别记录 -->
       <div class="records-section">
-        <h3>人脸识别记录</h3>
-        <a-table :columns="columns" :data-source="faceRecords" :loading="loading">
-        </a-table>
+        <!-- 申诉弹窗 -->
+        <a-modal v-model="showAppealModal" title="申诉" @ok="handleAppeal" @cancel="showAppealModal = false"
+          :okText="'提交'">
+          <a-form :form="appealForm" layout="vertical">
+            <a-form-item label="申诉理由">
+              <a-textarea v-decorator="['content', { rules: [{ required: true, message: '请输入申诉理由' }] }]" :rows="4"
+                placeholder="请输入申诉理由" />
+            </a-form-item>
+          </a-form>
+        </a-modal>
+
+        <!-- 系统照片 -->
+        <div class="system-photos-section">
+          <h4>系统照片</h4>
+          <div class="photos-container">
+            <div v-for="(photo, index) in systemPhotos" :key="photo" class="photo-item">
+              <img :src="photo" :alt="'系统照片' + (index + 1)" />
+              <p>{{ "系统照片" + (index + 1) }}</p>
+            </div>
+          </div>
+
+          <!-- 抓取照片 -->
+          <h4>抓取照片
+            <!-- 操作按钮 -->
+            <a-space v-if="isNotStudent" style="margin-left: 100px">
+              <a-button @click="confirmAttendance" size="small">确认出勤</a-button>
+              <a-button @click="confirmAbsent" size="small">确认缺勤</a-button>
+            </a-space>
+            <!-- 操作按钮 -->
+            <a-space v-if="!isNotStudent && studentInfo.can_appeal" style="margin-left: 20px">
+              <a-button @click="showAppealModal = true" size="small" type="danger" ghost>申诉</a-button>
+            </a-space>
+          </h4>
+
+          <div class="photos-container">
+            <div class="photo-item" v-for="(photo, index) in allPhotos" :key="index">
+              <img :src="photo.url" alt="抓取照片" />
+              <p :class="{ 'recognition-success': photo.result === 1, 'recognition-failed': photo.result === 0 }">
+                {{ photo.result === 1 ? '识别成功' : photo.result === 0 ? '识别失败' : '' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- 分页导航 -->
+          <a-pagination v-bind="pagination" @change="pageChange" style="text-align: right" />
+        </div>
       </div>
     </div>
   </a-drawer>
@@ -29,6 +72,9 @@
 
 <script>
 import { status1, status0, statusMinus1 } from "@/core/icons";
+import { getStudentRecordPage, updateAttendanceState, studentAppeal } from "@/api/distinguish";
+import { getLiveMaps } from "@/api/live";
+import { mapGetters } from "vuex";
 
 export default {
   name: 'StudentDetailDrawer',
@@ -37,35 +83,18 @@ export default {
       visible: false,
       attendanceStatusId: '',
       loading: false,
-      studentInfo: {
-        student_id: '20231001',
-        student_name: '张三',
-        status: -1
+      listParam: { page: 1, pageSize: 20 },
+      pagination: {
+        current: 1,
+        total: 0,
+        pageSize: 20,
       },
-      faceRecords: [],
-      columns: [
-        {
-          title: '识别时间',
-          dataIndex: 'recognize_time',
-          key: 'recognize_time'
-        },
-        {
-          title: '识别结果',
-          dataIndex: 'result',
-          key: 'result',
-          customRender: text => {
-            return text ? '成功' : '失败';
-          }
-        },
-        {
-          title: '相似度',
-          dataIndex: 'similarity',
-          key: 'similarity',
-          customRender: text => {
-            return text ? `${text.toFixed(2)}%` : '未知';
-          }
-        }
-      ]
+      studentInfo: {},
+      systemPhotos: [],
+      allPhotos: [],
+      attendanceStatusMap: [],
+      showAppealModal: false,
+      appealForm: this.$form.createForm(this),
     };
   },
   computed: {
@@ -80,13 +109,19 @@ export default {
       if (status === 1) return '出勤';
       if (status === -1) return '缺勤';
       return '未处理';
-    }
+    },
+    // 判断当前用户是否是学生
+    isNotStudent() {
+      return this.userInfo?.roleId !== 'student'
+    },
+    ...mapGetters(['userInfo']),
   },
   methods: {
     show(id) {
       this.attendanceStatusId = id;
       this.visible = true;
-      this.loadData();
+      this.getMaps();
+      this.fetch();
     },
     close() {
       this.visible = false;
@@ -94,49 +129,87 @@ export default {
     handleClose() {
       this.visible = false;
     },
-    async loadData() {
+    getMaps() {
+      getLiveMaps(["attendanceStatus"]).then(map => {
+        this.attendanceStatusMap = map.attendanceStatusMap;
+      });
+    },
+    // 获取学生详细信息和照片
+    fetch() {
       if (!this.attendanceStatusId) return;
 
       this.loading = true;
-      try {
-        // 这里需要根据实际的API来获取数据
-        // 假设API是getStudentFaceDetail
-        // const res = await getStudentFaceDetail(this.attendanceStatusId);
-        // this.studentInfo = res.student;
-        // this.faceRecords = res.faceRecords;
 
-        // 模拟数据
-        this.studentInfo = {
-          student_id: '10001',
-          student_name: '张三'
-        };
-        this.faceRecords = [
-          {
-            key: '1',
-            recognize_time: '2026-02-26 10:00:00',
-            result: true,
-            similarity: 95.5
-          },
-          {
-            key: '2',
-            recognize_time: '2026-02-26 10:05:00',
-            result: true,
-            similarity: 92.3
-          },
-          {
-            key: '3',
-            recognize_time: '2026-02-26 10:10:00',
-            result: false,
-            similarity: 65.7
-          }
-        ];
-      } catch (error) {
-        console.error('获取学生详情失败:', error);
-        this.$message.error('获取学生详情失败');
-      } finally {
-        this.loading = false;
-      }
-    }
+      getStudentRecordPage(this.attendanceStatusId, this.listParam)
+        .then(res => {
+          // 处理学生基本信息
+          this.studentInfo = res.data || {};
+
+          // 处理系统照片
+          this.systemPhotos = res.data.images || [];
+
+          // 处理抓取照片
+          this.allPhotos = res.pageBean.list || [];
+
+          // 更新分页信息
+          this.pagination = {
+            ...this.pagination,
+            current: res.pageBean.currentPage,
+            total: res.pageBean.allRow,
+          };
+        })
+        .catch(error => {
+          console.error('获取学生详情失败:', error);
+          this.$message.error('获取学生详情失败');
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+
+    // 分页切换
+    pageChange(page, pageSize) {
+      this.listParam = { page, pageSize };
+      this.fetch();
+    },
+
+    // 确认出勤
+    confirmAttendance() {
+      updateAttendanceState(this.attendanceStatusId, 1).then(res => {
+        if (res.status) {
+          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+          return;
+        }
+        this.$message.success("已确认出勤");
+        this.fetch();
+      });
+    },
+
+    // 确认缺勤
+    confirmAbsent() {
+      updateAttendanceState(this.attendanceStatusId, -1).then(res => {
+        if (res.status) {
+          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+          return;
+        }
+        this.$message.success("已确认缺勤");
+        this.fetch();
+      });
+    },
+
+    handleAppeal() {
+      this.appealForm.validateFields((err, values) => {
+        if (!err) {
+          studentAppeal(this.attendanceStatusId, values.content,).then(() => {
+            this.$message.success("申诉已提交");
+            this.showAppealModal = false;
+            this.appealForm.resetFields();
+          }).catch(() => {
+            this.$message.error("申诉提交失败");
+          });
+        }
+      });
+    },
   }
 };
 </script>
@@ -198,6 +271,57 @@ export default {
   font-size: 16px;
   font-weight: 600;
   color: #333;
+}
+
+.records-section h4 {
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 照片区域样式 */
+.system-photos-section {
+  margin-bottom: 20px;
+}
+
+.photos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.photo-item {
+  text-align: center;
+  flex: 0 0 calc(20% - 10px);
+  min-width: 100px;
+}
+
+.photo-item img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.photo-item p {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* 识别结果样式 */
+.recognition-success {
+  color: #52c41a;
+  text-align: center;
+}
+
+.recognition-failed {
+  color: #ff4d4f;
+  text-align: center;
 }
 
 .loading-container {
