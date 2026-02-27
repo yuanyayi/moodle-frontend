@@ -1,4 +1,5 @@
 <template>
+  
   <a-card :bordered="false" style="margin-bottom: 24px">
     <div class="live-info-section">
       <div class="title" style="line-height:26px">{{ detail.subject }}<status-tag
@@ -22,41 +23,41 @@
       </div>
     </div>
 
-    <a-row :gutter="[10, 10]">
+    <a-row :gutter="[16, 16]">
       <template v-for="(detail, index) in tableList">
-        <a-col :sm="12" :md="8" :xl="6">
+        <a-col :sm="12" :md="6" :xl="6">
           <div class="tableItem">
             <div class="frame" @click="gotoReplay(detail.id)">
-              <img v-show="detail.img" :src="detail.img" :alt="detail.subject" />
-              <a-icon type="play-circle" style="font-size: 50px" />
+              <img v-show="detail.img" :src="detail.img" :alt="detail.name" />
+              <img src="@/assets/icons/play.png" style="width: 32px; height: 32px" />
             </div>
             <div class="content">
-              <p style="font-size: 18px; font-weight: 500">
-                <EditText v-if="role !== 'student'" :ref="`edit${index}`" :value="detail.name" trigger="icon" @change="
+              <p>
+                <EditText v-if="role !== 'student'" :ref="`edit${index}`" :value="detail.name" trigger="none" @change="
                   val => {
                     editName(detail.id, val);
                   }
-                ">
-                  <template v-slot:addonAfter>
-                    <a-button class="operateBtn" icon="edit" size="small" ghost
-                      @click.stop="$refs[`edit${index}`][0].openEdit()" />
-                  </template>
-                </EditText>
+                "/>
                 <template v-else>{{ detail.name }}</template>
               </p>
-              <p style="display: flex; justify-content: space-between; align-items: center">
-                {{ detail.teacher_name }} {{ formatDate(+detail.start_time, "YYYY-MM-DD") }}
-                <span v-if="role !== 'student'">
+              <div class="bottom-actions" v-if="role !== 'student'">
+                <div class="switch-container">
                   <a-switch v-model="detail.open" size="small" @change="e => handleSwitchChange(detail.id, e)" />
-                  <a-button type="danger" icon="delete" size="small" ghost
-                    style="flex: none; border: none !important; box-shadow: none"
-                    @click.stop="deleteLiveRecord(detail.id)" />
-                </span>
-              </p>
-              <p v-if="role !== 'student'">
-                <a-button @click="prepareSummary(detail.id)">开始总结</a-button>
-                <a-button @click="getSummary(detail.id)">查看总结</a-button>
-              </p>
+                  <span>展示</span>
+                </div>
+                <a-dropdown>
+                  <a-button type="link" icon="ellipsis" size="small" />
+                  <a-menu slot="overlay">
+                    <a-menu-item @click="$refs[`edit${index}`][0].openEdit()">
+                      <a-icon type="edit" /> 重命名
+                    </a-menu-item>
+                    <a-menu-item @click="deleteLiveRecord(detail.id)">
+                      <a-icon type="delete" /> 删除
+                    </a-menu-item>
+                  </a-menu>
+                </a-dropdown>
+                <a-button type="primary" @click="getSummary(detail.id)">开始总结</a-button>
+              </div>
             </div>
           </div>
         </a-col>
@@ -179,7 +180,10 @@ export default {
         ...this.listParam,
       })
         .then(res => {
-          this.tableList = res.pageBean.list;
+          this.tableList = res.pageBean.list.map(el => {
+            !el.img && (el.img = "/defaultLive.jpg");
+            return el;
+          });
           this.pagination.current = res.pageBean.currentPage;
           this.pagination.total = res.pageBean.allRow;
         })
@@ -319,52 +323,84 @@ export default {
 
 .tableItem {
   box-sizing: border-box;
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #dedede;
-  display: block;
+  padding: 16px;
+  border: 1px solid #E9EBF1;
+  display: flex;
+  flex-direction: column;
   position: relative;
+  width: 100%;
+  border-radius: 8px;
+  background: #FFFFFF;
+  box-shadow: 0px 8px 24px 0px rgba(46, 93, 209, 0.08), 0px 8px 16px 0px rgba(46, 93, 209, 0.04);
 
   &:hover {
-    box-shadow: 2px 2px 3px #dedede;
+    box-shadow: 0px 8px 24px 0px rgba(46, 93, 209, 0.12), 0px 8px 16px 0px rgba(46, 93, 209, 0.08);
   }
 
   p {
-    margin-bottom: 0.3em;
-  }
-
-  .flag {
-    margin-top: 10px;
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 0 7px;
+    margin: 12px 0;
+    font-size: 14px;
+    line-height: 20px;
+    color: #111111;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .frame {
-    flex: 0 0 auto;
     width: 100%;
     height: 140px;
     text-align: center;
     position: relative;
     overflow: hidden;
-    margin-right: 10px;
     background-color: #f0f0f0;
+    border-radius: 6px;
+    cursor: pointer;
 
-    img {
+    img:first-child {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-color: red;
     }
 
-    .anticon {
+    img:last-child {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: #fff;
-      cursor: pointer;
+      z-index: 1;
+    }
+  }
+
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .bottom-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 12px;
+    gap: 12px;
+
+    .switch-container {
+      margin-right: auto;
+      display: flex;
+      align-items: center;
+
+      span {
+        margin-left: 8px;
+        font-size: 12px;
+        color: #1890ff;
+      }
+    }
+
+    a-button {
+      font-size: 12px;
     }
   }
 
