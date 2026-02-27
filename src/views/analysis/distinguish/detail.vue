@@ -32,18 +32,31 @@
       <a-button @click="handleDownloadExcel" icon="download">导出数据</a-button>
     </div>
 
-    <!-- 批量操作区域 -->
-    <div v-if="selectedRowKeys.length > 0" class="batch-actions">
-      <a-button type="link" @click="batchUpdate(1)">批量出勤</a-button>
-      <a-button type="link" @click="batchUpdate(-1)" class="danger">批量缺勤</a-button>
-      <a-button type="link" @click="clearSelection">取消选择</a-button>
-    </div>
-
     <!-- 学生考勤列表 -->
     <div class="student-list-section">
-      <a-table :columns="columns" :data-source="studentList" :pagination="pagination" :loading="loading"
+      <a-table :columns="columns" :data-source="studentList" :pagination="false" :loading="loading"
         :row-key="record => record.id" :row-selection="rowSelection" @change="handleTableChange">
       </a-table>
+      <!-- 批量操作和分页区域 -->
+      <div class="table-footer">
+        <!-- 批量操作区域 -->
+        <div class="batch-actions-container">
+          <div v-if="selectedRowKeys.length > 0" class="batch-actions">
+            <a-button type="link" @click="batchUpdate(1)">批量出勤</a-button>
+            <a-button type="link" @click="batchUpdate(-1)" class="danger">批量缺勤</a-button>
+            <a-button type="link" @click="clearSelection">取消选择</a-button>
+          </div>
+        </div>
+        <!-- 分页组件 -->
+        <div class="pagination-container">
+          <a-pagination 
+            :current="pagination.current" 
+            :page-size="pagination.pageSize" 
+            :total="pagination.total" 
+            @change="handlePaginationChange"
+          />
+        </div>
+      </div>
     </div>
 
     <!-- 学生详情抽屉 -->
@@ -214,6 +227,12 @@ export default {
       this.fetch();
     },
 
+    handlePaginationChange(current, pageSize) {
+      this.listParam.page = current;
+      this.listParam.pageSize = pageSize;
+      this.fetch();
+    },
+
     onSelectChange(selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys;
     },
@@ -320,18 +339,27 @@ export default {
   }
 }
 
-.batch-actions {
-  margin-bottom: 12px;
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
 
+.batch-actions-container {
+  flex: 1;
+}
+
+.batch-actions {
   .ant-btn {
     margin-right: 8px;
   }
 }
 
-.student-list-section {
-  background-color: #fff;
-  border: 1px solid #e8e8e8;
-  border-radius: 4px;
+.pagination-container {
+  flex-shrink: 0;
 }
 
 // 状态样式
