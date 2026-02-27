@@ -15,13 +15,13 @@
       <div v-for="(detail, index) in tableList" class="tableItem">
         <div class="content">
           <p>{{ detail.subject }}</p>
-          <p><a-icon :component="detail2" /><b>直播时间:</b>{{ formatTime(detail.start_time) }} - {{
+          <p><a-icon :component="detail2" /><b>直播时间:</b>{{ formatTime(detail.start_time) }} ~ {{
             formatTime(detail.end_time, "hh-mm-ss") }}</p>
           <p><a-icon :component="detail1" /><b>相关课程：</b>{{ detail.course_name }}</p>
           <p><a-icon :component="detail3" /><b>老师：</b>{{ detail.teacher_name }}</p>
 
-          <a-space>
-            <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary"
+          <a-space style="margin-top:6px;">
+            <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary" ghost
               @click="gotoCourseLive(detail.id)">进入直播间</a-button>
             <template v-if="role !== 'student'">
               <a-button v-if="shouldShowEnterBroadcastutton(detail)" type="primary"
@@ -29,7 +29,7 @@
             </template>
             <a-button v-if="detail.replay && detail.status === 3" class="greenBtn"
               @click="gotoReplayList(detail.id)">直播回放</a-button>
-
+            <a-button style="visibility: hidden;">占位</a-button>
             <!-- <template v-if="role === 'teacher'">
               <a-button type="info" @click="$refs.createModal.edit(detail)">编辑</a-button>
               <a-button type="danger" @click="removeLiveConfig(detail.id)">删除</a-button>
@@ -38,13 +38,13 @@
         </div>
         <div class="frame">
           <img v-show="detail.img" :src="detail.img" :alt="detail.subject" />
-          <a-icon type="play-circle" style="font-size: 50px" />
+          <img class="play-icon" src="@/assets/icons/play.png" style="width: 32px; height: 32px" />
         </div>
 
-        <div class="flag">
-          <a-button style="color: #fff" :style="{ backgroundColor: getStatusColor(detail.status) }">{{
-            getStatusText(detail.status) }}</a-button>
-          <!-- <a-badge :color="getStatusColor(detail.status)" :text="getStatusText(detail.status)" size="large" /> -->
+        <div class="flag"
+          :style="{ backgroundColor: getStatusColor(detail.status), color: detail.status === 3 ? '#767A8A' : '#fff' }">
+          {{
+            getStatusText(detail.status) }}
         </div>
       </div>
     </div>
@@ -177,6 +177,9 @@ export default {
       })
         .then(res => {
           this.tableList = res.pageBean.list.map(el => {
+            // DEBUG:
+            el.status = 1
+
             el.statusByTime = this.getStatusByTime(el);
             !el.img && (el.img = "/defaultLive.jpg");
             return el;
@@ -306,10 +309,19 @@ export default {
       }
     },
     getStatusText(s) {
-      return this.queryField.status.list.find(el => el.value == s)?.label || "未知的状态";
+      return this.queryField.status.list.find(el => el.value == s)?.label || "";
     },
+    /**
+     * 获取直播状态对应的颜色
+     * @param {number} s - 状态值，取值范围：
+     * 0: 未开始
+     * 1: 正在直播
+     * 2: 直播准备
+     * 3: 已结束
+     * @returns {string} 状态对应的颜色
+     */
     getStatusColor(s) {
-      return ["#1890FF", "#52c41a", "#---", "#afafaf"][s] || "#87d068";
+      return ["#1890FF", "#52c41a", "#---", "#E9EBF1"][s] || "#87d068";
     },
 
     shouldShowEnterLiveButton(detail) {
@@ -376,9 +388,11 @@ export default {
 
   .flag {
     position: absolute;
-    right: 16px;
-    bottom: 16px;
+    right: 0;
+    bottom: 0;
     z-index: 1;
+    border-radius: ~"28% 0 0 0 / 120% 0 0 0";
+    padding: 2px 20px;
   }
 
   .content {
@@ -391,6 +405,9 @@ export default {
       font-weight: 500;
       line-height: 24px;
       color: #111111;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     p:not(:first-child) {
@@ -398,21 +415,28 @@ export default {
       font-weight: normal;
       line-height: 22px;
       color: #111111;
-      b, .anticon {
+
+      b,
+      .anticon {
         font-weight: normal;
         color: #565D69;
+      }
+
+      b {
+        text-wrap: nowrap;
       }
     }
   }
 
   .frame {
     flex: 0 0 auto;
-    width: 160px;
-    height: 120px;
+    width: 202px;
+    height: 114px;
     text-align: center;
     position: relative;
     overflow: hidden;
     background-color: #f0f0f0;
+    border-radius: 6px;
 
     img {
       width: 100%;
@@ -420,7 +444,7 @@ export default {
       object-fit: cover;
     }
 
-    .anticon {
+    .play-icon {
       position: absolute;
       top: 50%;
       left: 50%;
