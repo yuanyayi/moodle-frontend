@@ -51,8 +51,6 @@ export default {
       // end
       isDev: process.env.NODE_ENV === "development" || process.env.VUE_APP_PREVIEW === "true",
 
-      // base
-      menus: [],
       // 侧栏收起状态
       collapsed: false,
       title: defaultSettings.title,
@@ -88,10 +86,13 @@ export default {
       // 动态主路由
       mainMenu: state => state.permission.addRouters,
     }),
+    // 计算菜单数据，当 mainMenu 变化时自动更新
+    menus() {
+      const routes = this.mainMenu.find(item => item.path === "/");
+      return (routes && routes.children) || [];
+    }
   },
   created() {
-    const routes = this.mainMenu.find(item => item.path === "/");
-    this.menus = (routes && routes.children) || [];
     // 处理侧栏收起状态
     this.$watch("collapsed", () => {
       this.$store.commit(SIDEBAR_TYPE, this.collapsed);
