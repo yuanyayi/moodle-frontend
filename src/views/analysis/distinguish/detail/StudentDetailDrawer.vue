@@ -1,6 +1,6 @@
 <template>
-  <a-drawer title="学生考勤详情" placement="right" :width="'100%'" :visible="visible" :closable="true" :mask-closable="true"
-    @close="handleClose" :style="{ maxWidth: '800px' }">
+  <a-drawer title="学生人脸识别记录" placement="right" :width="800" :visible="visible" :closable="true" :mask="true" :mask-closable="true"
+    @close="handleClose">
     <div v-if="loading" class="loading-container">
       <a-spin tip="加载中..." size="large" />
     </div>
