@@ -160,10 +160,6 @@ export default {
 </script>
 
 <style scoped>
-.log-detail {
-  padding: 0 20px;
-}
-
 .live-info-section {
   margin-bottom: 24px;
 }

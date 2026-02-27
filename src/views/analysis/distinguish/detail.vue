@@ -42,19 +42,16 @@
         <!-- 批量操作区域 -->
         <div class="batch-actions-container">
           <div v-if="selectedRowKeys.length > 0" class="batch-actions">
-            <a-button type="link" @click="batchUpdate(1)">批量出勤</a-button>
-            <a-button type="link" @click="batchUpdate(-1)" class="danger">批量缺勤</a-button>
-            <a-button type="link" @click="clearSelection">取消选择</a-button>
+            <span style="font-size: 13px;">已选择 {{ selectedRowKeys.length }} 项</span>
+            <a-button type="link" @click="clearSelection" size="small" style="font-size: 13px;">取消</a-button>
+            <a-button ghost type="primary" @click="batchUpdate(1)">批量出勤</a-button>
+            <a-button ghost type="danger" @click="batchUpdate(-1)" class="danger">批量缺勤</a-button>
           </div>
         </div>
         <!-- 分页组件 -->
         <div class="pagination-container">
-          <a-pagination 
-            :current="pagination.current" 
-            :page-size="pagination.pageSize" 
-            :total="pagination.total" 
-            @change="handlePaginationChange"
-          />
+          <a-pagination :current="pagination.current" :page-size="pagination.pageSize" :total="pagination.total"
+            @change="handlePaginationChange" />
         </div>
       </div>
     </div>
@@ -355,6 +352,7 @@ export default {
 .batch-actions {
   .ant-btn {
     margin-right: 8px;
+    font-weight: 400;
   }
 }
 
