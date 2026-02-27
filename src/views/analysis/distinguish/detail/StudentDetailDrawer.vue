@@ -214,7 +214,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .student-detail-content {
   padding: 16px 0;
 }
@@ -233,6 +233,10 @@ export default {
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
+
+  &>div {
+    margin-right: 16px;
+  }
 }
 
 .student-name {
