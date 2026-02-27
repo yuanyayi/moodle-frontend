@@ -56,7 +56,7 @@
                     </a-menu-item>
                   </a-menu>
                 </a-dropdown>
-                <a-button type="primary" @click="getSummary(detail.id)">开始总结</a-button>
+                <a-button type="primary" @click="prepareSummary(detail.id)">开始总结</a-button>
               </div>
             </div>
           </div>
