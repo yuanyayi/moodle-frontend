@@ -1,6 +1,6 @@
 // eslint-disable-next-line
 import { UserLayout, BasicLayout, BlankLayout, PageView } from "@/layouts";
-import { list, liveAnaylse } from "@/core/icons";
+import { list, liveAnaylse, docs } from "@/core/icons";
 
 // const RouteView = {
 //   name: "RouteView",
@@ -36,6 +36,7 @@ export const asyncRouterMap = [
       return "/live/list";
     },
     children: [
+      // 直播统计
       {
         path: "/analysis",
         name: "analysis",
@@ -158,6 +159,13 @@ export const asyncRouterMap = [
       //   meta: { title: "flv测试", permission: ["live"] },
       //   component: () => import("@/views/live/FlvPlayerDemo"),
       // },
+      // 用户手册
+      {
+        path: "/docs",
+        name: "docs",
+        meta: { title: "用户手册", permission: ["live"],icon:docs },
+        component: () => import("@/views/docs"),
+      },
     ],
   },
   {

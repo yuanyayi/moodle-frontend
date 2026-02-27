@@ -56,9 +56,10 @@
                     </a-menu-item>
                   </a-menu>
                 </a-dropdown>
-                <a-button type="primary" @click="prepareSummary(detail.id)">开始总结</a-button>
-                <a-button disabled class="disabled-btn">总结中...</a-button>
-                <a-button @click="getSummary(detail.id)">查看总结</a-button>
+                <a-button v-if="detail.summary_status === 0" type="primary"
+                  @click="prepareSummary(detail.id)">开始总结</a-button>
+                <a-button v-if="detail.summary_status === 1" disabled class="disabled-btn">总结中...</a-button>
+                <a-button v-if="detail.summary_status === 2" @click="getSummary(detail.id)">查看总结</a-button>
               </div>
             </div>
           </div>
@@ -262,6 +263,8 @@ export default {
           return;
         }
         this.$message.success(res.msg || "AI总结中，请等待。");
+      }).finally(res => {
+        this.fetch();
       });
     },
     getSummary(id) {

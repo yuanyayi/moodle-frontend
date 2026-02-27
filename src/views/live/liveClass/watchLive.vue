@@ -12,14 +12,8 @@
     <!-- 设备测试弹窗，仅在直播模式且为学生角色时显示 -->
     <!-- <LiveDeviceTestModal v-if="role === 'student' && mode === 'live'" :visible="deviceTestModalVisible" @confirm="handleDeviceConfirm" @cancel="handleDeviceCancel" /> -->
 
-    <!-- 返回直播平台按钮 -->
-    <div class="floating-player-toggle" v-if="mode === 'replay'">
-      <a-button type="primary" shape="circle" @click="goReplay"
-        :style="{ position: 'fixed', right: '20px', top: '50px', zIndex: 999, width: '52px', height: '52px', lineHeight: '52px' }"
-        title="返回直播平台">
-        <a-icon type="home-o" :style="{ fontSize: '30px', verticalAlign: 'middle' }" />
-      </a-button>
-    </div>
+    <!-- 浮动胶囊组件 -->
+    <FloatingCapsule :items="capsuleItems" :initialPosition="{ x: null, y: 50 }" />
 
     <!-- 主要内容区域 -->
     <!-- <div class="volcLiveApp" v-if="mode === 'live'">
@@ -75,7 +69,7 @@
       </div>
     </div>
     <VideoNotes v-if="mode === 'replay'" :vid="liveConfigId" :showEditor="role === 'student'"
-      style="background-color: #fff; position: relative;  z-index: 10;" />
+      style="background-color: #fff; position: relative;  z-index: 10; margin-top: -85px;" />
   </div>
 </template>
 
@@ -83,6 +77,8 @@
 import CameraCapture from "@/components/CameraCapture.vue";
 import { prepareLivePage2, prepareReplay, getLiveCountdownTime, handUp, getFeedbackResult } from "@/api/livepage";
 import VideoNotes from "@/components/VideoNotes.vue";
+import FloatingCapsule from "@/components/FloatingCapsule.vue";
+import { backSystem, feedback } from "@/core/icons";
 import { mapGetters } from "vuex";
 import CountdownModal from "@/components/CountdownModal";
 import RealNameCheckInModal from "@/components/RealNameCheckInModal.vue";
@@ -93,6 +89,7 @@ export default {
   components: {
     CameraCapture,
     VideoNotes,
+    FloatingCapsule,
     CountdownModal,
     RealNameCheckInModal,
     LiveDeviceTestModal,
@@ -123,6 +120,20 @@ export default {
         handle: false,
       },
       feedbackPollTimer: null, // 轮询定时器
+      // 浮动胶囊组件配置
+      capsuleItems: [
+        {
+          component: backSystem,
+          title: '返回系统',
+          onClick: () => this.goReplay()
+        },
+        {
+          component: feedback,
+          title: '问题反馈',
+          show: () => !this.feedback.id || this.feedback.handle,
+          onClick: () => this.handUp()
+        }
+      ]
     };
   },
   computed: {
@@ -483,9 +494,13 @@ export default {
 
   .player-iframe {
     width: 100%;
-    height: calc((90vw - 330px) * 9 / 16 + 154px);
+    height: calc((90vw - 330px) * 9 / 16 + 209px);
     min-height: 415px;
     border: none;
+
+    @media (max-width: 972px) {
+      height: 571px;
+    }
   }
 
   .player-header {

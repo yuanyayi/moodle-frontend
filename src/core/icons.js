@@ -7,7 +7,6 @@
  * 所有图标均从这里加载，方便管理
  */
 import bxAnaalyse from "@/assets/icons/bx-analyse.svg?inline"; // path to your '*.svg?inline' file.
-import nav06 from "@/assets/icons/nav-06.svg?inline";
 import docs from "@/assets/icons/docs.svg?inline";
 import liveOverall from "@/assets/icons/live-overall.svg?inline";
 import liveAnaylse from "@/assets/icons/live-anaylse.svg?inline";
@@ -24,6 +23,7 @@ import ciyun2 from "@/assets/icons/ciyun2.svg?inline";
 import status1 from "@/assets/icons/status1.svg?inline";
 import status0 from "@/assets/icons/status0.svg?inline";
 import statusMinus1 from "@/assets/icons/status-1.svg?inline";
+import drag from "@/assets/icons/drag.svg?inline";
 
 
-export { bxAnaalyse, nav06, docs, liveOverall, liveAnaylse, list, backHome, backSystem, feedback, studentView, detail1, detail2, detail3, ciyun1, ciyun2, status1, status0, statusMinus1 };
+export { bxAnaalyse, docs, liveOverall, liveAnaylse, list, backHome, backSystem, feedback, studentView, detail1, detail2, detail3, ciyun1, ciyun2, status1, status0, statusMinus1, drag };
