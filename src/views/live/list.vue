@@ -11,43 +11,41 @@
     </div> -->
 
     <Empty v-if="!tableList.length" />
-    <div v-for="(detail, index) in tableList" class="tableItem">
-      <div class="frame">
-        <img v-show="detail.img" :src="detail.img" :alt="detail.subject" />
-        <a-icon type="play-circle" style="font-size: 50px" />
-      </div>
-      <div class="content">
-        <p style="font-size: 18px">{{ detail.subject }}</p>
-        <p><b>相关课程：</b>{{ detail.course_name }}</p>
-        <p><b>老师：</b>{{ detail.teacher_name }}</p>
-        <p v-if="detail.repeat">
-          <b>直播时间:</b>{{ readFromList(detail.repeat, repeatMap) }}{{ formatTime(detail.start_time, "YYYY-MM-DD HH:mm")
-          }}
-          <span style="color: #a1a1a1">下次直播：{{ formatTime(detail.next_start_time, "YYYY-MM-DD HH:mm") }}</span>
-        </p>
-        <p v-else><b>直播时间:</b>{{ formatTime(detail.start_time) }} - {{ formatTime(detail.end_time) }}</p>
+    <div class="table-container">
+      <div v-for="(detail, index) in tableList" class="tableItem">
+        <div class="content">
+          <p>{{ detail.subject }}</p>
+          <p><a-icon :component="detail2" /><b>直播时间:</b>{{ formatTime(detail.start_time) }} - {{
+            formatTime(detail.end_time, "hh-mm-ss") }}</p>
+          <p><a-icon :component="detail1" /><b>相关课程：</b>{{ detail.course_name }}</p>
+          <p><a-icon :component="detail3" /><b>老师：</b>{{ detail.teacher_name }}</p>
 
-        <a-space>
-          <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary"
-            @click="gotoCourseLive(detail.id)">进入直播间</a-button>
-          <template v-if="role !== 'student'">
-            <a-button v-if="shouldShowEnterBroadcastutton(detail)" type="primary"
-              @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
-          </template>
-          <a-button v-if="detail.replay && detail.status === 3" class="greenBtn"
-            @click="gotoReplayList(detail.id)">直播回放</a-button>
+          <a-space>
+            <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary"
+              @click="gotoCourseLive(detail.id)">进入直播间</a-button>
+            <template v-if="role !== 'student'">
+              <a-button v-if="shouldShowEnterBroadcastutton(detail)" type="primary"
+                @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
+            </template>
+            <a-button v-if="detail.replay && detail.status === 3" class="greenBtn"
+              @click="gotoReplayList(detail.id)">直播回放</a-button>
 
-          <!-- <template v-if="role === 'teacher'">
-            <a-button type="info" @click="$refs.createModal.edit(detail)">编辑</a-button>
-            <a-button type="danger" @click="removeLiveConfig(detail.id)">删除</a-button>
-          </template> -->
-        </a-space>
-      </div>
+            <!-- <template v-if="role === 'teacher'">
+              <a-button type="info" @click="$refs.createModal.edit(detail)">编辑</a-button>
+              <a-button type="danger" @click="removeLiveConfig(detail.id)">删除</a-button>
+            </template> -->
+          </a-space>
+        </div>
+        <div class="frame">
+          <img v-show="detail.img" :src="detail.img" :alt="detail.subject" />
+          <a-icon type="play-circle" style="font-size: 50px" />
+        </div>
 
-      <div class="flag">
-        <a-button style="color: #fff" :style="{ backgroundColor: getStatusColor(detail.status) }">{{
-          getStatusText(detail.status) }}</a-button>
-        <!-- <a-badge :color="getStatusColor(detail.status)" :text="getStatusText(detail.status)" size="large" /> -->
+        <div class="flag">
+          <a-button style="color: #fff" :style="{ backgroundColor: getStatusColor(detail.status) }">{{
+            getStatusText(detail.status) }}</a-button>
+          <!-- <a-badge :color="getStatusColor(detail.status)" :text="getStatusText(detail.status)" size="large" /> -->
+        </div>
       </div>
     </div>
     <a-pagination style="float: right" v-bind="pagination" @change="paginationChangeHandler" />
@@ -67,6 +65,7 @@ import { fetchLiveList, getLiveMaps, getCourseList, removeLiveConfig } from "@/a
 import CreateLive from "./CreateLive.vue";
 import moment from "moment";
 import { mapGetters } from "vuex";
+import { detail1, detail2, detail3 } from "@/core/icons";
 
 export default {
   name: "liveList",
@@ -79,6 +78,9 @@ export default {
   },
   data() {
     return {
+      detail1,
+      detail2,
+      detail3,
       loading: false,
       queryField: {
         semester_id: {
@@ -331,45 +333,91 @@ export default {
 </script>
 
 <style lang="less" scope>
+.table-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
 .tableItem {
   box-sizing: border-box;
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #dedede;
+  padding: 16px;
+  border: 1px solid #E9EBF1;
   display: flex;
   position: relative;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  border-radius: 8px;
+  background: #FFFFFF;
+  box-shadow: 0px 8px 24px 0px rgba(46, 93, 209, 0.08), 0px 8px 16px 0px rgba(46, 93, 209, 0.04);
 
   &:hover {
-    box-shadow: 2px 2px 3px #dedede;
+    box-shadow: 0px 8px 24px 0px rgba(46, 93, 209, 0.12), 0px 8px 16px 0px rgba(46, 93, 209, 0.08);
   }
 
   p {
     margin-bottom: 0.3em;
+    display: flex;
+    align-items: center;
+
+    .anticon {
+      margin-right: 8px;
+      font-size: 18px;
+      vertical-align: middle;
+    }
   }
 
   .flag {
-    margin-top: 10px;
     position: absolute;
-    right: 0;
-    top: 0;
-    padding: 0 7px;
+    right: 16px;
+    bottom: 16px;
+    z-index: 1;
+  }
+
+  .content {
+    flex: 1;
+    margin-right: 16px;
+    min-width: 0;
+
+    p:first-child {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 24px;
+      color: #111111;
+    }
+
+    p:not(:first-child) {
+      font-size: 14px;
+      font-weight: normal;
+      line-height: 22px;
+      color: #111111;
+      b, .anticon {
+        font-weight: normal;
+        color: #565D69;
+      }
+    }
   }
 
   .frame {
     flex: 0 0 auto;
-    width: 200px;
-    height: 140px;
+    width: 160px;
+    height: 120px;
     text-align: center;
     position: relative;
     overflow: hidden;
-    margin-right: 10px;
     background-color: #f0f0f0;
 
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-color: red;
     }
 
     .anticon {
