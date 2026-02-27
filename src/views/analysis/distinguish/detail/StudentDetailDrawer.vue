@@ -43,13 +43,12 @@
           <!-- 抓取照片 -->
           <h4>抓取照片
             <!-- 操作按钮 -->
-            <a-space v-if="isNotStudent" style="margin-left: 100px">
-              <a-button @click="confirmAttendance" size="small">确认出勤</a-button>
-              <a-button @click="confirmAbsent" size="small">确认缺勤</a-button>
-            </a-space>
-            <!-- 操作按钮 -->
-            <a-space v-if="!isNotStudent && studentInfo.can_appeal" style="margin-left: 20px">
-              <a-button @click="showAppealModal = true" size="small" type="danger" ghost>申诉</a-button>
+            <a-space v-if="isNotStudent">
+              <a-button @click="confirmAttendance">确认出勤</a-button>
+              <a-button @click="confirmAbsent">确认缺勤</a-button>
+              <template v-if="studentInfo.can_appeal">
+                <a-button @click="showAppealModal = true" type="danger" ghost>申诉</a-button>
+              </template>
             </a-space>
           </h4>
 
@@ -278,29 +277,40 @@ export default {
 }
 
 .records-section h4 {
-  margin-bottom: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
+  padding: 8px 16px;
+  margin-bottom: 0;
+  color: #111;
+  background: linear-gradient(270deg, rgba(25, 120, 254, 0) 0%, rgba(5, 124, 251, 0.05) 100%);
+  box-sizing: border-box;
+  border-width: 0px 0px 0px 2px;
+  border-style: solid;
+  border-color: #057CFB;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  >* {
+    margin: -6px 0;
+  }
 }
 
 /* 照片区域样式 */
 .system-photos-section {
-  margin-bottom: 20px;
+  margin-bottom: 4px;
 }
 
 .photos-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
-  margin-bottom: 20px;
+  padding: 16px;
+  gap: 16px;
 }
 
 .photo-item {
   text-align: center;
-  flex: 0 0 calc(20% - 10px);
+  flex: 0 1 calc(25% - 16px);
   min-width: 100px;
+  max-width: calc(25% - 16px);
 }
 
 .photo-item img {
