@@ -456,14 +456,16 @@ export default {
 }
 
 .greenBtn {
-  background-color: #52c41a;
+  // background-color: #52c41a;
+  background-color: #fff;
   border-color: #52c41a;
-  color: #fff;
+  color: #52c41a;
 
   &:hover {
-    background-color: #73d13d;
+    // background-color: #73d13d;
+    background-color: #fff;
     border-color: #73d13d;
-    color: #fff;
+    color: #73d13d;
   }
 }
 </style>
