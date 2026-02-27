@@ -40,6 +40,9 @@
         </a-table>
       </div>
     </a-card>
+
+    <!-- 学生直播日志详情抽屉 -->
+    <student-live-log-detail-drawer ref="studentLiveLogDetailDrawer" />
   </div>
 </template>
 
@@ -48,12 +51,14 @@ import { fetchLogsByLive } from "@/api/logs";
 import { formatTime } from "@/utils/common";
 import { mapGetters } from "vuex";
 import StatusTag from "@/components/Common/StatusTag.vue";
+import StudentLiveLogDetailDrawer from "./detail/StudentLiveLogDetailDrawer.vue";
 import { detail1, detail2, detail3 } from "@/core/icons";
 
 export default {
   name: "LiveLogDetail",
   components: {
     StatusTag,
+    StudentLiveLogDetailDrawer,
   },
   data() {
     return {
@@ -145,14 +150,8 @@ export default {
       this.fetchStudentRecords();
     },
     viewDetail(studentId) {
-      // 跳转到学生日志详情页面
-      this.$router.push({
-        name: "studentLiveLogDetail",
-        params: {
-          live_config_id: this.liveConfigId,
-          student_id: studentId
-        }
-      });
+      // 打开学生直播日志详情抽屉
+      this.$refs.studentLiveLogDetailDrawer.show(this.liveConfigId, studentId);
     },
     // 添加t方法解决国际化问题
     t(key) {
