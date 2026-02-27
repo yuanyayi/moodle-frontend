@@ -61,9 +61,13 @@
       </div>
       <div style="flex: 1">
         <div class="player-header" v-if="mode === 'replay'">
-          <div class="title">{{ replayDetail.name }}的回放</div>
+          <div class="header-left">
+            <div class="title">{{ replayDetail.name }}</div>
+            <div class="replay-tag">回放</div>
+          </div>
           <div class="info">
-            <span>观看人数:{{ replayDetail.view_number }}</span><span>点赞数：{{ replayDetail.like_number }}</span>
+            <span><a-icon type="eye" /> 观看人数: {{ replayDetail.view_number }}</span>
+            <span><a-icon type="like" /> 点赞数: {{ replayDetail.like_number }}</span>
           </div>
         </div>
         <iframe :src="isCheckedIn && liveUrl" class="player-iframe"
@@ -71,7 +75,7 @@
       </div>
     </div>
     <VideoNotes v-if="mode === 'replay'" :vid="liveConfigId" :showEditor="role === 'student'"
-      style="background-color: #fff" />
+      style="background-color: #fff; position: relative;  z-index: 10;" />
   </div>
 </template>
 
@@ -479,24 +483,57 @@ export default {
 
   .player-iframe {
     width: 100%;
-    // height: calc(100vh - 202px);
-    aspect-ratio: 16 / 10;
+    height: calc((90vw - 330px) * 9 / 16 + 154px);
     min-height: 415px;
     border: none;
   }
 
   .player-header {
     background: #fff;
-    font-size: 16px;
-    padding: 5px 10px;
+    font-size: 24px;
+    padding: 20px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90vw;
+    margin: 0 auto;
 
-    span {
-      margin-right: 1em;
+    .header-left {
+      display: flex;
+      align-items: center;
+
+      .title {
+        font-size: 16px;
+        font-weight: 500;
+        color: #111111;
+        margin-right: 10px;
+      }
+
+      .replay-tag {
+        font-size: 12px;
+        color: #1890ff;
+        background: rgba(24, 144, 255, 0.1);
+        padding: 2px 8px;
+        border-radius: 4px;
+      }
     }
 
     .info {
       font-size: 14px;
-      color: #a4a4a4;
+      color: #565d69;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        i {
+          color: #1890ff;
+        }
+      }
     }
   }
 
