@@ -268,3 +268,39 @@ ol {
   padding-top: 5px;
   padding-bottom: 5px;
 }
+
+// ============================================
+// 分页组件样式：自定义元素顺序
+// ============================================
+.ant-pagination {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+// 总条数
+.ant-pagination-total-text {
+  order: 0;
+}
+
+// 页面大小选择器
+.ant-pagination-options-size-changer {
+  order: 1;
+  margin-right: 8px;
+}
+
+// 页码
+.ant-pagination-item,
+.ant-pagination-prev,
+.ant-pagination-next,
+.ant-pagination-jump-prev,
+.ant-pagination-jump-next {
+  order: 2;
+}
+
+// 快速跳转
+.ant-pagination-options-quick-jumper {
+  order: 3;
+  margin-left: 8px;
+}
