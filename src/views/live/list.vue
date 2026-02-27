@@ -48,7 +48,7 @@
         </div>
       </div>
     </div>
-    <a-pagination style="float: right" v-bind="pagination" @change="paginationChangeHandler" />
+    <a-pagination style="text-align:right;margin-top:20px;" v-bind="pagination" @change="paginationChangeHandler" />
 
     <!--  -->
     <CreateLive ref="createModal" @ok="handleOk" />
@@ -124,9 +124,12 @@ export default {
       },
       tableList: [],
       pagination: {
-        simple: true,
         current: 1,
         total: 0,
+        pageSize: 10,
+        showSizeChanger: true,
+        pageSizeOptions: ["10", "20", "50", "100"],
+        showTotal: (total) => `共 ${total} 条数据`,
       },
       repeatMap: [],
     };
@@ -177,9 +180,6 @@ export default {
       })
         .then(res => {
           this.tableList = res.pageBean.list.map(el => {
-            // DEBUG:
-            el.status = 1
-
             el.statusByTime = this.getStatusByTime(el);
             !el.img && (el.img = "/defaultLive.jpg");
             return el;
@@ -450,7 +450,6 @@ export default {
       left: 50%;
       transform: translate(-50%, -50%);
       color: #fff;
-      cursor: pointer;
     }
   }
 }

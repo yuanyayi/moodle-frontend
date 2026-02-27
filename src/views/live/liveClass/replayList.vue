@@ -1,21 +1,26 @@
 <template>
   <a-card :bordered="false" style="margin-bottom: 24px">
-    <a-card title="直播基本信息" style="margin-bottom: 24px">
-      <a-descriptions :column="3" :bordered="false" :dataSource="detail" :size="'small'">
-        <a-descriptions-item v-for="(desc, field) in fieldsMap" :key="field" :label="desc.label">
-          <template v-if="['start_time', 'end_time'].indexOf(field) !== -1">
-            {{ formatDate(detail[field], "YYYY-MM-DD HH:mm") }}
-          </template>
-          <!-- <template v-else-if="field === 'repeat'">
-            {{ readFromList(detail[field], desc.list) }}
-          </template>
-          <template v-else-if="field === 'replay'">
-            {{ detail[field] ? "是" : "否" }}
-          </template> -->
-          <template v-else>{{ detail[field] }}</template>
-        </a-descriptions-item>
-      </a-descriptions>
-    </a-card>
+    <div class="live-info-section">
+      <div class="title" style="line-height:26px">{{ detail.subject }}<status-tag
+          :color="detail.replay ? '#13C74F' : '#6E7079'" :text="detail.replay ? '已开放回放' : '未开放回放'" /></div>
+      <div>
+        <span class="info-item">
+          <a-icon :component="detail1" />
+          <span class="label">相关课程：</span>
+          <span class="value">{{ detail.course_name }}</span>
+        </span>
+        <span class="info-item">
+          <a-icon :component="detail2" />
+          <span class="label">直播时间：</span>
+          <span class="value">{{ formatTime(detail.start_time, "YYYY-MM-DD HH:mm") }}</span>
+        </span>
+        <span class="info-item">
+          <a-icon :component="detail3" />
+          <span class="label">老师：</span>
+          <span class="value">{{ detail.teacher_name || "未知" }}</span>
+        </span>
+      </div>
+    </div>
 
     <a-row :gutter="[10, 10]">
       <template v-for="(detail, index) in tableList">
@@ -67,11 +72,13 @@
 import APagination from "ant-design-vue/es/pagination";
 import Empty from "@/components/Empty.vue";
 import DetailList from "@/components/DetailList";
-import { formatDate, readFromList } from "@/utils/common";
+import { formatDate, readFromList, formatTime } from "@/utils/common";
 import { getLiveConfigDetail, getLiveMaps, prepareSummary, getSummary } from "@/api/live";
 import { getReplayList, renameLiveRecord, deleteLiveRecord, updateOpen } from "@/api/livepage";
 import EditText from "@/components/EditText";
 import { mapGetters } from "vuex";
+import StatusTag from "@/components/Common/StatusTag.vue";
+import { detail1, detail2, detail3 } from "@/core/icons";
 
 export default {
   name: "replayList",
@@ -80,9 +87,13 @@ export default {
     APagination,
     Empty,
     EditText,
+    StatusTag,
   },
   data() {
     return {
+      detail1,
+      detail2,
+      detail3,
       loading: false,
       listParam: {
         page: 1,
@@ -199,6 +210,7 @@ export default {
       return this.statusList.find(el => el.value == s)?.label || "未知的状态";
     },
     formatDate,
+    formatTime,
     readFromList,
     getStatusColor(s) {
       return ["gold", "#2db7f5", "#fff", "#87d068", "#ff4d4f", "#ff4d4f"][s] || "#87d068";
@@ -263,6 +275,48 @@ export default {
 </script>
 
 <style lang="less" scope>
+.live-info-section {
+  padding: 24px;
+  background: url('@/assets/bg/image@2x.png') right center / auto 100%, linear-gradient(180deg, #F3F7FF 0%, rgba(243, 247, 255, 0) 100%);
+  background-repeat: no-repeat;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-flow: row wrap;
+
+  .title {
+    width: 100%;
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .info-item {
+    margin-right: 20px;
+
+    >*+* {
+      margin-left: 8px;
+    }
+
+    .anticon {
+      vertical-align: middle;
+      font-size: 22px;
+    }
+
+    .label {
+      width: 100px;
+      font-weight: 500;
+      color: #666;
+    }
+
+    .value {
+      flex: 1;
+      color: #333;
+    }
+  }
+}
+
 .tableItem {
   box-sizing: border-box;
   padding: 10px;
