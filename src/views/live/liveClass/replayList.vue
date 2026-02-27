@@ -1,5 +1,5 @@
 <template>
-  
+
   <a-card :bordered="false" style="margin-bottom: 24px">
     <div class="live-info-section">
       <div class="title" style="line-height:26px">{{ detail.subject }}<status-tag
@@ -37,7 +37,7 @@
                   val => {
                     editName(detail.id, val);
                   }
-                "/>
+                " />
                 <template v-else>{{ detail.name }}</template>
               </p>
               <div class="bottom-actions" v-if="role !== 'student'">
@@ -57,6 +57,8 @@
                   </a-menu>
                 </a-dropdown>
                 <a-button type="primary" @click="prepareSummary(detail.id)">开始总结</a-button>
+                <a-button disabled class="disabled-btn">总结中...</a-button>
+                <a-button @click="getSummary(detail.id)">查看总结</a-button>
               </div>
             </div>
           </div>
@@ -422,5 +424,11 @@ export default {
     border-color: #73d13d;
     color: #fff;
   }
+}
+
+.disabled-btn {
+  background: rgba(5, 124, 251, 0.1) !important;
+  border: 1px solid rgba(5, 124, 251, 0.4) !important;
+  color: #1E69FF !important;
 }
 </style>
