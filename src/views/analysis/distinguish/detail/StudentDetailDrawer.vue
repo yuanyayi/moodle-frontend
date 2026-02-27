@@ -7,14 +7,13 @@
     <div v-else class="student-detail-content">
       <!-- 学生基本信息 -->
       <div class="info-section">
-        <h3>学生信息</h3>
-        <div class="info-item">
-          <span class="label">学生ID：</span>
-          <span class="value">{{ studentInfo.student_id || '未知' }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">学生姓名：</span>
-          <span class="value">{{ studentInfo.student_name || '未知' }}</span>
+        <div class="student-header">
+          <div class="student-name">{{ studentInfo.student_name || '未知' }}</div>
+          <div class="student-id">学生ID：{{ studentInfo.student_id || '未知' }}</div>
+          <div class="attendance-status">
+            <a-icon :component="statusIcon" style="margin-right: 4px;" />
+            {{ attendanceStatusText }}
+          </div>
         </div>
       </div>
 
@@ -29,6 +28,8 @@
 </template>
 
 <script>
+import { status1, status0, statusMinus1 } from "@/core/icons";
+
 export default {
   name: 'StudentDetailDrawer',
   data() {
@@ -36,7 +37,11 @@ export default {
       visible: false,
       attendanceStatusId: '',
       loading: false,
-      studentInfo: {},
+      studentInfo: {
+        student_id: '20231001',
+        student_name: '张三',
+        status: -1
+      },
       faceRecords: [],
       columns: [
         {
@@ -62,6 +67,20 @@ export default {
         }
       ]
     };
+  },
+  computed: {
+    statusIcon() {
+      const status = this.studentInfo.status;
+      if (status === 1) return status1;
+      if (status === -1) return statusMinus1;
+      return status0;
+    },
+    attendanceStatusText() {
+      const status = this.studentInfo.status;
+      if (status === 1) return '出勤';
+      if (status === -1) return '缺勤';
+      return '未处理';
+    }
   },
   methods: {
     show(id) {
@@ -130,37 +149,55 @@ export default {
 .info-section {
   margin-bottom: 24px;
   padding: 16px;
-  background-color: #f5f5f5;
-  border-radius: 8px;
+  background: linear-gradient(180deg, #F3F7FF 0%, rgba(243, 247, 255, 0) 100%);
+  border-radius: 12px;
+  box-sizing: border-box;
+  border: 1px solid #E1EEFC;
 }
 
-.info-section h3,
-.records-section h3 {
-  margin-bottom: 16px;
-  font-size: 16px;
+.student-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.student-name {
+  font-family: PingFang SC;
+  font-size: 18px;
   font-weight: 600;
+  line-height: 26px;
+  letter-spacing: 0px;
   color: #333;
 }
 
-.info-item {
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-}
-
-.label {
-  width: 80px;
-  font-weight: 500;
+.student-id {
+  height: 22px;
+  border-radius: 4px;
+  padding: 0px 10px;
+  box-sizing: border-box;
+  border: 1px solid #DCDCDC;
+  font-size: 14px;
+  line-height: 20px;
   color: #666;
 }
 
-.value {
-  flex: 1;
+.attendance-status {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
   color: #333;
 }
 
 .records-section {
   margin-bottom: 16px;
+}
+
+.records-section h3 {
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
 }
 
 .loading-container {
