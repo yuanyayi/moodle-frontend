@@ -41,18 +41,6 @@
           @photoCaptured="handlePhotoCaptured" @photoCaptureError="handlePhotoCaptureError"
           @autoCaptureStarted="handleAutoCaptureStarted" @autoCaptureStopped="handleAutoCaptureStopped"
           @autoCaptureError="handleAutoCaptureError" />
-
-        <div style="text-align: center; font-size: 16px; padding: 20px 0">
-          <div style="margin-bottom:10px"><a-button @click="goHome"><a-icon type="home"
-                theme="filled" />返回直播平台</a-button></div>
-          <!-- 原有的反馈UI已移至悬浮窗 -->
-          <!-- <span v-if="feedback.id && !feedback.handle" style="color: #f01c08"> 问题已反馈，等待处理 </span>
-          <span v-if="feedback.id && feedback.handle" style="color: #44d0c8"> 问题已处理 </span>
-          <a-button type="primary" ghost v-if="!feedback.id || feedback.handle" @click="handUp"
-            style="width:138px"><a-icon type="message" />{{
-              feedback.id ? "继续反馈"
-                : "问题反馈" }}</a-button> -->
-        </div>
       </div>
       <div style="flex: 1">
         <div class="player-header" v-if="mode === 'replay'">

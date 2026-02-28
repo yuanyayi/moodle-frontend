@@ -331,7 +331,7 @@ export default {
       const startTime = moment(detail.start_time);
       const endTime = moment(detail.end_time);
 
-      return now.isBetween(detail.start_time, endTime);
+      return now.isBetween(startTime, endTime);
     },
     shouldShowEnterBroadcastutton(detail) {
       const now = moment();

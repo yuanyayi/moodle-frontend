@@ -138,10 +138,13 @@ export default {
 
     // 点击返回首页按钮
     goHome() {
+      const h = this.$createElement;
       this.$confirm({
-        title: "确认离开 ",
-        content: "点击确认将离开直播页面 <br/> 2分钟内未进入直播页面将自动结束直播",
-        dangerouslyUseHTMLString: true,
+        title: "确认离开",
+        content: h('div', [
+          h('p', '点击确认将离开直播页面'),
+          h('p', '2分钟内未进入直播页面将自动结束直播')
+        ]),
         okText: "确定",
         cancelText: "取消",
         onOk: () => {

@@ -9,26 +9,35 @@
     <div class="table-container">
       <a-table :columns="columns" :data-source="tableList" :pagination="pagination" :loading="loading" :row-key="record => record.id" @change="handleTableChange"> </a-table>
     </div>
+
+    <!-- 学生详情抽屉 -->
+    <student-detail-drawer ref="studentDetailDrawer" @refresh="fetch" />
   </a-card>
 </template>
 
 <script>
 import SearchForm from "@/components/SearchForm.vue";
 import Empty from "@/components/Empty.vue";
-import { formatTime } from "@/utils/common";
+import StudentDetailDrawer from "./detail/StudentDetailDrawer.vue";
+import { formatTime, readFromList } from "@/utils/common";
 import { getLiveMaps, getCourseList } from "@/api/live";
 import { getStudentDistinguishList } from "@/api/distinguish";
 import { mapGetters } from "vuex";
+import { status1, status0, statusMinus1 } from "@/core/icons";
 
 export default {
   name: "studentFaceRecordList",
   components: {
     SearchForm,
     Empty,
+    StudentDetailDrawer,
   },
   data() {
     return {
       loading: false,
+      status1,
+      status0,
+      statusMinus1,
       queryField: {
         semester_id: {
           type: "select",
@@ -95,34 +104,33 @@ export default {
           title: <div class='nowrap'>考勤状态</div>,
           dataIndex: "status",
           key: "status",
-          customRender: val => {
-            // 从考勤状态映射中查找对应的中文名称
-            const statusItem = this.attendanceStatusMap.find(item => item.value === val);
-            const statusName = statusItem ? statusItem.label : val;
-            
-            // 根据状态设置不同的颜色
-            let color = '';
-            switch(val) {
-              case 1:
-                color = 'green';
-                break;
-              case 0:
-                color = 'red';
-                break;
-              default:
-                color = '';
+          customRender: text => {
+            const statusText = readFromList(text, this.attendanceStatusMap);
+            let iconComponent = null;
+
+            if (text === 0) {
+              iconComponent = status0;
+            } else if (text === 1) {
+              iconComponent = status1;
+            } else if (text === -1) {
+              iconComponent = statusMinus1;
             }
-            
-            return color ? <span style={`color:${color}`}>{statusName}</span> : statusName;
+
+            return (
+              <span>
+                {iconComponent && <a-icon component={iconComponent} style={{ marginRight: '4px' }} />}
+                {statusText}
+              </span>
+            );
           },
         },
         {
           title: <div class='nowrap'>操作</div>,
           dataIndex: "id",
           key: "action",
-          customRender: live_id => {
+          customRender: id => {
             return (
-              <a-button type='link' size='small' onClick={() => this.gotoDetail(live_id)}>
+              <a-button type='link' size='small' onClick={() => this.gotoStudentDetail(id)}>
                 查看详情
               </a-button>
             );
@@ -224,12 +232,8 @@ export default {
       this.listParam.pageSize = pagination.pageSize;
       this.fetch();
     },
-    gotoDetail(live_id) {
-      // 跳转到学生人脸识别记录详情页
-      this.$router.push({
-        name: "studentFaceDetail",
-        params: { id: live_id },
-      });
+    gotoStudentDetail(attendance_status_id) {
+      this.$refs.studentDetailDrawer.show(attendance_status_id);
     },
     // ---------- Filters ---------- //
     formatTime,
