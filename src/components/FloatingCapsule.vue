@@ -2,7 +2,8 @@
   <div class="floating-capsule" :class="{ 'is-dragging': isDragging, 'is-left': isLeft }" :style="capsuleStyle"
     @mousedown="startDrag">
     <div class="capsule-content">
-      <a-tooltip v-for="(item, index) in visibleItems" :key="index" :title="item.title" :placement="isLeft ? 'right' : 'left'">
+      <a-tooltip v-for="(item, index) in visibleItems" :key="index" :title="item.title"
+        :placement="isLeft ? 'right' : 'left'">
         <div class="capsule-item" @click="handleItemClick(item)">
           <a-badge v-if="item.badge && (typeof item.badge === 'function' ? item.badge() : item.badge)" dot
             :offset="[0, 0]" :numberStyle="{ width: '8px', height: '8px', boxShadow: '0 0 0 1px #fff' }">
@@ -148,6 +149,7 @@ export default {
   gap: 8px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   user-select: none;
+  z-index: 995;
 
   &.is-dragging {
     cursor: grabbing;
