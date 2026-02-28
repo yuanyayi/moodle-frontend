@@ -146,7 +146,7 @@ export default {
         {
           component: feedback,
           title: '问题反馈',
-          show: () => !this.feedback.id || this.feedback.handle,
+          show: () => this.role === 'student' && this.mode === 'live',
           onClick: () => this.showFeedbackFloatWindow()
         }
       ],

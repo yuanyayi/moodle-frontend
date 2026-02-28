@@ -326,7 +326,12 @@ export default {
 
     shouldShowEnterLiveButton(detail) {
       if (this.role === "teacher") return false;
-      return true;
+
+      const now = moment();
+      const startTime = moment(detail.start_time);
+      const endTime = moment(detail.end_time);
+
+      return now.isBetween(detail.start_time, endTime);
     },
     shouldShowEnterBroadcastutton(detail) {
       const now = moment();
