@@ -213,6 +213,7 @@ export default {
         if (!err) {
           studentAppeal(this.attendanceStatusId, values.content,).then(() => {
             this.$message.success("申诉已提交");
+            this.studentInfo.can_appeal = false;
             this.showAppealModal = false;
             this.appealForm.resetFields();
           }).catch(() => {
