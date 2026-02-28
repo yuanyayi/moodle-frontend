@@ -84,12 +84,8 @@ export default {
       this.checkPosition()
     },
     checkPosition() {
-      if (this.position.x !== null) {
-        const centerX = this.windowWidth / 2
-        this.isLeft = this.position.x < centerX
-      } else {
-        this.isLeft = false
-      }
+      // 强制贴右侧
+      this.isLeft = false
     },
     startDrag(e) {
       if (e.target.closest('.capsule-drag-handle')) {
@@ -119,14 +115,9 @@ export default {
     stopDrag() {
       this.isDragging = false
 
-      const centerX = this.windowWidth / 2
-      if (this.position.x < centerX) {
-        this.isLeft = true
-        this.position.x = 20
-      } else {
-        this.isLeft = false
-        this.position.x = null
-      }
+      // 强制贴右侧
+      this.isLeft = false
+      this.position.x = null
 
       document.removeEventListener('mousemove', this.onDrag)
       document.removeEventListener('mouseup', this.stopDrag)
