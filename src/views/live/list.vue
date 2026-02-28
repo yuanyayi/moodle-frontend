@@ -16,7 +16,7 @@
         <div class="content">
           <p>{{ detail.subject }}</p>
           <p><a-icon :component="detail2" /><b>直播时间:</b>{{ formatTime(detail.start_time) }} ~ {{
-            formatTime(detail.end_time, "hh-mm-ss") }}</p>
+            formatTime(detail.end_time, "hh:mm:ss") }}</p>
           <p><a-icon :component="detail1" /><b>相关课程：</b>{{ detail.course_name }}</p>
           <p><a-icon :component="detail3" /><b>老师：</b>{{ detail.teacher_name }}</p>
 

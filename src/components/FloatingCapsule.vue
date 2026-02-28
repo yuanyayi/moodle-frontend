@@ -2,18 +2,19 @@
   <div class="floating-capsule" :class="{ 'is-dragging': isDragging, 'is-left': isLeft }" :style="capsuleStyle"
     @mousedown="startDrag">
     <div class="capsule-content">
-      <div v-for="(item, index) in visibleItems" :key="index" class="capsule-item" @click="handleItemClick(item)"
-        :title="item.title">
-        <a-badge v-if="item.badge && (typeof item.badge === 'function' ? item.badge() : item.badge)" dot
-          :offset="[0, 0]" :numberStyle="{ width: '8px', height: '8px', boxShadow: '0 0 0 1px #fff' }">
-          <a-icon v-if="item.icon" :type="item.icon" class="item-icon" />
-          <a-icon v-else-if="item.component" :component="item.component" class="item-icon" />
-        </a-badge>
-        <template v-else>
-          <a-icon v-if="item.icon" :type="item.icon" class="item-icon" />
-          <a-icon v-else-if="item.component" :component="item.component" class="item-icon" />
-        </template>
-      </div>
+      <a-tooltip v-for="(item, index) in visibleItems" :key="index" :title="item.title" :placement="isLeft ? 'right' : 'left'">
+        <div class="capsule-item" @click="handleItemClick(item)">
+          <a-badge v-if="item.badge && (typeof item.badge === 'function' ? item.badge() : item.badge)" dot
+            :offset="[0, 0]" :numberStyle="{ width: '8px', height: '8px', boxShadow: '0 0 0 1px #fff' }">
+            <a-icon v-if="item.icon" :type="item.icon" class="item-icon" />
+            <a-icon v-else-if="item.component" :component="item.component" class="item-icon" />
+          </a-badge>
+          <template v-else>
+            <a-icon v-if="item.icon" :type="item.icon" class="item-icon" />
+            <a-icon v-else-if="item.component" :component="item.component" class="item-icon" />
+          </template>
+        </div>
+      </a-tooltip>
     </div>
     <div class="capsule-drag-handle" title="拖拽移动">
       <a-icon :component="dragIcon" class="drag-icon" />
