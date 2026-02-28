@@ -43,10 +43,13 @@
           <!-- 抓取照片 -->
           <h4>抓取照片
             <!-- 操作按钮 -->
-            <a-space v-if="isNotStudent">
-              <a-button @click="confirmAttendance">确认出勤</a-button>
-              <a-button @click="confirmAbsent">确认缺勤</a-button>
-              <template v-if="studentInfo.can_appeal">
+            <a-space>
+              <template v-if="isNotStudent">
+                
+                <a-button @click="confirmAttendance">确认出勤</a-button>
+                <a-button @click="confirmAbsent">确认缺勤</a-button>
+              </template>
+              <template v-if="!isNotStudent && studentInfo.can_appeal">
                 <a-button @click="showAppealModal = true" type="danger" ghost>申诉</a-button>
               </template>
             </a-space>
@@ -62,7 +65,8 @@
           </div>
 
           <!-- 分页导航 -->
-          <a-pagination v-bind="pagination" @change="pageChange" style="text-align: right" :show-total="total => `共 ${total} 条数据`" size="small" />
+          <a-pagination v-bind="pagination" @change="pageChange" style="text-align: right"
+            :show-total="total => `共 ${total} 条数据`" size="small" />
         </div>
       </div>
     </div>
@@ -185,6 +189,8 @@ export default {
         }
         this.$message.success("已确认出勤");
         this.fetch();
+        // 通知主页面刷新列表
+        this.$emit('refresh');
       });
     },
 
@@ -197,6 +203,8 @@ export default {
         }
         this.$message.success("已确认缺勤");
         this.fetch();
+        // 通知主页面刷新列表
+        this.$emit('refresh');
       });
     },
 

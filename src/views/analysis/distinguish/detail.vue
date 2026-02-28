@@ -57,7 +57,7 @@
     </div>
 
     <!-- 学生详情抽屉 -->
-    <student-detail-drawer ref="studentDetailDrawer" />
+    <student-detail-drawer ref="studentDetailDrawer" @refresh="fetch" />
   </a-card>
 </template>
 
