@@ -45,12 +45,13 @@
         <div style="text-align: center; font-size: 16px; padding: 20px 0">
           <div style="margin-bottom:10px"><a-button @click="goHome"><a-icon type="home"
                 theme="filled" />返回直播平台</a-button></div>
-          <span v-if="feedback.id && !feedback.handle" style="color: #f01c08"> 问题已反馈，等待处理 </span>
+          <!-- 原有的反馈UI已移至悬浮窗 -->
+          <!-- <span v-if="feedback.id && !feedback.handle" style="color: #f01c08"> 问题已反馈，等待处理 </span>
           <span v-if="feedback.id && feedback.handle" style="color: #44d0c8"> 问题已处理 </span>
           <a-button type="primary" ghost v-if="!feedback.id || feedback.handle" @click="handUp"
             style="width:138px"><a-icon type="message" />{{
               feedback.id ? "继续反馈"
-                : "问题反馈" }}</a-button>
+                : "问题反馈" }}</a-button> -->
         </div>
       </div>
       <div style="flex: 1">
@@ -72,6 +73,14 @@
     </div>
     <VideoNotes v-if="mode === 'replay'" :vid="liveConfigId" :showEditor="role === 'student'"
       style="background-color: #fff; position: relative;  z-index: 10; margin-top: -85px;" />
+    
+    <!-- 反馈悬浮窗 -->
+    <FeedbackFloatWindow 
+      :visible="feedbackFloatWindowVisible" 
+      :feedback="feedback"
+      @close="closeFeedbackFloatWindow"
+      @handUp="handUp"
+    />
   </div>
 </template>
 
@@ -85,6 +94,7 @@ import { mapGetters } from "vuex";
 import CountdownModal from "@/components/CountdownModal";
 import RealNameCheckInModal from "@/components/RealNameCheckInModal.vue";
 import LiveDeviceTestModal from "@/components/LiveDeviceTestModal.vue";
+import FeedbackFloatWindow from "@/components/FeedbackFloatWindow.vue";
 
 export default {
   name: "watchLive",
@@ -95,6 +105,7 @@ export default {
     CountdownModal,
     RealNameCheckInModal,
     LiveDeviceTestModal,
+    FeedbackFloatWindow,
   },
   data() {
     return {
@@ -136,9 +147,11 @@ export default {
           component: feedback,
           title: '问题反馈',
           show: () => !this.feedback.id || this.feedback.handle,
-          onClick: () => this.handUp()
+          onClick: () => this.showFeedbackFloatWindow()
         }
-      ]
+      ],
+      // 反馈悬浮窗可见性
+      feedbackFloatWindowVisible: false
     };
   },
   computed: {
@@ -431,6 +444,14 @@ export default {
         name: "replayList",
         params: { configId: this.replayDetail.live_config_id },
       })
+    },
+    // 显示反馈悬浮窗
+    showFeedbackFloatWindow() {
+      this.feedbackFloatWindowVisible = true;
+    },
+    // 关闭反馈悬浮窗
+    closeFeedbackFloatWindow() {
+      this.feedbackFloatWindowVisible = false;
     },
   },
   destroyed() {
