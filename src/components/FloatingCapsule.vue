@@ -97,8 +97,9 @@ export default {
         this.dragOffset.x = e.clientX - (this.position.x || this.windowWidth - 60)
         this.dragOffset.y = e.clientY - this.position.y
 
-        document.addEventListener('mousemove', this.onDrag)
+        document.addEventListener('mousemove', this.onDrag, { passive: false })
         document.addEventListener('mouseup', this.stopDrag)
+        document.addEventListener('mouseleave', this.stopDrag)
         e.preventDefault()
       }
     },
@@ -129,6 +130,7 @@ export default {
 
       document.removeEventListener('mousemove', this.onDrag)
       document.removeEventListener('mouseup', this.stopDrag)
+      document.removeEventListener('mouseleave', this.stopDrag)
     },
     handleItemClick(item) {
       if (item.onClick && typeof item.onClick === 'function') {
