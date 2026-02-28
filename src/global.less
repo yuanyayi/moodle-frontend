@@ -176,7 +176,8 @@ ol {
   box-shadow: none !important;
 }
 
-.ant-menu-item>a {
+.ant-menu-item>a,
+.ant-menu-submenu-title {
   .anticon {
     font-size: 20px;
   }
@@ -194,11 +195,35 @@ ol {
 
 .ant-menu-item-selected>a,
 .ant-menu-item-selected>a:hover {
-  color: #fff;
+  color: #fff !important;
+  
+  & .anticon {
+    color: #fff !important;
+  }
+  
+  & .anticon svg {
+    fill: #fff !important;
+  }
+  
+  & .anticon > svg {
+    fill: #fff !important;
+  }
+}
 
-  .ant-icon {
-    font-size: 20px;
-    color: #fff;
+// 子菜单项选中状态
+.ant-menu-submenu-selected {
+  color: #fff !important;
+  
+  & .anticon {
+    color: #fff !important;
+  }
+  
+  & .anticon svg {
+    fill: #fff !important;
+  }
+  
+  & .anticon > svg {
+    fill: #fff !important;
   }
 }
 
