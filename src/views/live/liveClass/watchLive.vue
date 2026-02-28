@@ -60,8 +60,10 @@
             <div class="replay-tag">回放</div>
           </div>
           <div class="info">
-            <span><a-icon type="eye" /> 观看人数: {{ replayDetail.view_number }}</span>
-            <span><a-icon type="like" /> 点赞数: {{ replayDetail.like_number }}</span>
+            <span><a-icon :component="eye" style="font-size:20px;" /> 观看人数: {{
+              replayDetail.view_number }}</span>
+            <span><a-icon :component="like" style="font-size:20px;" /> 点赞数: {{
+              replayDetail.like_number }}</span>
           </div>
         </div>
         <iframe :src="isCheckedIn && liveUrl" class="player-iframe"
@@ -78,7 +80,7 @@ import CameraCapture from "@/components/CameraCapture.vue";
 import { prepareLivePage2, prepareReplay, getLiveCountdownTime, handUp, getFeedbackResult } from "@/api/livepage";
 import VideoNotes from "@/components/VideoNotes.vue";
 import FloatingCapsule from "@/components/FloatingCapsule.vue";
-import { backSystem, feedback } from "@/core/icons";
+import { backSystem, feedback, eye, like } from "@/core/icons";
 import { mapGetters } from "vuex";
 import CountdownModal from "@/components/CountdownModal";
 import RealNameCheckInModal from "@/components/RealNameCheckInModal.vue";
@@ -119,6 +121,9 @@ export default {
         id: 0,
         handle: false,
       },
+      // 图标
+      eye,
+      like,
       feedbackPollTimer: null, // 轮询定时器
       // 浮动胶囊组件配置
       capsuleItems: [
@@ -443,54 +448,54 @@ export default {
   // background-color: #080b12;
   height: 100vh;
 
-  .volcLiveApp {
-    background-image: url(//p6-live.byteimg.com/tos-cn-i-gjr78lqtd0/faa3e534621e30f31b5fd87bcd31a11d.jpg~tplv-gjr78lqtd0-image.image);
-    background-size: 100% auto;
-    background-repeat: no-repeat;
-    height: 100%;
-    width: 100%;
-    flex: 1;
-    display: flex;
+  // .volcLiveApp {
+  //   background-image: url(//p6-live.byteimg.com/tos-cn-i-gjr78lqtd0/faa3e534621e30f31b5fd87bcd31a11d.jpg~tplv-gjr78lqtd0-image.image);
+  //   background-size: 100% auto;
+  //   background-repeat: no-repeat;
+  //   height: 100%;
+  //   width: 100%;
+  //   flex: 1;
+  //   display: flex;
 
-    .content {
-      width: 100%;
-      min-width: 600px;
-      // max-width: 1612px;
-      margin: 0 auto;
-      padding-top: 120px;
-      padding-bottom: 80px;
-    }
+  //   .content {
+  //     width: 100%;
+  //     min-width: 600px;
+  //     // max-width: 1612px;
+  //     margin: 0 auto;
+  //     padding-top: 120px;
+  //     padding-bottom: 80px;
+  //   }
 
-    .menu-top {
-      width: 100%;
-      display: flex;
-    }
+  //   .menu-top {
+  //     width: 100%;
+  //     display: flex;
+  //   }
 
-    .player {
-      width: calc(100% - 282px);
-      height: calc((90vw - 282px) / 16 * 9 + 55px);
-      min-width: 640px;
-      max-width: 1280px;
-      min-height: 360px;
-      max-height: 775px;
-    }
+  //   .player {
+  //     width: calc(100% - 282px);
+  //     height: calc((90vw - 282px) / 16 * 9 + 55px);
+  //     min-width: 640px;
+  //     max-width: 1280px;
+  //     min-height: 360px;
+  //     max-height: 775px;
+  //   }
 
-    .menu {
-      width: 270px;
-      margin-left: 12px;
-      height: calc((90vw - 282px) / 16 * 9 + 55px);
-      max-height: 775px;
-      min-height: 415px;
-    }
+  //   .menu {
+  //     width: 270px;
+  //     margin-left: 12px;
+  //     height: calc((90vw - 282px) / 16 * 9 + 55px);
+  //     max-height: 775px;
+  //     min-height: 415px;
+  //   }
 
-    .menu-bottom {
-      width: 100%;
-      margin-top: 12px;
-      height: calc(66vw + 100px);
-      max-height: 1300px;
-      min-height: 800px;
-    }
-  }
+  //   .menu-bottom {
+  //     width: 100%;
+  //     margin-top: 12px;
+  //     height: calc(66vw + 100px);
+  //     max-height: 1300px;
+  //     min-height: 800px;
+  //   }
+  // }
 
   .player-iframe {
     width: 100%;

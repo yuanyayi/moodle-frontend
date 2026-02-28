@@ -211,9 +211,10 @@ export default {
   }
 
   .drag-icon {
-    width: 14px;
+    width: 16px;
     height: 4px;
     fill: #999999;
+    font-size: 16px;
   }
 
   &:hover .drag-icon {
