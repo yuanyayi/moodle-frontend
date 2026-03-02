@@ -1,9 +1,9 @@
 <template>
-  <div class="floating-capsule" :class="{ 'is-dragging': isDragging, 'is-left': isLeft }" :style="capsuleStyle"
+  <div class="floating-capsule" :class="{ 'is-dragging': isDragging }" :style="capsuleStyle"
     @mousedown="startDrag">
     <div class="capsule-content">
       <a-tooltip v-for="(item, index) in visibleItems" :key="index" :title="item.title"
-        :placement="isLeft ? 'right' : 'left'">
+        :placement="position.x < window.innerWidth / 2 ? 'right' : 'left'">
         <div class="capsule-item" @click="handleItemClick(item)">
           <a-badge v-if="item.badge && (typeof item.badge === 'function' ? item.badge() : item.badge)" dot
             :offset="[0, 0]" :numberStyle="{ width: '8px', height: '8px', boxShadow: '0 0 0 1px #fff' }">
@@ -35,15 +35,14 @@ export default {
     },
     initialPosition: {
       type: Object,
-      default: () => ({ x: null, y: 50 })
+      default: () => ({ x: null, y: window.innerHeight / 3 })
     }
   },
   data() {
     return {
       isDragging: false,
-      position: { x: null, y: 50 },
+      position: { x: window.innerWidth - 100, y: window.innerHeight / 3 },
       dragOffset: { x: 0, y: 0 },
-      isLeft: false,
       windowWidth: window.innerWidth,
       dragIcon: drag
     }
@@ -52,12 +51,9 @@ export default {
     capsuleStyle() {
       const style = {
         top: `${this.position.y}px`,
-        zIndex: 999
-      }
-      if (this.isLeft) {
-        style.left = '20px'
-      } else {
-        style.right = '20px'
+        left: `${this.position.x}px`,
+        zIndex: 999,
+        position: 'fixed'
       }
       return style
     },
@@ -71,8 +67,12 @@ export default {
     }
   },
   mounted() {
-    this.position.x = this.initialPosition.x
-    this.position.y = this.initialPosition.y
+    if (this.initialPosition.x !== null) {
+      this.position.x = this.initialPosition.x
+    }
+    if (this.initialPosition.y !== null) {
+      this.position.y = this.initialPosition.y
+    }
     this.checkPosition()
     window.addEventListener('resize', this.handleResize)
   },
@@ -85,20 +85,24 @@ export default {
       this.checkPosition()
     },
     checkPosition() {
-      // 强制贴右侧
-      this.isLeft = false
+      // 检查并限制在屏幕范围内
+      const capsuleWidth = 80 // 估算胶囊宽度
+      const capsuleHeight = 200 // 估算胶囊高度
+      
+      this.position.x = Math.max(0, Math.min(this.position.x, window.innerWidth - capsuleWidth))
+      this.position.y = Math.max(0, Math.min(this.position.y, window.innerHeight - capsuleHeight))
     },
     startDrag(e) {
-      if (e.target.closest('.capsule-drag-handle')) {
-        this.isDragging = true
-        this.dragOffset.x = e.clientX - (this.position.x || this.windowWidth - 60)
-        this.dragOffset.y = e.clientY - this.position.y
+      this.isDragging = true
+      // 计算鼠标相对于胶囊的偏移量
+      const rect = this.$el.getBoundingClientRect()
+      this.dragOffset.x = e.clientX - rect.left
+      this.dragOffset.y = e.clientY - rect.top
 
-        document.addEventListener('mousemove', this.onDrag, { passive: false })
-        document.addEventListener('mouseup', this.stopDrag)
-        document.addEventListener('mouseleave', this.stopDrag)
-        e.preventDefault()
-      }
+      document.addEventListener('mousemove', this.onDrag, { passive: false })
+      document.addEventListener('mouseup', this.stopDrag)
+      document.addEventListener('mouseleave', this.stopDrag)
+      e.preventDefault()
     },
     onDrag(e) {
       if (!this.isDragging) return
@@ -106,19 +110,19 @@ export default {
       let newX = e.clientX - this.dragOffset.x
       let newY = e.clientY - this.dragOffset.y
 
-      newY = Math.max(0, Math.min(newY, window.innerHeight - 200))
+      // 限制在屏幕范围内
+      const capsuleWidth = 80 // 估算胶囊宽度
+      const capsuleHeight = 200 // 估算胶囊高度
+      
+      newX = Math.max(0, Math.min(newX, window.innerWidth - capsuleWidth))
+      newY = Math.max(0, Math.min(newY, window.innerHeight - capsuleHeight))
 
       this.position.x = newX
       this.position.y = newY
-
-      this.checkPosition()
     },
     stopDrag() {
       this.isDragging = false
-
-      // 强制贴右侧
-      this.isLeft = false
-      this.position.x = null
+      this.checkPosition()
 
       document.removeEventListener('mousemove', this.onDrag)
       document.removeEventListener('mouseup', this.stopDrag)
@@ -156,9 +160,7 @@ export default {
     box-shadow: -4px 0px 20px 0px rgba(0, 92, 173, 0.2);
   }
 
-  &.is-left {
-    box-shadow: 4px 0px 16px 0px rgba(0, 92, 173, 0.1);
-  }
+
 
   &:hover {
     background-color: #fff;
