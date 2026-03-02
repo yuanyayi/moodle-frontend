@@ -255,12 +255,12 @@ export default {
   color: #333;
 }
 
-:deep(.ant-table-small)>.ant-table-content>.ant-table-body {
+:deep(.ant-table) .ant-table-tbody {
   margin: 0;
 }
 
-:deep(.ant-table-small)>.ant-table-content>.ant-table-body td {
-  padding: 12px;
+:deep(.ant-table) .ant-table-tbody>tr>td {
+  padding: 8px;
 }
 
 /* 状态颜色样式 */
