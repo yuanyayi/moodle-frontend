@@ -13,7 +13,7 @@
     <!-- <LiveDeviceTestModal v-if="role === 'student' && mode === 'live'" :visible="deviceTestModalVisible" @confirm="handleDeviceConfirm" @cancel="handleDeviceCancel" /> -->
 
     <!-- 浮动胶囊组件 -->
-    <FloatingCapsule :items="capsuleItems" :initialPosition="{ x: null, y: 50 }" />
+    <FloatingCapsule :items="capsuleItems" />
 
     <!-- 主要内容区域 -->
     <!-- <div class="volcLiveApp" v-if="mode === 'live'">

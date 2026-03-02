@@ -1,25 +1,9 @@
 <template>
-  <div
-    class="floating-video-player"
-    :style="{
-      position: `${position.position || 'fixed'}`,
-      right: `${position.right}px`,
-      top: `${position.top}px`,
-      width: isMinimized ? '200px' : '400px',
-      height: isMinimized ? '30px' : 'auto',
-      zIndex: zIndex,
-    }">
-    <div class="player-header" @mousedown="startDrag" @dblclick="toggleMinimize">
-      <span class="header-title">悬浮视窗</span>
-      <div class="header-controls">
-        <span @click="toggleMinimize" class="control-btn">{{ isMinimized ? "□" : "—" }}</span>
-        <span @click="closePlayer" class="control-btn">×</span>
-      </div>
-    </div>
-
-    <div v-show="!isMinimized" class="player-content">
-      <div class="header-title">视频播放器</div>
-      <FlvPlayer v-if="videoUrl" ref="flvPlayerRef" :src="videoUrl" width="100%" height="100%" :autoplay="true" :muted="true" />
+  <a-modal v-model="visible" title="悬浮视窗" :width="'400px'" :mask="false" :closable="true" :zIndex="1000"
+    :bodyStyle="{ padding: 0, height: 'auto', }" :footer="null">
+    <div class="player-content">
+      <FlvPlayer v-if="videoUrl" ref="flvPlayerRef" :src="videoUrl" width="100%" height="100%" :autoplay="true"
+        :muted="true" />
       <div v-else class="loading-placeholder">
         <a-spin />
         <p>正在加载视频...</p>
@@ -27,7 +11,7 @@
     </div>
 
     <slot></slot>
-  </div>
+  </a-modal>
 </template>
 
 <script>
@@ -45,10 +29,6 @@ export default {
       type: [Number, String],
       required: true,
     },
-    positionOpt: {
-      type: [Object, String],
-      default: "fixed",
-    },
     open: {
       type: Boolean,
       default: false,
@@ -57,11 +37,7 @@ export default {
   data() {
     return {
       isMinimized: false,
-      position: {
-        right: 20,
-        top: 100,
-      },
-      zIndex: 1000,
+      visible: false,
       videoUrl: "",
       dragState: {
         isDragging: false,
@@ -73,48 +49,21 @@ export default {
     };
   },
   watch: {
-    positionOpt: {
-      immediate: true,
-      handler(newVal) {
-        if (newVal === "fixed") {
-          this.position = {
-            right: 20,
-            top: 100,
-          };
-        } else if (newVal === "relative") {
-          this.position = {
-            position: "relative",
-            right: 0,
-            top: 0,
-          };
-        } else if (typeof newVal === "object") {
-          this.position = {
-            ...newVal,
-          };
-        }
-      },
-    },
     open: {
-      async handler(newVal, oldVal) {
-        if (!oldVal && newVal) {
+      immediate: true,
+      async handler(newVal) {
+        this.visible = newVal;
+        if (newVal) {
           await this.loadVideoUrl();
         }
       },
     },
   },
   async mounted() {
-    // 组件挂载时获取视频地址
-    await this.loadVideoUrl();
-
-    document.addEventListener("mousemove", this.handleDrag);
-    document.addEventListener("mouseup", this.stopDrag);
-
     // 监听页面可见性变化
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
   },
   beforeDestroy() {
-    document.removeEventListener("mousemove", this.handleDrag);
-    document.removeEventListener("mouseup", this.stopDrag);
     document.removeEventListener("visibilitychange", this.handleVisibilityChange);
 
     // 在组件销毁时停止视频播放
@@ -151,25 +100,7 @@ export default {
       this.$emit("close");
     },
 
-    startDrag(event) {
-      this.dragState.isDragging = true;
-      this.dragState.startX = event.clientX;
-      this.dragState.startY = event.clientY;
-      this.dragState.startRight = this.position.right;
-      this.dragState.startTop = this.position.top;
-      this.zIndex = 9999; // 拖拽时提高层级
-    },
-    handleDrag(event) {
-      if (!this.dragState.isDragging) return;
-      const deltaX = event.clientX - this.dragState.startX;
-      const deltaY = event.clientY - this.dragState.startY;
-      this.position.top = this.dragState.startTop + deltaY;
-      this.position.right = this.dragState.startRight - deltaX;
-    },
-    stopDrag() {
-      this.dragState.isDragging = false;
-      this.zIndex = 1000;
-    },
+
 
     // 处理页面可见性变化 - 确保页面进入后台时继续播放
     async handleVisibilityChange() {
@@ -188,25 +119,11 @@ export default {
 </script>
 
 <style scoped>
-.floating-video-player {
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: #fff;
-  overflow: hidden;
-  transition: width 0.3s ease, height 0.3s ease;
-}
-
-.player-header {
-  height: 30px;
-  background: #f0f2f5;
+.modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
-  cursor: move;
-  user-select: none;
-  border-bottom: 1px solid #d9d9d9;
+  width: 100%;
 }
 
 .header-title {
@@ -236,7 +153,9 @@ export default {
 
 .player-content {
   height: auto;
-  padding: 5px;
+  margin: 8px 20px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .loading-placeholder {
@@ -244,8 +163,19 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  height: 200px;
   color: #999;
   font-size: 14px;
+}
+
+/* 调整a-modal的样式 */
+:deep(.ant-modal-header) {
+  padding: 10px 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+:deep(.ant-modal-content) {
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 </style>

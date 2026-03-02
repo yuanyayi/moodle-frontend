@@ -25,7 +25,6 @@
     <!-- 浮动胶囊组件 -->
     <FloatingCapsule
       :items="capsuleItems"
-      :initialPosition="{ x: null, y: 50 }"
     />
 
     <!-- 倒计时弹窗 -->
@@ -74,7 +73,6 @@ export default {
         {
           component: studentView,
           title: '打开悬浮视窗',
-          show: () => !this.showFloatingPlayer,
           badge: () => this.feedbackCount - this.readedFeedbackCount > 0,
           onClick: () => this.openFloatingPlayer()
         },

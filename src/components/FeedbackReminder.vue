@@ -1,11 +1,13 @@
 <template>
   <div class="feedback-reminder" :class="{ shake: shouldShake }">
     <div class="reminder-header">
+      <a-icon :component="helpIcon" class="header-icon" />
       <span class="header-title">反馈提醒</span>
     </div>
     <div class="reminder-content">
       <!-- <button @click="triggerShake">测试震动</button> -->
-      <a-table :columns="columns" :data-source="tableData" :pagination="pagination" :show-header="false" size="small" @change="handleTableChange">
+      <a-table :columns="columns" :data-source="tableData" :pagination="pagination" :show-header="false"
+        @change="handleTableChange">
         <template v-slot:msg="_, record">
           <span :class="record.handle ? 'status-success' : 'status-error'">
             {{ record.msg }}
@@ -13,11 +15,13 @@
         </template>
         <template v-slot:handle="_, record">
           <span :class="record.handle ? 'status-success' : 'status-error'">
+            <span class="statusDot"></span>
             {{ record.handle ? "已处理" : "未处理" }}
           </span>
         </template>
         <template v-slot:operations="_, record">
-          <a-button v-if="!record.handle" size="small" @click="handleFeedback(record.id)"> 处理异常 </a-button>
+          <a-button v-if="!record.handle" size="small" type="primary" ghost @click="handleFeedback(record.id)"> 处理异常
+          </a-button>
         </template>
       </a-table>
     </div>
@@ -26,6 +30,7 @@
 
 <script>
 import { getFeedbackList, handleFeedback } from "@/api/livepage";
+import { help } from "@/core/icons";
 
 export default {
   name: "FeedbackReminder",
@@ -43,6 +48,7 @@ export default {
   },
   data() {
     return {
+      helpIcon: help,
       columns: [
         {
           title: "动作",
@@ -55,7 +61,7 @@ export default {
           dataIndex: "handle",
           key: "handle",
           scopedSlots: { customRender: "handle" },
-          width: 60,
+          width: 94,
         },
         {
           title: "操作",
@@ -77,7 +83,8 @@ export default {
         pageSize: 5,
         total: 0,
         showQuickJumper: true,
-        showTotal: total => `共 ${total} 条`,
+        size: "small",
+        showTotal: total => `共 ${total} 条数据`,
       },
     };
   },
@@ -149,7 +156,7 @@ export default {
       // 设置定时器，每1分钟获取一次数据
       this.pollTimer = setInterval(() => {
         this.fetch();
-      }, 10000); 
+      }, 10000);
     },
 
     stopPolling() {
@@ -196,13 +203,9 @@ export default {
 
 <style scoped>
 .feedback-reminder {
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: #fff;
+  margin: 20px;
   overflow: hidden;
   transition: all 0.3s ease;
-  max-width: 400px;
 }
 
 /* 震动动画效果 */
@@ -211,10 +214,12 @@ export default {
 }
 
 @keyframes shake {
+
   0%,
   100% {
     transform: translateX(0);
   }
+
   10%,
   30%,
   50%,
@@ -222,6 +227,7 @@ export default {
   90% {
     transform: translateX(-5px);
   }
+
   20%,
   40%,
   60%,
@@ -231,12 +237,16 @@ export default {
 }
 
 .reminder-header {
-  height: 30px;
-  background: #f0f2f5;
   display: flex;
   align-items: center;
-  padding: 0 10px;
-  border-bottom: 1px solid #d9d9d9;
+  padding: 0;
+  margin-bottom: 4px;
+}
+
+.header-icon {
+  margin-right: 8px;
+  color: #1890ff;
+  font-size: 16px;
 }
 
 .header-title {
@@ -245,20 +255,37 @@ export default {
   color: #333;
 }
 
-.reminder-content {
-  padding: 10px;
-}
-
-:deep(.ant-table-small) > .ant-table-content > .ant-table-body {
+:deep(.ant-table-small)>.ant-table-content>.ant-table-body {
   margin: 0;
 }
 
+:deep(.ant-table-small)>.ant-table-content>.ant-table-body td {
+  padding: 12px;
+}
+
 /* 状态颜色样式 */
+.statusDot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
 .status-success {
-  color: green;
+  color: #73D13D;
+}
+
+.status-success .statusDot {
+  background-color: #73D13D;
 }
 
 .status-error {
-  color: red;
+  color: #FF4D4F;
+}
+
+.status-error .statusDot {
+  background-color: #FF4D4F;
 }
 </style>

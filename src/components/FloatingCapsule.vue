@@ -3,7 +3,7 @@
     @mousedown="startDrag">
     <div class="capsule-content">
       <a-tooltip v-for="(item, index) in visibleItems" :key="index" :title="item.title"
-        :placement="position.x < window.innerWidth / 2 ? 'right' : 'left'">
+        :placement="position.x < windowWidth / 2 ? 'right' : 'left'">
         <div class="capsule-item" @click="handleItemClick(item)">
           <a-badge v-if="item.badge && (typeof item.badge === 'function' ? item.badge() : item.badge)" dot
             :offset="[0, 0]" :numberStyle="{ width: '8px', height: '8px', boxShadow: '0 0 0 1px #fff' }">
@@ -32,18 +32,15 @@ export default {
     items: {
       type: Array,
       default: () => []
-    },
-    initialPosition: {
-      type: Object,
-      default: () => ({ x: null, y: window.innerHeight / 3 })
     }
   },
   data() {
     return {
       isDragging: false,
-      position: { x: window.innerWidth - 100, y: window.innerHeight / 3 },
+      position: { x: 0, y: 0 },
       dragOffset: { x: 0, y: 0 },
       windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       dragIcon: drag
     }
   },
@@ -67,12 +64,11 @@ export default {
     }
   },
   mounted() {
-    if (this.initialPosition.x !== null) {
-      this.position.x = this.initialPosition.x
-    }
-    if (this.initialPosition.y !== null) {
-      this.position.y = this.initialPosition.y
-    }
+    // 组件挂载后计算初始位置
+    this.windowWidth = window.innerWidth
+    this.windowHeight = window.innerHeight
+    this.position.x = this.windowWidth - 20
+    this.position.y = this.windowHeight / 2
     this.checkPosition()
     window.addEventListener('resize', this.handleResize)
   },
@@ -82,15 +78,16 @@ export default {
   methods: {
     handleResize() {
       this.windowWidth = window.innerWidth
+      this.windowHeight = window.innerHeight
       this.checkPosition()
     },
     checkPosition() {
       // 检查并限制在屏幕范围内
-      const capsuleWidth = 80 // 估算胶囊宽度
+      const capsuleWidth = 52 // 估算胶囊宽度
       const capsuleHeight = 200 // 估算胶囊高度
       
-      this.position.x = Math.max(0, Math.min(this.position.x, window.innerWidth - capsuleWidth))
-      this.position.y = Math.max(0, Math.min(this.position.y, window.innerHeight - capsuleHeight))
+      this.position.x = Math.max(0, Math.min(this.position.x, this.windowWidth - capsuleWidth))
+      this.position.y = Math.max(0, Math.min(this.position.y, this.windowHeight - capsuleHeight))
     },
     startDrag(e) {
       this.isDragging = true
@@ -111,11 +108,11 @@ export default {
       let newY = e.clientY - this.dragOffset.y
 
       // 限制在屏幕范围内
-      const capsuleWidth = 80 // 估算胶囊宽度
+      const capsuleWidth = 52 // 估算胶囊宽度
       const capsuleHeight = 200 // 估算胶囊高度
       
-      newX = Math.max(0, Math.min(newX, window.innerWidth - capsuleWidth))
-      newY = Math.max(0, Math.min(newY, window.innerHeight - capsuleHeight))
+      newX = Math.max(0, Math.min(newX, this.windowWidth - capsuleWidth))
+      newY = Math.max(0, Math.min(newY, this.windowHeight - capsuleHeight))
 
       this.position.x = newX
       this.position.y = newY
