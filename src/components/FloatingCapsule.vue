@@ -3,7 +3,7 @@
     @mousedown="startDrag">
     <div class="capsule-content">
       <a-tooltip v-for="(item, index) in visibleItems" :key="index" :title="item.title"
-        :placement="position.x < windowWidth / 2 ? 'right' : 'left'">
+        :placement="position.right < windowWidth / 2 ? 'right' : 'left'">
         <div class="capsule-item" @click="handleItemClick(item)">
           <a-badge v-if="item.badge && (typeof item.badge === 'function' ? item.badge() : item.badge)" dot
             :offset="[0, 0]" :numberStyle="{ width: '8px', height: '8px', boxShadow: '0 0 0 1px #fff' }">
@@ -37,7 +37,7 @@ export default {
   data() {
     return {
       isDragging: false,
-      position: { x: 0, y: 0 },
+      position: { right: 20, bottom: 0 },
       dragOffset: { x: 0, y: 0 },
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
@@ -47,8 +47,8 @@ export default {
   computed: {
     capsuleStyle() {
       const style = {
-        top: `${this.position.y}px`,
-        left: `${this.position.x}px`,
+        bottom: `${this.position.bottom}px`,
+        right: `${this.position.right}px`,
         zIndex: 999,
         position: 'fixed'
       }
@@ -67,8 +67,8 @@ export default {
     // 组件挂载后计算初始位置
     this.windowWidth = window.innerWidth
     this.windowHeight = window.innerHeight
-    this.position.x = this.windowWidth - 20
-    this.position.y = this.windowHeight / 2
+    this.position.right = 20
+    this.position.bottom = this.windowHeight / 2
     this.checkPosition()
     window.addEventListener('resize', this.handleResize)
   },
@@ -86,8 +86,8 @@ export default {
       const capsuleWidth = 52 // 估算胶囊宽度
       const capsuleHeight = 200 // 估算胶囊高度
       
-      this.position.x = Math.max(0, Math.min(this.position.x, this.windowWidth - capsuleWidth))
-      this.position.y = Math.max(0, Math.min(this.position.y, this.windowHeight - capsuleHeight))
+      this.position.right = Math.max(0, Math.min(this.position.right, this.windowWidth - capsuleWidth))
+      this.position.bottom = Math.max(0, Math.min(this.position.bottom, this.windowHeight - capsuleHeight))
     },
     startDrag(e) {
       this.isDragging = true
@@ -104,18 +104,18 @@ export default {
     onDrag(e) {
       if (!this.isDragging) return
 
-      let newX = e.clientX - this.dragOffset.x
-      let newY = e.clientY - this.dragOffset.y
+      let newRight = this.windowWidth - e.clientX - this.dragOffset.x
+      let newBottom = this.windowHeight - e.clientY - this.dragOffset.y
 
       // 限制在屏幕范围内
       const capsuleWidth = 52 // 估算胶囊宽度
       const capsuleHeight = 200 // 估算胶囊高度
       
-      newX = Math.max(0, Math.min(newX, this.windowWidth - capsuleWidth))
-      newY = Math.max(0, Math.min(newY, this.windowHeight - capsuleHeight))
+      newRight = Math.max(0, Math.min(newRight, this.windowWidth - capsuleWidth))
+      newBottom = Math.max(0, Math.min(newBottom, this.windowHeight - capsuleHeight))
 
-      this.position.x = newX
-      this.position.y = newY
+      this.position.right = newRight
+      this.position.bottom = newBottom
     },
     stopDrag() {
       this.isDragging = false
