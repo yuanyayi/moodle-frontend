@@ -161,7 +161,7 @@ export const asyncRouterMap = [
       // },
       // 用户手册
       {
-        path: "/docs",
+        path: "/user_docs",
         name: "docs",
         meta: { title: "用户手册", permission: ["live"],icon:docs },
         component: () => import("@/views/docs"),
