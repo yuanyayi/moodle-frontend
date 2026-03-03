@@ -27,6 +27,7 @@ import drag from "@/assets/icons/drag.svg?inline";
 import eye from "@/assets/icons/eye.svg?inline";
 import like from "@/assets/icons/like.svg?inline";
 import help from "@/assets/icons/help.svg?inline";
+import camera from "@/assets/icons/camera.svg?inline";
 
 
-export { bxAnaalyse, docs, liveOverall, liveAnaylse, list, backHome, backSystem, feedback, studentView, detail1, detail2, detail3, ciyun1, ciyun2, status1, status0, statusMinus1, drag, eye, like, help };
+export { bxAnaalyse, docs, liveOverall, liveAnaylse, list, backHome, backSystem, feedback, studentView, detail1, detail2, detail3, ciyun1, ciyun2, status1, status0, statusMinus1, drag, eye, like, help, camera };

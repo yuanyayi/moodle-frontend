@@ -89,14 +89,27 @@ export default {
       this.position.right = Math.max(0, Math.min(this.position.right, this.windowWidth - capsuleWidth))
       this.position.bottom = Math.max(0, Math.min(this.position.bottom, this.windowHeight - capsuleHeight))
     },
+    // 节流函数
+    throttle(func, wait) {
+      let timeout
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout)
+          func(...args)
+        }
+        clearTimeout(timeout)
+        timeout = setTimeout(later, wait)
+      }
+    },
     startDrag(e) {
       this.isDragging = true
       // 计算鼠标相对于胶囊的偏移量
       const rect = this.$el.getBoundingClientRect()
-      this.dragOffset.x = e.clientX - rect.left
       this.dragOffset.y = e.clientY - rect.top
 
-      document.addEventListener('mousemove', this.onDrag, { passive: false })
+      // 使用节流处理拖拽事件
+      this.throttledOnDrag = this.throttle(this.onDrag, 16) // 约60fps
+      document.addEventListener('mousemove', this.throttledOnDrag, { passive: false })
       document.addEventListener('mouseup', this.stopDrag)
       document.addEventListener('mouseleave', this.stopDrag)
       e.preventDefault()
@@ -104,24 +117,21 @@ export default {
     onDrag(e) {
       if (!this.isDragging) return
 
-      let newRight = this.windowWidth - e.clientX - this.dragOffset.x
+      // 只更新上下位置，保持左右位置不变
       let newBottom = this.windowHeight - e.clientY - this.dragOffset.y
 
       // 限制在屏幕范围内
-      const capsuleWidth = 52 // 估算胶囊宽度
       const capsuleHeight = 200 // 估算胶囊高度
       
-      newRight = Math.max(0, Math.min(newRight, this.windowWidth - capsuleWidth))
       newBottom = Math.max(0, Math.min(newBottom, this.windowHeight - capsuleHeight))
 
-      this.position.right = newRight
       this.position.bottom = newBottom
     },
     stopDrag() {
       this.isDragging = false
       this.checkPosition()
 
-      document.removeEventListener('mousemove', this.onDrag)
+      document.removeEventListener('mousemove', this.throttledOnDrag)
       document.removeEventListener('mouseup', this.stopDrag)
       document.removeEventListener('mouseleave', this.stopDrag)
     },

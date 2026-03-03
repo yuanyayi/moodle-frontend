@@ -1,5 +1,8 @@
 <template>
   <a-modal :visible="isModalVisible" title="真人签到" :width="400" :footer="null" :closable="false">
+    <!-- 背景图片 -->
+    <div class="modal-background"></div>
+
     <a-form :model="formData" layout="vertical">
       <a-form-item label="姓名" name="name" :rules="[{ required: true, message: '请输入姓名' }]">
         <a-input v-model:value="formData.name" placeholder="输入姓名" />
@@ -18,7 +21,7 @@
         </div>
       </a-form-item>
 
-      <a-form-item>
+      <a-form-item style="margin-bottom:0">
         <a-button type="primary" block @click="handleSubmit" :loading="loading">签到</a-button>
       </a-form-item>
     </a-form>
@@ -109,7 +112,7 @@ export default {
         const canvas = document.createElement("canvas");
         canvas.width = video.videoWidth || video.width;
         canvas.height = video.videoHeight || video.height;
-        
+
         // 检查canvas上下文是否可用
         const ctx = canvas.getContext("2d");
         if (!ctx) {
@@ -118,7 +121,7 @@ export default {
           reject(new Error(errorMsg));
           return;
         }
-        
+
         try {
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         } catch (e) {
@@ -250,9 +253,28 @@ export default {
 </script>
 
 <style scoped>
+.modal-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 300px;
+  background-image: url('@/assets/bg/modalHeader.png');
+  background-size: contain;
+  background-position: top left;
+  background-repeat: no-repeat;
+}
+
+:deep(.ant-modal-header) {
+  border-bottom: none;
+}
+
+:deep(.ant-row).ant-form-item {
+  margin-bottom: 20px;
+}
+
 .photo-container {
   text-align: center;
-  margin: 20px 0;
 }
 
 .camera-preview {

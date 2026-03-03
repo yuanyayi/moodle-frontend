@@ -2,7 +2,10 @@
   <div class="camera-capture-component">
     <div id="distinguishBox" class="distinguish-box">
       <div class="camera-section">
-        <h3 class="section-title">摄像头采集</h3>
+        <h3 class="section-title">
+          <a-icon :component="cameraIcon" class="title-icon" />
+          摄像头采集
+        </h3>
 
         <!-- 摄像头预览区域 -->
         <div class="camera-container">
@@ -22,12 +25,16 @@
               </div>
             </div>
           </div>
+
+          <!-- 摄像头边框 -->
+          <div class="camera-frame"></div>
         </div>
 
         <!-- 控制按钮 -->
         <div v-if="false" class="control-buttons">
           <button v-if="cameraStatus === 'ready'" @click="capturePhoto" class="capture-btn">抓拍</button>
-          <button v-if="cameraStatus === 'ready'" @click="toggleAutoCapture" :class="['auto-capture-btn', { active: isAutoCapturing }]">
+          <button v-if="cameraStatus === 'ready'" @click="toggleAutoCapture"
+            :class="['auto-capture-btn', { active: isAutoCapturing }]">
             {{ isAutoCapturing ? "停止自动抓拍" : "开始自动抓拍" }}
           </button>
         </div>
@@ -52,6 +59,7 @@
 
 <script>
 import { uploadStudentPhoto } from "@/api/distinguish";
+import { camera } from "@/core/icons";
 export default {
   name: "CameraCapture",
   props: {
@@ -73,6 +81,7 @@ export default {
       capturedPhotos: [],
       photoCount: 0,
       AUTO_CAPTURE_INTERVAL: 300000, // 5分钟自动抓拍间隔
+      cameraIcon: camera,
     };
   },
   async mounted() {
@@ -326,29 +335,35 @@ export default {
 <style lang="less" scoped>
 .camera-capture-component {
   .distinguish-box {
-    width: 200px;
     height: fit-content;
-    background: #1a1f2d;
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
     .camera-section {
-      padding: 15px;
+      padding: 20px;
 
       .section-title {
-        font-size: 14px;
+        margin-bottom: 20px;
+        font-size: 16px;
         font-weight: 600;
-        margin-bottom: 15px;
-        color: #e2e8f0;
-        text-align: center;
+        line-height: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .title-icon {
+          width: 16px;
+          height: 16px;
+          font-size: 16px;
+        }
       }
 
       .camera-container {
         position: relative;
-        width: 100%;
-        height: 180px;
+        width: 160px;
+        height: 214px;
         background: #000;
-        border-radius: 6px;
+        border-radius: 10px;
         overflow: hidden;
         margin-bottom: 15px;
 
@@ -356,6 +371,8 @@ export default {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          position: relative;
+          z-index: 0;
         }
 
         .camera-overlay {
@@ -368,6 +385,7 @@ export default {
           display: flex;
           align-items: center;
           justify-content: center;
+          z-index: 1;
 
           .status-content {
             text-align: center;
@@ -410,6 +428,20 @@ export default {
               }
             }
           }
+        }
+
+        .camera-frame {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-image: url('@/assets/bg/cameraFrame.png');
+          background-size: contain;
+          background-position: center;
+          background-repeat: no-repeat;
+          z-index: 999;
+          pointer-events: none;
         }
       }
 
