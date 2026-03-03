@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" class="floating-video-player" :style="playerStyle">
+  <div v-show="visible" class="floating-video-player" :style="playerStyle">
     <div class="player-header" @mousedown="startDrag">
       <div class="header-title">悬浮视窗</div>
       <div class="header-controls">
@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="player-content">
-      <FlvPlayer v-if="videoUrl" ref="flvPlayerRef" :src="videoUrl" width="100%" height="100%" :autoplay="true"
+      <FlvPlayer v-if="visible && videoUrl" ref="flvPlayerRef" :src="videoUrl" width="100%" height="100%" :autoplay="true"
         :muted="true" />
       <div v-else class="loading-placeholder">
         <a-spin />
@@ -159,8 +159,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 10px 16px;
-  background: #f0f2f5;
-  border-bottom: 1px solid #d9d9d9;
+  border-bottom: 1px solid #e9e9e9;
   cursor: move;
   user-select: none;
 }

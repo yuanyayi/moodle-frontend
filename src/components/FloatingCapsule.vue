@@ -1,6 +1,5 @@
 <template>
-  <div class="floating-capsule" :class="{ 'is-dragging': isDragging }" :style="capsuleStyle"
-    @mousedown="startDrag">
+  <div class="floating-capsule" :class="{ 'is-dragging': isDragging }" :style="capsuleStyle" @mousedown="startDrag">
     <div class="capsule-content">
       <a-tooltip v-for="(item, index) in visibleItems" :key="index" :title="item.title"
         :placement="position.right < windowWidth / 2 ? 'right' : 'left'">
@@ -63,6 +62,9 @@ export default {
       })
     }
   },
+  created() {
+    this.throttledOnDrag = this.throttle(this.onDrag, 16)
+  },
   mounted() {
     // 组件挂载后计算初始位置
     this.windowWidth = window.innerWidth
@@ -85,55 +87,97 @@ export default {
       // 检查并限制在屏幕范围内
       const capsuleWidth = 52 // 估算胶囊宽度
       const capsuleHeight = 200 // 估算胶囊高度
-      
+
       this.position.right = Math.max(0, Math.min(this.position.right, this.windowWidth - capsuleWidth))
       this.position.bottom = Math.max(0, Math.min(this.position.bottom, this.windowHeight - capsuleHeight))
     },
     // 节流函数
     throttle(func, wait) {
-      let timeout
-      return function executedFunction(...args) {
-        const later = () => {
-          clearTimeout(timeout)
-          func(...args)
+      let previous = 0
+      return function (...args) {
+        const now = Date.now()
+        if (now - previous > wait) {
+          func.apply(this, args)
+          previous = now
         }
-        clearTimeout(timeout)
-        timeout = setTimeout(later, wait)
       }
     },
     startDrag(e) {
       this.isDragging = true
-      // 计算鼠标相对于胶囊的偏移量
-      const rect = this.$el.getBoundingClientRect()
-      this.dragOffset.y = e.clientY - rect.top
+      // 记录拖拽开始时的鼠标位置
+      const startMouseY = e.clientY
+      // 记录拖拽开始时的胶囊位置
+      const startBottom = this.position.bottom
+      
+      // 禁用过渡效果，避免拖拽开始时的跳动
+      this.$el.style.transition = 'none'
 
-      // 使用节流处理拖拽事件
-      this.throttledOnDrag = this.throttle(this.onDrag, 16) // 约60fps
-      document.addEventListener('mousemove', this.throttledOnDrag, { passive: false })
-      document.addEventListener('mouseup', this.stopDrag)
-      document.addEventListener('mouseleave', this.stopDrag)
+      // 使用requestAnimationFrame实现更平滑的拖拽
+      let isDragging = true
+      
+      const onDrag = (e) => {
+        if (!isDragging || !this.isDragging) return
+        
+        // 计算鼠标移动的距离
+        const mouseDelta = e.clientY - startMouseY
+        
+        // 计算新的bottom位置：鼠标移动多少，胶囊移动多少
+        const newBottom = startBottom - mouseDelta
+        const capsuleHeight = 200 // 胶囊高度
+        
+        // 边界检查：确保胶囊完全在屏幕内
+        const constrainedBottom = Math.max(0, Math.min(newBottom, this.windowHeight - capsuleHeight))
+        
+        // 直接更新位置，不进行条件检查，确保拖拽的连续性
+        this.position.bottom = constrainedBottom
+        
+        requestAnimationFrame(() => {
+          if (isDragging) {
+            onDrag(e)
+          }
+        })
+      }
+      
+      const stopDrag = () => {
+        isDragging = false
+        this.isDragging = false
+        this.checkPosition()
+        
+        // 恢复过渡效果
+        setTimeout(() => {
+          this.$el.style.transition = ''
+        }, 100)
+        
+        document.removeEventListener('mousemove', onDrag)
+        document.removeEventListener('mouseup', stopDrag)
+        document.removeEventListener('mouseleave', stopDrag)
+      }
+      
+      document.addEventListener('mousemove', onDrag, { passive: false })
+      document.addEventListener('mouseup', stopDrag)
+      document.addEventListener('mouseleave', stopDrag)
       e.preventDefault()
     },
     onDrag(e) {
+      // 保留此方法以保持兼容性
       if (!this.isDragging) return
 
-      // 只更新上下位置，保持左右位置不变
-      let newBottom = this.windowHeight - e.clientY - this.dragOffset.y
+      // 只计算必要的值
+      const newBottom = this.windowHeight - e.clientY - this.dragOffset.y
+      const capsuleHeight = 200
 
-      // 限制在屏幕范围内
-      const capsuleHeight = 200 // 估算胶囊高度
-      
-      newBottom = Math.max(0, Math.min(newBottom, this.windowHeight - capsuleHeight))
+      // 边界检查
+      const constrainedBottom = Math.max(0, Math.min(newBottom, this.windowHeight - capsuleHeight))
 
-      this.position.bottom = newBottom
+      // 只有当位置真正改变时才更新
+      if (this.position.bottom !== constrainedBottom) {
+        this.position.bottom = constrainedBottom
+      }
     },
+    // 保留此方法以保持兼容性
     stopDrag() {
       this.isDragging = false
       this.checkPosition()
-
-      document.removeEventListener('mousemove', this.throttledOnDrag)
-      document.removeEventListener('mouseup', this.stopDrag)
-      document.removeEventListener('mouseleave', this.stopDrag)
     },
     handleItemClick(item) {
       if (item.onClick && typeof item.onClick === 'function') {
