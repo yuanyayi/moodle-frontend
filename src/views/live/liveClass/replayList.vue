@@ -43,7 +43,7 @@
               <div class="bottom-actions" v-if="role !== 'student'">
                 <div class="switch-container">
                   <a-switch v-model="detail.open" size="small" @change="e => handleSwitchChange(detail.id, e)" />
-                  <span>展示</span>
+                  <span>回放状态</span>
                 </div>
                 <a-dropdown>
                   <a-button type="link" icon="ellipsis" size="small" />

@@ -237,7 +237,10 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       // 处理表格排序和筛选变化
       this.listParam.page = pagination.current;
-      this.listParam.pageSize = pagination.pageSize;
+      // 确保pageSize是数字类型
+      this.listParam.pageSize = Number(pagination.pageSize);
+      // 同时更新pagination对象的pageSize
+      this.pagination.pageSize = Number(pagination.pageSize);
       this.fetch();
     },
     gotoStudentDetail(attendance_status_id) {

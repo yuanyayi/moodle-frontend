@@ -34,12 +34,11 @@
 
     <!-- 学生考勤列表 -->
     <div class="student-list-section">
-      <a-table :columns="columns" :data-source="studentList" :pagination="false" :loading="loading"
+      <a-table :columns="columns" :data-source="studentList" :pagination="pagination" :loading="loading"
         :row-key="record => record.id" :row-selection="rowSelection" @change="handleTableChange">
       </a-table>
-      <!-- 批量操作和分页区域 -->
+      <!-- 批量操作区域 -->
       <div class="table-footer">
-        <!-- 批量操作区域 -->
         <div class="batch-actions-container">
           <div v-if="selectedRowKeys.length > 0" class="batch-actions">
             <span style="font-size: 13px;">已选择 {{ selectedRowKeys.length }} 项</span>
@@ -47,11 +46,6 @@
             <a-button ghost type="primary" @click="batchUpdate(1)">批量出勤</a-button>
             <a-button ghost type="danger" @click="batchUpdate(-1)" class="danger">批量缺勤</a-button>
           </div>
-        </div>
-        <!-- 分页组件 -->
-        <div class="pagination-container">
-          <a-pagination :current="pagination.current" :page-size="pagination.pageSize" :total="pagination.total"
-            @change="handlePaginationChange" />
         </div>
       </div>
     </div>
@@ -230,14 +224,14 @@ export default {
     },
 
     handleTableChange(pagination, filters, sorter) {
-      this.listParam.page = pagination.current;
-      this.listParam.pageSize = pagination.pageSize;
-      this.fetch();
-    },
-
-    handlePaginationChange(current, pageSize) {
-      this.listParam.page = current;
-      this.listParam.pageSize = pageSize;
+      // 确保参数是数字类型
+      const currentPage = Number(pagination.current);
+      const currentPageSize = Number(pagination.pageSize);
+      this.listParam.page = currentPage;
+      this.listParam.pageSize = currentPageSize;
+      // 同时更新pagination对象
+      this.pagination.current = currentPage;
+      this.pagination.pageSize = currentPageSize;
       this.fetch();
     },
 

@@ -65,8 +65,12 @@
           </div>
 
           <!-- 分页导航 -->
-          <a-pagination v-bind="pagination" @change="pageChange" style="text-align: right"
-            :show-total="total => `共 ${total} 条数据`" size="small" />
+          <a-pagination 
+            v-bind="pagination"
+            @change="pageChange" 
+            @showSizeChange="onShowSizeChange"
+            style="text-align: right"
+            size="small" />
         </div>
       </div>
     </div>
@@ -158,12 +162,9 @@ export default {
           this.allPhotos = res.pageBean.list || [];
 
           // 更新分页信息
-          this.pagination = {
-            ...this.pagination,
-            current: res.pageBean.currentPage,
-            pageSize: res.pageBean.pageSize || 20,
-            total: res.pageBean.allRow,
-          };
+          this.pagination.current = res.pageBean.currentPage;
+          this.pagination.pageSize = res.pageBean.pageSize || 20;
+          this.pagination.total = res.pageBean.allRow;
         })
         .catch(error => {
           console.error('获取学生详情失败:', error);
@@ -176,7 +177,27 @@ export default {
 
     // 分页切换
     pageChange(page, pageSize) {
-      this.listParam = { page, pageSize };
+      console.log('Page change:', page, pageSize);
+      // 确保参数是数字类型
+      const currentPage = Number(page);
+      const currentPageSize = Number(pageSize);
+      this.listParam = { page: currentPage, pageSize: currentPageSize };
+      // 同时更新pagination对象
+      this.pagination.current = currentPage;
+      this.pagination.pageSize = currentPageSize;
+      this.fetch();
+    },
+    
+    // 每页条目变化
+    onShowSizeChange(current, size) {
+      console.log('Show size change:', current, size);
+      // 确保参数是数字类型
+      const currentPage = Number(current);
+      const currentPageSize = Number(size);
+      this.listParam = { page: currentPage, pageSize: currentPageSize };
+      // 同时更新pagination对象
+      this.pagination.current = currentPage;
+      this.pagination.pageSize = currentPageSize;
       this.fetch();
     },
 
