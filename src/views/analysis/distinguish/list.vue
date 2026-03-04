@@ -2,12 +2,14 @@
   <a-card :bordered="false" class="live-list-container">
     <!-- 搜索区域 -->
     <div class="table-page-search-wrapper">
-      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter" @clearQuery="clearQuery"></SearchForm>
+      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter"
+        @clearQuery="clearQuery"></SearchForm>
     </div>
 
     <!-- 数据表格 -->
     <div class="table-container">
-      <a-table :columns="columns" :data-source="tableList" :pagination="pagination" :loading="loading" :row-key="record => record.id" @change="handleTableChange"> </a-table>
+      <a-table :columns="columns" :data-source="tableList" :pagination="pagination" :loading="loading"
+        :row-key="record => record.id" @change="handleTableChange"> </a-table>
     </div>
   </a-card>
 </template>
@@ -36,7 +38,7 @@ export default {
           list: [],
           onChange: this.getCoursesBySemester,
         },
-       
+
         course_id: {
           type: "select",
           label: "相关课程",
@@ -123,6 +125,9 @@ export default {
     role() {
       // 从store中获取用户角色，如果没有则默认为teacher
       return this.roles.id || "student";
+    },
+    detail_id() {
+      return this.$route.query.id || undefined;
     },
   },
   created() {

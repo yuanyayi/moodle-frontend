@@ -169,8 +169,8 @@ export default {
       }
       let queryParam = { ...this.queryParam };
       if (queryParam.start_time.length) {
-        queryParam.start_time_begin = queryParam.start_time[0].format("x");
-        queryParam.start_time_stop = queryParam.start_time[1].format("x");
+        queryParam.start_time_begin = queryParam.start_time[0].startOf('day').format("x");
+        queryParam.start_time_stop = queryParam.start_time[1].endOf('day').format("x");
         delete queryParam.start_time;
       }
 
@@ -230,6 +230,7 @@ export default {
         start_time: [],
         course_id: undefined,
       };
+      this.queryField.course_id.list = [];
       this.fetch();
     },
     gotoCourseLive(liveConfigId) {

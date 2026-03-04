@@ -2,12 +2,14 @@
   <a-card :bordered="false" class="student-face-record-container">
     <div class="table-page-search-wrapper">
       <!-- 搜索功能 -->
-      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter" @clearQuery="clearQuery"></SearchForm>
+      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter"
+        @clearQuery="clearQuery"></SearchForm>
     </div>
 
     <!-- 数据表格 -->
     <div class="table-container">
-      <a-table :columns="columns" :data-source="tableList" :pagination="pagination" :loading="loading" :row-key="record => record.id" @change="handleTableChange"> </a-table>
+      <a-table :columns="columns" :data-source="tableList" :pagination="pagination" :loading="loading"
+        :row-key="record => record.id" @change="handleTableChange"> </a-table>
     </div>
 
     <!-- 学生详情抽屉 -->
@@ -147,11 +149,17 @@ export default {
     userId() {
       return this.userInfo.id || 0;
     },
+    detail_id() {
+      return this.$route.query.id || undefined;
+    },
   },
   created() {
     this.getMaps().then(() => {
       this.fetch();
     });
+  },
+  mounted() {
+    +this.detail_id && this.gotoStudentDetail(this.detail_id);
   },
   methods: {
     getMaps() {
@@ -233,6 +241,7 @@ export default {
       this.fetch();
     },
     gotoStudentDetail(attendance_status_id) {
+      console.log(attendance_status_id);
       this.$refs.studentDetailDrawer.show(attendance_status_id);
     },
     // ---------- Filters ---------- //

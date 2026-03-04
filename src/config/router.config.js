@@ -73,7 +73,7 @@ export const asyncRouterMap = [
               },
               // 整合distinguish模块的人脸识别记录功能
               {
-                path: "face_record",
+                path: "face_record/",
                 name: "faceRecord",
                 meta: { title: "人脸识别记录", permission: ["analysis", "distinguish"] },
                 component: () => {
@@ -88,19 +88,13 @@ export const asyncRouterMap = [
                   }
                 },
               },
+              // 教师端第二层：按课程
               {
                 path: "face_record/detail/:id([1-9]\\d*)",
                 name: "faceRecordDetail",
                 meta: { title: "人脸识别记录详情", permission: ["analysis", "distinguish"] },
                 hidden: true,
                 component: () => import("@/views/analysis/distinguish/detail"),
-              },
-              {
-                path: "face_record/student/:id([1-9]\\d*)",
-                name: "studentFaceDetail",
-                meta: { title: "学生人脸识别记录", permission: ["analysis", "distinguish"] },
-                hidden: true,
-                component: () => import("@/views/analysis/distinguish/studentDetail"),
               },
               {
                 path: "logs",
@@ -114,13 +108,6 @@ export const asyncRouterMap = [
                 meta: { title: "直播日志详情", permission: ["analysis", "logs"] },
                 hidden: true,
                 component: () => import("@/views/analysis/logs/oneLiveLogs"),
-              },
-              {
-                path: "logs/:live_config_id([1-9]\\d*)/student/:student_id",
-                name: "studentLiveLogDetail",
-                meta: { title: "学生直播日志详情", permission: ["analysis", "logs"] },
-                hidden: true,
-                component: () => import("@/views/analysis/logs/studentLiveLogDetail"),
               },
             ],
           },
@@ -163,7 +150,7 @@ export const asyncRouterMap = [
       {
         path: "/user_docs",
         name: "docs",
-        meta: { title: "用户手册", permission: ["live"],icon:docs },
+        meta: { title: "用户手册", permission: ["live"], icon: docs },
         component: () => import("@/views/docs"),
       },
     ],
