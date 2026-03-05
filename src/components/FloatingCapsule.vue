@@ -1,5 +1,5 @@
 <template>
-  <div class="floating-capsule" :class="{ 'is-dragging': isDragging }" :style="capsuleStyle" @mousedown="startDrag">
+  <div v-if="visibleItems.length > 0" class="floating-capsule" :class="{ 'is-dragging': isDragging }" :style="capsuleStyle" @mousedown="startDrag">
     <div class="capsule-content">
       <a-tooltip v-for="(item, index) in visibleItems" :key="index" :title="item.title"
         :placement="position.right < windowWidth / 2 ? 'right' : 'left'">

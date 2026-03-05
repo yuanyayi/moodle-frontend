@@ -61,14 +61,10 @@
     </div>
     <VideoNotes v-if="mode === 'replay'" :vid="liveConfigId" :showEditor="role === 'student'"
       style="background-color: #fff; position: relative;  z-index: 10; margin-top: -85px;" />
-    
+
     <!-- 反馈悬浮窗 -->
-    <FeedbackFloatWindow 
-      :visible="feedbackFloatWindowVisible" 
-      :feedback="feedback"
-      @close="closeFeedbackFloatWindow"
-      @handUp="handUp"
-    />
+    <FeedbackFloatWindow :visible="feedbackFloatWindowVisible" :feedback="feedback" @close="closeFeedbackFloatWindow"
+      @handUp="handUp" />
   </div>
 </template>
 

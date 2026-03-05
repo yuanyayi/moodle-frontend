@@ -1,11 +1,17 @@
 <template>
-  <a-modal title="倒计时" :visible="visible" :footer="null" :closable="false" :maskClosable="false" width="300px"
+  <a-modal title="倒计时" :visible="visible" :footer="null" :closable="false" :maskClosable="false" width="auto"
     :z-index="1001">
     <div class="countdown-container">
       <div class="countdown-display">
         <div class="countdown-label">距离直播开始还有</div>
-        <span class="time">{{ formatTime(hours) }}</span>
-        <span class="separator">:</span>
+        <template v-if="days > 0">
+          <span class="time">{{ formatTime(days) }}</span>
+          <span class="separator">:</span>
+        </template>
+        <template v-if="days > 0 || hours > 0">
+          <span class="time">{{ formatTime(hours) }}</span>
+          <span class="separator">:</span>
+        </template>
         <span class="time">{{ formatTime(minutes) }}</span>
         <span class="separator">:</span>
         <span class="time">{{ formatTime(seconds) }}</span>
@@ -30,6 +36,7 @@ export default {
   data() {
     return {
       visible: false,
+      days: 0,
       hours: 0,
       minutes: 0,
       seconds: 0,
@@ -88,9 +95,10 @@ export default {
         return;
       }
 
-      // 计算剩余的小时、分钟、秒
+      // 计算剩余的天、小时、分钟、秒
       const totalSeconds = Math.floor(remaining / 1000);
-      this.hours = Math.floor(totalSeconds / 3600);
+      this.days = Math.floor(totalSeconds / 86400); // 一天有86400秒
+      this.hours = Math.floor((totalSeconds % 86400) / 3600); // 剩余的小时数
       this.minutes = Math.floor((totalSeconds % 3600) / 60);
       this.seconds = totalSeconds % 60;
     },
@@ -119,6 +127,11 @@ export default {
 </script>
 
 <style scoped>
+:deep(.ant-modal-content) {
+  width: fit-content;
+  margin: auto;
+}
+
 .countdown-container {
   text-align: center;
   padding: 20px;
@@ -129,24 +142,30 @@ export default {
   font-weight: bold;
   margin-bottom: 10px;
   font-family: "Courier New", monospace;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .time {
   display: inline-block;
   width: 60px;
+  text-align: center;
 }
 
 .separator {
   margin: 0 5px;
+  font-weight: bold;
 }
 
 .countdown-label {
   font-size: 16px;
   color: #666;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .countdown-footer {
   margin-top: 20px;
+  text-align: center;
 }
 </style>

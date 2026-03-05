@@ -7,7 +7,7 @@
     <!-- <FeedbackReminder :liveConfigId="liveConfigId" style="margin-top: 20px" /> -->
     <!-- </div> -->
     <div style="flex: 1">
-      <iframe v-if="broadcastUrl" :src="broadcastUrl+'?lang=zh-CN'" width="100%" height="100%"
+      <iframe v-if="broadcastUrl" :src="broadcastUrl + '?lang=zh-CN'" width="100%" height="100%"
         style="min-height: 100vh; min-width: 100vh" frameborder="0" scrolling="no"
         allow="microphone;camera;midi;encrypted-media;display-capture;fullscreen; clipboard-read *; clipboard-write *; "></iframe>
       <div v-else style="background-color: #fff; padding: 20px">
@@ -23,9 +23,7 @@
     </FloatingVideoPlayer>
 
     <!-- 浮动胶囊组件 -->
-    <FloatingCapsule
-      :items="capsuleItems"
-    />
+    <FloatingCapsule :items="capsuleItems" />
 
     <!-- 倒计时弹窗 -->
     <CountdownModal ref="countdownModal" :countdownTimestamp="countdownTimestamp" />
@@ -65,11 +63,11 @@ export default {
       readedFeedbackCount: 0, // 已读反馈数
       // 浮动胶囊组件配置
       capsuleItems: [
-        {
-          component: backSystem,
-          title: '返回系统',
-          onClick: () => this.goHome()
-        },
+        // {
+        //   component: backSystem,
+        //   title: '返回系统',
+        //   onClick: () => this.goHome()
+        // },
         {
           component: studentView,
           title: '打开悬浮视窗',
