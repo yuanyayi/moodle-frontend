@@ -1,10 +1,11 @@
 <template>
-  <a-modal title="倒计时" :visible="visible" :footer="null" :closable="false" :maskClosable="false" width="300px" :z-index="1001">
+  <a-modal title="倒计时" :visible="visible" :footer="null" :closable="false" :maskClosable="false" width="300px"
+    :z-index="1001">
     <div class="countdown-container">
       <div class="countdown-display">
         <div class="countdown-label">距离直播开始还有</div>
-        <!-- <span class="time">{{ formatTime(hours) }}</span>
-        <span class="separator">:</span> -->
+        <span class="time">{{ formatTime(hours) }}</span>
+        <span class="separator">:</span>
         <span class="time">{{ formatTime(minutes) }}</span>
         <span class="separator">:</span>
         <span class="time">{{ formatTime(seconds) }}</span>
