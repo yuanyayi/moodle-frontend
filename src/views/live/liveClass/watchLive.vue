@@ -125,7 +125,8 @@ export default {
         {
           component: backSystem,
           title: '返回系统',
-          onClick: () => this.goReplay()
+          onClick: () => this.goReplay(),
+          show: () => this.mode === 'replay',
         },
         {
           component: feedback,

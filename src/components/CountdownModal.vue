@@ -6,7 +6,8 @@
         <div class="countdown-label">距离直播开始还有</div>
         <template v-if="days > 0">
           <span class="time">{{ formatTime(days) }}</span>
-          <span class="separator">:</span>
+          <span class="separator" style="font-size: 28px;">天</span>
+          <br />
         </template>
         <template v-if="days > 0 || hours > 0">
           <span class="time">{{ formatTime(hours) }}</span>
