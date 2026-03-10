@@ -1,6 +1,6 @@
 <template>
   <a-tabs default-active-key="2" @change="handleTabChange">
-    <a-tab-pane key="1" tab="视频总结">
+    <a-tab-pane key="1" tab="视频总结" v-if="summaryDebug">
       <!-- 视频总结内容 -->
       <pre style="padding: 20px">
         {{ summary }}
@@ -27,7 +27,8 @@
 
             <!-- 笔记内容 -->
             <div class="note-content">
-              <div :class="{ 'note-text': true, 'note-text-collapsed': !note.expanded }" :ref="`noteContent-${index}`" v-html="note.note"></div>
+              <div :class="{ 'note-text': true, 'note-text-collapsed': !note.expanded }" :ref="`noteContent-${index}`"
+                v-html="note.note"></div>
 
               <!-- 渐变遮罩和显示全文链接 -->
               <div v-if="!note.expanded && shouldShowCollapse(note.note, index)" class="note-overlay">
@@ -64,6 +65,7 @@ export default {
   },
   data() {
     return {
+      summaryDebug: false,
       summary: "",
       activeTab: "2",
       editorContent: "",
@@ -76,7 +78,7 @@ export default {
       handler(newVal) {
         if (newVal) {
           this.fetchList();
-          this.fetchSummary();
+          summaryDebug && this.fetchSummary();
         }
       },
       immediate: true,

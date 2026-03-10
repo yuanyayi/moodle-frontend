@@ -19,9 +19,10 @@
             formatTime(detail.end_time, "ah (周dd)") }}</p>
           <p><a-icon :component="detail1" /><b>相关课程：</b>{{ detail.course_name }}</p>
           <p><a-icon :component="detail3" /><b>授课老师：</b>{{ detail.teacher_name }}</p>
-          <p><a-icon type="snippets"
-              style="font-size: 14px;margin-left:2px;margin-right:9px;" /><b>授课内容：</b>{{
-                detail.course_content || "--" }}</p>
+          <p class="course-content"><a-icon type="snippets"
+              style="font-size: 14px;margin-left:2px;margin-right:9px;" /><b>授课内容：</b><span
+              :title="detail.course_content || '--'">{{
+                detail.course_content || "--" }}</span></p>
 
           <a-space style="margin-top:6px; min-height: 32px;">
             <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary" ghost
@@ -434,6 +435,17 @@ export default {
       b {
         text-wrap: nowrap;
       }
+    }
+
+    .course-content {
+      /* 授课内容：强制两行高度 */
+      height: 44px;
+      line-height: 22px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
   }
 

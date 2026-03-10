@@ -56,10 +56,13 @@
                     </a-menu-item>
                   </a-menu>
                 </a-dropdown>
-                <a-button v-if="detail.summary_status === 0" type="primary"
-                  @click="prepareSummary(detail.id)">开始总结</a-button>
-                <a-button v-if="detail.summary_status === 1" disabled class="disabled-btn">总结中...</a-button>
-                <a-button v-if="detail.summary_status === 2" @click="getSummary(detail.id)">查看总结</a-button>
+                <!-- 总结按钮 隐藏 -->
+                <template v-if="false">
+                  <a-button v-if="detail.summary_status === 0" type="primary"
+                    @click="prepareSummary(detail.id)">开始总结</a-button>
+                  <a-button v-if="detail.summary_status === 1" disabled class="disabled-btn">总结中...</a-button>
+                  <a-button v-if="detail.summary_status === 2" @click="getSummary(detail.id)">查看总结</a-button>
+                </template>
               </div>
             </div>
           </div>
