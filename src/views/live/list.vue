@@ -15,11 +15,13 @@
       <div v-for="(detail, index) in tableList" class="tableItem">
         <div class="content">
           <p>{{ detail.subject }}</p>
-          <p><a-icon :component="detail2" /><b>直播/上课时间:</b>{{ formatTime(detail.start_time, "YYYY年M月D日 ah") }} - {{ formatTime(detail.end_time, "ah (周dd)") }}</p>
+          <p><a-icon :component="detail2" /><b>直播/上课时间:</b>{{ formatTime(detail.start_time, "YYYY年M月D日 ah") }} - {{
+            formatTime(detail.end_time, "ah (周dd)") }}</p>
           <p><a-icon :component="detail1" /><b>相关课程：</b>{{ detail.course_name }}</p>
           <p><a-icon :component="detail3" /><b>授课老师：</b>{{ detail.teacher_name }}</p>
-          <p><a-icon type="snippets" style="font-size: 14px;margin-left:2px;margin-right:9px;" /><b>授课内容：</b>{{
-            detail.course_content || "--" }}</p>
+          <p><a-icon type="snippets"
+              style="font-size: 14px;margin-left:2px;margin-right:9px;" /><b>授课内容：</b>{{
+                detail.course_content || "--" }}</p>
 
           <a-space style="margin-top:6px; min-height: 32px;">
             <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary" ghost
