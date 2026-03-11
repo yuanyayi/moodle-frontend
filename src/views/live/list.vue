@@ -15,8 +15,9 @@
       <div v-for="(detail, index) in tableList" class="tableItem">
         <div class="content">
           <p>{{ detail.subject }}</p>
-          <p><a-icon :component="detail2" /><b>直播/上课时间:</b>{{ formatTime(detail.start_time, "YYYY年M月D日 ah") }} - {{
-            formatTime(detail.end_time, "ah (周dd)") }}</p>
+          <p><a-icon :component="detail2" /><b>直播/上课时间:</b>{{ formatTime(detail.start_time,
+            "YYYY年M月D日") + detail.start_period }} - {{ detail.end_period +
+              formatTime(detail.end_time, "(周dd)") }}</p>
           <p><a-icon :component="detail1" /><b>相关课程：</b>{{ detail.course_name }}</p>
           <p><a-icon :component="detail3" /><b>授课老师：</b>{{ detail.teacher_name }}</p>
           <p class="course-content"><a-icon type="snippets"

@@ -78,7 +78,7 @@ export default {
       handler(newVal) {
         if (newVal) {
           this.fetchList();
-          summaryDebug && this.fetchSummary();
+          this.summaryDebug && this.fetchSummary();
         }
       },
       immediate: true,
