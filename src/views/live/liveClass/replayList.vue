@@ -1,9 +1,7 @@
 <template>
-
   <a-card :bordered="false" style="margin-bottom: 24px">
     <div class="live-info-section">
-      <div class="title" style="line-height:26px">{{ detail.subject }}<status-tag
-          :color="detail.replay ? '#13C74F' : '#6E7079'" :text="detail.replay ? '已开放回放' : '未开放回放'" /></div>
+      <div class="title" style="line-height: 26px">{{ detail.subject }}<status-tag :color="detail.replay ? '#13C74F' : '#6E7079'" :text="detail.replay ? '已开放回放' : '未开放回放'" /></div>
       <div>
         <span class="info-item">
           <a-icon :component="detail1" />
@@ -33,11 +31,16 @@
             </div>
             <div class="content">
               <p>
-                <EditText v-if="role !== 'student'" :ref="`edit${index}`" :value="detail.name" trigger="none" @change="
-                  val => {
-                    editName(detail.id, val);
-                  }
-                " />
+                <EditText
+                  v-if="role !== 'student'"
+                  :ref="`edit${index}`"
+                  :value="detail.name"
+                  trigger="none"
+                  @change="
+                    val => {
+                      editName(detail.id, val);
+                    }
+                  " />
                 <template v-else>{{ detail.name }}</template>
               </p>
               <div class="bottom-actions" v-if="role !== 'student'">
@@ -48,21 +51,13 @@
                 <a-dropdown>
                   <a-button type="link" icon="ellipsis" size="small" />
                   <a-menu slot="overlay">
-                    <a-menu-item @click="$refs[`edit${index}`][0].openEdit()">
-                      <a-icon type="edit" /> 重命名
-                    </a-menu-item>
-                    <a-menu-item @click="deleteLiveRecord(detail.id)">
-                      <a-icon type="delete" /> 删除
-                    </a-menu-item>
+                    <a-menu-item @click="$refs[`edit${index}`][0].openEdit()"> <a-icon type="edit" /> 重命名 </a-menu-item>
+                    <a-menu-item @click="deleteLiveRecord(detail.id)"> <a-icon type="delete" /> 删除 </a-menu-item>
                   </a-menu>
                 </a-dropdown>
-                <!-- 总结按钮 隐藏 -->
-                <template v-if="false">
-                  <a-button v-if="detail.summary_status === 0" type="primary"
-                    @click="prepareSummary(detail.id)">开始总结</a-button>
-                  <a-button v-if="detail.summary_status === 1" disabled class="disabled-btn">总结中...</a-button>
-                  <a-button v-if="detail.summary_status === 2" @click="getSummary(detail.id)">查看总结</a-button>
-                </template>
+                <a-button v-if="detail.summary_status === 0" type="primary" @click="prepareSummary(detail.id)">开始总结</a-button>
+                <a-button v-if="detail.summary_status === 1" disabled class="disabled-btn">总结中...</a-button>
+                <a-button v-if="detail.summary_status === 2" @click="getSummary(detail.id)">查看总结</a-button>
               </div>
             </div>
           </div>
@@ -113,7 +108,7 @@ export default {
         pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
-        showTotal: (total) => `共 ${total} 条数据`,
+        showTotal: total => `共 ${total} 条数据`,
       },
       detail: {},
       fieldsMap: {
@@ -263,15 +258,17 @@ export default {
     },
 
     prepareSummary(id) {
-      prepareSummary(id).then(res => {
-        if (res.status) {
-          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
-          return;
-        }
-        this.$message.success(res.msg || "AI总结中，请等待。");
-      }).finally(res => {
-        this.fetch();
-      });
+      prepareSummary(id)
+        .then(res => {
+          if (res.status) {
+            this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+            return;
+          }
+          this.$message.success(res.msg || "AI总结中，请等待。");
+        })
+        .finally(res => {
+          this.fetch();
+        });
     },
     getSummary(id) {
       getSummary(id).then(res => {
@@ -292,7 +289,7 @@ export default {
 <style lang="less" scope>
 .live-info-section {
   padding: 24px;
-  background: url('@/assets/bg/image@2x.png') right center / auto 100%, linear-gradient(180deg, #F3F7FF 0%, rgba(243, 247, 255, 0) 100%);
+  background: url("@/assets/bg/image@2x.png") right center / auto 100%, linear-gradient(180deg, #f3f7ff 0%, rgba(243, 247, 255, 0) 100%);
   background-repeat: no-repeat;
   border-radius: 16px;
   margin-bottom: 16px;
@@ -310,7 +307,7 @@ export default {
   .info-item {
     margin-right: 20px;
 
-    >*+* {
+    > * + * {
       margin-left: 8px;
     }
 
@@ -335,13 +332,13 @@ export default {
 .tableItem {
   box-sizing: border-box;
   padding: 16px;
-  border: 1px solid #E9EBF1;
+  border: 1px solid #e9ebf1;
   display: flex;
   flex-direction: column;
   position: relative;
   width: 100%;
   border-radius: 8px;
-  background: #FFFFFF;
+  background: #ffffff;
   box-shadow: 0px 8px 24px 0px rgba(46, 93, 209, 0.08), 0px 8px 16px 0px rgba(46, 93, 209, 0.04);
 
   &:hover {
@@ -438,6 +435,6 @@ export default {
 .disabled-btn {
   background: rgba(5, 124, 251, 0.1) !important;
   border: 1px solid rgba(5, 124, 251, 0.4) !important;
-  color: #1E69FF !important;
+  color: #1e69ff !important;
 }
 </style>

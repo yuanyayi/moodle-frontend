@@ -33,8 +33,7 @@
         <!-- 控制按钮 -->
         <div v-if="false" class="control-buttons">
           <button v-if="cameraStatus === 'ready'" @click="capturePhoto" class="capture-btn">抓拍</button>
-          <button v-if="cameraStatus === 'ready'" @click="toggleAutoCapture"
-            :class="['auto-capture-btn', { active: isAutoCapturing }]">
+          <button v-if="cameraStatus === 'ready'" @click="toggleAutoCapture" :class="['auto-capture-btn', { active: isAutoCapturing }]">
             {{ isAutoCapturing ? "停止自动抓拍" : "开始自动抓拍" }}
           </button>
         </div>
@@ -60,6 +59,7 @@
 <script>
 import { uploadStudentPhoto } from "@/api/distinguish";
 import { camera } from "@/core/icons";
+import ImageCompressor from "image-compressor.js";
 export default {
   name: "CameraCapture",
   props: {
@@ -176,19 +176,38 @@ export default {
         // 绘制当前视频帧到canvas
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // 使用 toBlob 方法替代 fetch 方式获取 blob
-        const blob = await new Promise(resolve => {
+        // 使用 toBlob 方法获取原始 blob
+        const originalBlob = await new Promise(resolve => {
           canvas.toBlob(resolve, "image/png");
         });
 
-        if (!blob) {
+        if (!originalBlob) {
           throw new Error("无法生成图片数据");
         }
 
-        // 转换为 File 对象
-        const file = new File([blob], `student-photo-${Date.now()}.png`, {
-          type: "image/png",
+        // 使用 ImageCompressor 压缩图片，目标大小限制在 150KB 左右
+        const compressedBlob = await new Promise((resolve, reject) => {
+          new ImageCompressor(originalBlob, {
+            quality: 0.8, // 压缩质量，从0.6提高到0.8
+            maxWidth: 1024, // 最大宽度，从800提高到1024
+            maxHeight: 768, // 最大高度，从600提高到768
+            convertSize: 153600, // 150KB，从100KB提高到150KB
+            success(result) {
+              resolve(result);
+            },
+            error(err) {
+              console.error("图片压缩失败:", err);
+              resolve(originalBlob); // 压缩失败时返回原图
+            },
+          });
         });
+
+        // 转换为 File 对象
+        const file = new File([compressedBlob], `student-photo-${Date.now()}.${compressedBlob.type.split("/")[1]}`, {
+          type: compressedBlob.type,
+        });
+
+        console.log(file);
 
         // 构造 FormData
         const formData = new FormData();
@@ -201,7 +220,7 @@ export default {
         console.log("上传成功:", res);
 
         // 转换为图片数据用于预览
-        const imageUrl = URL.createObjectURL(blob);
+        const imageUrl = URL.createObjectURL(compressedBlob);
 
         // 添加到抓拍记录
         this.photoCount++;
@@ -436,7 +455,7 @@ export default {
           left: 0;
           width: 100%;
           height: 100%;
-          background-image: url('@/assets/bg/cameraFrame.png');
+          background-image: url("@/assets/bg/cameraFrame.png");
           background-size: contain;
           background-position: center;
           background-repeat: no-repeat;

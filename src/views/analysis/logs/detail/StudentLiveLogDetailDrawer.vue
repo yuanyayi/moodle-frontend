@@ -87,6 +87,9 @@ export default {
     },
     handleClose() {
       this.visible = false;
+      // 重置分页信息到第一页
+      this.listParam.page = 1;
+      this.pagination.current = 1;
     },
     fetchStudentLogs() {
       if (!this.live_config_id || !this.student_id) return;

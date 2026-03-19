@@ -27,8 +27,7 @@
 
             <!-- 笔记内容 -->
             <div class="note-content">
-              <div :class="{ 'note-text': true, 'note-text-collapsed': !note.expanded }" :ref="`noteContent-${index}`"
-                v-html="note.note"></div>
+              <div :class="{ 'note-text': true, 'note-text-collapsed': !note.expanded }" :ref="`noteContent-${index}`" v-html="note.note"></div>
 
               <!-- 渐变遮罩和显示全文链接 -->
               <div v-if="!note.expanded && shouldShowCollapse(note.note, index)" class="note-overlay">
@@ -45,6 +44,11 @@
 
         <!-- 无笔记提示 -->
         <empty v-else description="暂无笔记" />
+
+        <!-- 分页组件 -->
+        <div class="pagination-container">
+          <a-pagination v-bind="pagination" @change="handlePageChange" @showSizeChange="handlePageSizeChange" />
+        </div>
       </div>
     </a-tab-pane>
   </a-tabs>
@@ -71,6 +75,18 @@ export default {
       editorContent: "",
       saving: false,
       notes: [],
+      listParam: {
+        page: 1,
+        pageSize: 10,
+      },
+      pagination: {
+        current: 1,
+        pageSize: 10,
+        total: 0,
+        showSizeChanger: true,
+        pageSizeOptions: ["10", "20", "50"],
+        layout: "total, sizes, prev, pager, next, jumper",
+      },
     };
   },
   watch: {
@@ -104,8 +120,14 @@ export default {
     },
 
     fetchList() {
-      getVideoNoteList(this.vid).then(res => {
-        this.notes = (res.list || []).map((el, i) => {
+      getVideoNoteList(this.vid, this.listParam).then(res => {
+        if (res.pageBean) {
+          this.pagination.total = res.pageBean.allRow || 0;
+          this.pagination.current = res.pageBean.currentPage || res.pageBean.currentPage;
+          this.pagination.pageSize = res.pageBean.pageSize || this.pagination.pageSize;
+        }
+        const list = res.pageBean?.list || [];
+        this.notes = list.map((el, i) => {
           el.createTime = formatDate(el.create_time);
           el.expanded = this.shouldShowCollapse(el.note, i) ? false : undefined;
           return el;
@@ -136,6 +158,20 @@ export default {
 
     shouldShowCollapse(content, index) {
       return content.length > 200;
+    },
+
+    handlePageChange(page) {
+      this.listParam.page = page;
+      this.pagination.current = page;
+      this.fetchList();
+    },
+
+    handlePageSizeChange(current, size) {
+      this.listParam.page = 1;
+      this.listParam.pageSize = size;
+      this.pagination.current = 1;
+      this.pagination.pageSize = size;
+      this.fetchList();
     },
   },
 };
@@ -235,5 +271,11 @@ export default {
 
 :deep(.ant-empty) {
   padding: 40px 0;
+}
+
+.pagination-container {
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

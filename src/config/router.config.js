@@ -150,8 +150,23 @@ export const asyncRouterMap = [
       {
         path: "/user_docs",
         name: "docs",
+        redirect: "/user_docs/t",
         meta: { title: "用户手册", permission: ["live"], icon: docs },
-        component: () => import("@/views/docs"),
+        component: PageView,
+        children: [
+          {
+            path: "/user_docs/t",
+            name: "docsT",
+            meta: { title: "文字版操作指引", permission: ["live"] },
+            component: () => import("@/views/docs"),
+          },
+          {
+            path: "/user_docs/v",
+            name: "docsV",
+            meta: { title: "视频版操作指引", permission: ["live"] },
+            component: () => import("@/views/docs/v.vue"),
+          },
+        ],
       },
     ],
   },

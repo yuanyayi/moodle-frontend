@@ -341,14 +341,8 @@ export default {
     },
     shouldShowEnterBroadcastutton(detail) {
       const now = moment();
-      // const startTime = moment(detail.start_time);
-      const endTime = moment(detail.end_time);
+      const endTime = moment(detail.start_time).endOf("day");
 
-      // 根据角色确定提前进入的时间
-      // let minutesBeforeStart = 30;
-
-      // const allowedStartTime = startTime.clone().subtract(minutesBeforeStart, "minutes");
-      // return now.isBetween(allowedStartTime, endTime);
       return !now.isAfter(endTime);
     },
   },
