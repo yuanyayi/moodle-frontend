@@ -31,6 +31,8 @@
 <script>
 import { getFeedbackList, handleFeedback } from "@/api/livepage";
 import { help } from "@/core/icons";
+import soundT1 from "@/assets/sounds/t1.m4a";
+import soundT2 from "@/assets/sounds/t2.m4a";
 
 export default {
   name: "FeedbackReminder",
@@ -86,6 +88,12 @@ export default {
         size: "small",
         showTotal: total => `共 ${total} 条数据`,
       },
+      audioQueue: [], // 音频播放队列
+      isPlaying: false, // 是否正在播放
+      audioInstance: null, // 单例 Audio 对象
+      playTimeout: null, // 播放超时定时器
+      MAX_QUEUE_LENGTH: 5, // 队列最大长度阈值
+      PLAY_TIMEOUT: 5000, // 播放超时时间（5 秒）
     };
   },
   watch: {
@@ -99,14 +107,31 @@ export default {
     },
   },
   mounted() {
-    // 开始轮询，间隔1分钟
     if (this.autoFetch && this.liveConfigId) {
       this.startPolling();
     }
+    // 初始化单例 Audio 对象
+    this.audioInstance = new Audio();
   },
   beforeDestroy() {
     // 组件销毁时清除定时器
     this.stopPolling();
+    // 清空音频队列，停止正在播放的音频
+    this.audioQueue = [];
+    this.isPlaying = false;
+    // 清理超时定时器
+    if (this.playTimeout) {
+      clearTimeout(this.playTimeout);
+      this.playTimeout = null;
+    }
+    // 清理单例 Audio 对象
+    if (this.audioInstance) {
+      this.audioInstance.onended = null;
+      this.audioInstance.onerror = null;
+      this.audioInstance.src = '';
+      this.audioInstance.load();
+      this.audioInstance = null;
+    }
   },
   methods: {
     fetch() {
@@ -123,8 +148,17 @@ export default {
 
         // 保存当前条目数用于比较
         const currentCount = res.pageBean.allRow;
+        const newData = res.pageBean.list || [];
 
-        this.tableData = res.pageBean.list || [];
+        // 检查是否有新增项
+        if (currentCount > this.previousCount) {
+          // 找出新增的项
+          const newItems = this.findNewItems(newData);
+          // 处理新增项并播放提示音
+          this.processNewItems(newItems);
+        }
+
+        this.tableData = newData;
 
         // 更新分页信息
         this.pagination = {
@@ -153,7 +187,7 @@ export default {
       // 立即获取一次数据
       this.fetch();
 
-      // 设置定时器，每1分钟获取一次数据
+      // 定时器轮询，接近实时
       this.pollTimer = setInterval(() => {
         this.fetch();
       }, 10000);
@@ -196,6 +230,142 @@ export default {
     // 允许父组件手动刷新数据
     refresh() {
       this.fetch();
+    },
+    // 找出新增的项
+    findNewItems(newData) {
+      const oldIds = new Set(this.tableData.map(item => item.id));
+      return newData.filter(item => !oldIds.has(item.id));
+    },
+    // 处理新增项并添加到播放队列
+    processNewItems(newItems) {
+      // 提取需要播放的 type，去重
+      const typesToPlay = [];
+      const playedTypes = new Set();
+
+      newItems.forEach(item => {
+        const type = item.type;
+        // 只处理 type 为 1 或 2 的情况
+        if ((type === 1 || type === 2) && !playedTypes.has(type)) {
+          typesToPlay.push(type);
+          playedTypes.add(type);
+        }
+      });
+
+      // 将需要播放的类型加入队列
+      if (typesToPlay.length > 0) {
+        this.audioQueue.push(...typesToPlay);
+        
+        // 监控队列长度，超过阈值时清空队列
+        if (this.audioQueue.length > this.MAX_QUEUE_LENGTH) {
+          console.warn(`[FeedbackReminder] 队列长度超过阈值 (${this.MAX_QUEUE_LENGTH})，当前长度：${this.audioQueue.length}，已清空队列`);
+          this.audioQueue = [];
+          this.isPlaying = false;
+          return;
+        }
+        
+        // 如果当前没有在播放，开始播放
+        if (!this.isPlaying) {
+          this.playNextAudio();
+        }
+      }
+    },
+    // 播放下一个音频
+    playNextAudio() {
+      // 如果队列为空，结束播放
+      if (this.audioQueue.length === 0) {
+        this.isPlaying = false;
+        return;
+      }
+
+      // 标记为正在播放
+      this.isPlaying = true;
+
+      // 从队列头部取出一个类型
+      const type = this.audioQueue.shift();
+      
+      // 选择对应的音频文件
+      const audioSrc = type === 1 ? soundT1 : soundT2;
+
+      // 使用单例 Audio 对象
+      const audio = this.audioInstance;
+      audio.src = audioSrc;
+      audio.load();
+
+      // 清除之前的超时定时器
+      if (this.playTimeout) {
+        clearTimeout(this.playTimeout);
+        this.playTimeout = null;
+      }
+
+      // 设置播放超时保护
+      this.playTimeout = setTimeout(() => {
+        console.warn(`[FeedbackReminder] 音频播放超时（type=${type}），已强制停止`);
+        // 清理事件监听器
+        audio.onended = null;
+        audio.onerror = null;
+        // 停止播放
+        audio.pause();
+        audio.currentTime = 0;
+        // 继续播放下一个
+        this.playNextAudio();
+      }, this.PLAY_TIMEOUT);
+
+      // 播放完成后的回调
+      const onEndedHandler = () => {
+        // 清除超时定时器
+        if (this.playTimeout) {
+          clearTimeout(this.playTimeout);
+          this.playTimeout = null;
+        }
+        // 清理事件监听器，避免内存泄漏
+        audio.onended = null;
+        audio.onerror = null;
+        // 重置音频状态
+        audio.src = '';
+        audio.load();
+        // 播放下一个音频
+        this.playNextAudio();
+      };
+
+      // 播放出错时的处理
+      const onErrorHandler = () => {
+        console.error(`[FeedbackReminder] 音频播放失败：type=${type}`);
+        // 清除超时定时器
+        if (this.playTimeout) {
+          clearTimeout(this.playTimeout);
+          this.playTimeout = null;
+        }
+        // 清理事件监听器
+        audio.onended = null;
+        audio.onerror = null;
+        // 重置音频状态
+        audio.src = '';
+        audio.load();
+        // 继续播放下一个
+        this.playNextAudio();
+      };
+
+      // 绑定事件监听器
+      audio.onended = onEndedHandler;
+      audio.onerror = onErrorHandler;
+
+      // 开始播放
+      audio.play().catch(err => {
+        console.error(`[FeedbackReminder] 音频播放错误：type=${type}`, err);
+        // 清除超时定时器
+        if (this.playTimeout) {
+          clearTimeout(this.playTimeout);
+          this.playTimeout = null;
+        }
+        // 清理事件监听器
+        audio.onended = null;
+        audio.onerror = null;
+        // 重置音频状态
+        audio.src = '';
+        audio.load();
+        // 继续播放下一个
+        this.playNextAudio();
+      });
     },
   },
 };

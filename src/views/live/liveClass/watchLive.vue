@@ -1,13 +1,21 @@
 <template>
   <div id="watchLivePage">
     <!-- 倒计时弹窗，仅在直播模式下显示 -->
-    <CountdownModal ref="countdownModal" v-if="countdownTimestamp && mode === 'live'"
-      :countdownTimestamp="countdownTimestamp" @cutout="handleEnterLive"
+    <CountdownModal
+      ref="countdownModal"
+      v-if="countdownTimestamp && mode === 'live'"
+      :countdownTimestamp="countdownTimestamp"
+      @cutout="handleEnterLive"
       @countdown-finished="handleCountdownFinished" />
 
     <!-- 真人签到弹窗，仅在直播模式且为学生角色时显示 -->
-    <RealNameCheckInModal v-if="role === 'student' && mode === 'live'" :visible="checkInModalVisible" :user-id="userId"
-      :live-config-id="liveConfigId" @submit="handleCheckInSubmit" @cancel="hideCheckInModal" />
+    <RealNameCheckInModal
+      v-if="role === 'student' && mode === 'live'"
+      :visible="checkInModalVisible"
+      :user-id="userId"
+      :live-config-id="liveConfigId"
+      @submit="handleCheckInSubmit"
+      @cancel="hideCheckInModal" />
 
     <!-- 设备测试弹窗，仅在直播模式且为学生角色时显示 -->
     <!-- <LiveDeviceTestModal v-if="role === 'student' && mode === 'live'" :visible="deviceTestModalVisible" @confirm="handleDeviceConfirm" @cancel="handleDeviceCancel" /> -->
@@ -37,9 +45,14 @@
     </div> -->
     <div style="display: flex; flex-flow: row nowrap">
       <div v-if="role === 'student' && mode !== 'replay'" style="flex: 0 0 auto">
-        <CameraCapture ref="cameraCapture" :user-id="userId" :live-config-id="liveConfigId"
-          @photoCaptured="handlePhotoCaptured" @photoCaptureError="handlePhotoCaptureError"
-          @autoCaptureStarted="handleAutoCaptureStarted" @autoCaptureStopped="handleAutoCaptureStopped"
+        <CameraCapture
+          ref="cameraCapture"
+          :user-id="userId"
+          :live-config-id="liveConfigId"
+          @photoCaptured="handlePhotoCaptured"
+          @photoCaptureError="handlePhotoCaptureError"
+          @autoCaptureStarted="handleAutoCaptureStarted"
+          @autoCaptureStopped="handleAutoCaptureStopped"
           @autoCaptureError="handleAutoCaptureError" />
       </div>
       <div style="flex: 1">
@@ -49,22 +62,17 @@
             <div class="replay-tag">回放</div>
           </div>
           <div class="info">
-            <span><a-icon :component="eye" style="font-size:20px;" /> 观看人数: {{
-              replayDetail.view_number }}</span>
-            <span><a-icon :component="like" style="font-size:20px;" /> 点赞数: {{
-              replayDetail.like_number }}</span>
+            <span><a-icon :component="eye" style="font-size: 20px" /> 观看人数: {{ replayDetail.view_number }}</span>
+            <span><a-icon :component="like" style="font-size: 20px" /> 点赞数: {{ replayDetail.like_number }}</span>
           </div>
         </div>
-        <iframe :src="isCheckedIn && liveUrl" class="player-iframe"
-          allow="fullscreen; clipboard-read *; clipboard-write *; camera; microphone;midi;"></iframe>
+        <iframe :src="isCheckedIn && liveUrl" class="player-iframe" allow="fullscreen; clipboard-read *; clipboard-write *; camera; microphone;midi;"></iframe>
       </div>
     </div>
-    <VideoNotes v-if="mode === 'replay'" :vid="liveConfigId" :showEditor="role === 'student'"
-      style="background-color: #fff; position: relative;  z-index: 10; margin-top: -85px;" />
+    <VideoNotes v-if="mode === 'replay'" :vid="liveConfigId" :showEditor="role === 'student'" style="background-color: #fff; position: relative; z-index: 10; margin-top: -85px" />
 
     <!-- 反馈悬浮窗 -->
-    <FeedbackFloatWindow :visible="feedbackFloatWindowVisible" :feedback="feedback" @close="closeFeedbackFloatWindow"
-      @handUp="handUp" />
+    <FeedbackFloatWindow :visible="feedbackFloatWindowVisible" :feedback="feedback" @close="closeFeedbackFloatWindow" @handUp="handUp" />
   </div>
 </template>
 
@@ -124,19 +132,19 @@ export default {
       capsuleItems: [
         {
           component: backSystem,
-          title: '返回系统',
+          title: "返回系统",
           onClick: () => this.goReplay(),
-          show: () => this.mode === 'replay',
+          show: () => this.mode === "replay",
         },
         {
           component: feedback,
-          title: '问题反馈',
-          show: () => this.role === 'student' && this.mode === 'live',
-          onClick: () => this.showFeedbackFloatWindow()
-        }
+          title: "问题反馈",
+          show: () => this.role === "student" && this.mode === "live",
+          onClick: () => this.showFeedbackFloatWindow(),
+        },
       ],
       // 反馈悬浮窗可见性
-      feedbackFloatWindowVisible: false
+      feedbackFloatWindowVisible: false,
     };
   },
   computed: {
@@ -185,6 +193,7 @@ export default {
         this.liveUrl = viewUrl;
 
         return;
+        // 以下是火山插件模式，不敢删，先放着。
         this.activityId = res.data.activityId;
         this.liveToken = res.data.liveToken;
 
@@ -372,9 +381,10 @@ export default {
       this.deviceTestModalVisible = false;
       this.$message.info("设备测试已取消");
     },
-    handUp(obtain = false) {
-      obtain = typeof obtain === "boolean" ? obtain : false;
-      handUp(this.userId, this.liveConfigId, obtain).then(res => {
+    handUp(type) {
+      obtain = typeof type === "boolean" ? obtain : false;
+      type = typeof type === "number" ? type : 0;
+      handUp(this.userId, this.liveConfigId, type, obtain).then(res => {
         if (res.status) {
           this.$message.error(res.msg || "获取数据失败，请稍后再试。");
           return;
@@ -428,7 +438,7 @@ export default {
       this.$router.push({
         name: "replayList",
         params: { configId: this.replayDetail.live_config_id },
-      })
+      });
     },
     // 显示反馈悬浮窗
     showFeedbackFloatWindow() {

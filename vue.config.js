@@ -32,6 +32,17 @@ const vueConfig = {
     ],
     optimization: {
       splitChunks: false
+    },
+    module: {
+      rules: [
+        {
+          test: /\.(mp3|wav|m4a|ogg)$/i,
+          type: 'asset/resource',
+          generator: {
+            filename: 'sounds/[name].[hash:8][ext]'
+          }
+        }
+      ]
     }
   },
 
@@ -70,7 +81,6 @@ const vueConfig = {
         modifyVars: {
           // 主色调（会影响主按钮）
           "primary-color": "#057CFB",
-
           // 按钮相关变量
           "btn-primary-bg": "#057CFB",           // 主按钮背景色
           // 或者覆盖按钮特定的悬浮变量

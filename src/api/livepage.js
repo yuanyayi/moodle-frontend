@@ -124,13 +124,14 @@ export function handleFeedback(id) {
  * For student
  * @param {*} userId
  * @param {*} liveConfigId
+ * @param {*} type 问题类型：1-听不到声音，2-看不到共享屏幕画面
  * @returns
  */
-export function handUp(userId, liveConfigId, obtain = false) {
+export function handUp(userId, liveConfigId, type) {
   return axios({
     url: `/feedback/submit`,
     method: "post",
-    params: { userId, liveConfigId, obtain },
+    params: { userId, liveConfigId, type },
   });
 }
 
