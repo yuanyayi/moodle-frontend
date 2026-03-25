@@ -11,8 +11,8 @@
           <span v-if="feedback.id && feedback.handle" style="color: #44d0c8"> 问题已处理 </span>
         </div>
         <div class="feedback-button">
-          <a-button type="primary" ghost v-if="!feedback.id || feedback.handle" @click="handUp(1)" style="width: 138px; margin-bottom: 10px"><a-icon type="message" />听不到声音</a-button>
-          <a-button type="primary" ghost v-if="!feedback.id || feedback.handle" @click="handUp(2)" style="width: 138px"><a-icon type="message" />看不到共享屏幕画面</a-button>
+          <a-button type="primary" ghost v-if="!feedback.id || feedback.handle" @click="handUp(1)" style="margin-bottom: 10px"><a-icon type="message" />听不到声音</a-button>
+          <a-button type="primary" ghost v-if="!feedback.id || feedback.handle" @click="handUp(2)"><a-icon type="message" />看不到共享屏幕画面</a-button>
         </div>
       </div>
     </div>

@@ -190,7 +190,7 @@ export default {
       // 定时器轮询，接近实时
       this.pollTimer = setInterval(() => {
         this.fetch();
-      }, 10000);
+      }, 5000);
     },
 
     stopPolling() {

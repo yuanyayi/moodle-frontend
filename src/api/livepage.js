@@ -127,11 +127,11 @@ export function handleFeedback(id) {
  * @param {*} type 问题类型：1-听不到声音，2-看不到共享屏幕画面
  * @returns
  */
-export function handUp(userId, liveConfigId, type) {
+export function handUp(userId, liveConfigId, type = 0, obtain = false) {
   return axios({
     url: `/feedback/submit`,
     method: "post",
-    params: { userId, liveConfigId, type },
+    params: { userId, liveConfigId, type, obtain },
   });
 }
 

@@ -175,7 +175,7 @@ export default {
       // 显示真人签到弹窗
       this.checkAndShowCheckInModal();
       // 刷新feedback ID
-      this.handUp(true);
+      this.handUp(0, true);
     }
     // 只有学生需要手动签到
     if (this.role !== "student" || this.mode === "replay") {
@@ -381,9 +381,7 @@ export default {
       this.deviceTestModalVisible = false;
       this.$message.info("设备测试已取消");
     },
-    handUp(type) {
-      obtain = typeof type === "boolean" ? obtain : false;
-      type = typeof type === "number" ? type : 0;
+    handUp(type = 0, obtain = false) {
       handUp(this.userId, this.liveConfigId, type, obtain).then(res => {
         if (res.status) {
           this.$message.error(res.msg || "获取数据失败，请稍后再试。");
@@ -416,11 +414,10 @@ export default {
       // 先停止可能存在的轮询
       this.stopFeedbackPolling();
 
-      this.getFeedbackResult();
       // 启动新的轮询，每分钟执行一次
       this.feedbackPollTimer = setInterval(() => {
         this.getFeedbackResult();
-      }, 30000);
+      }, 5000);
     },
 
     // 停止反馈轮询
