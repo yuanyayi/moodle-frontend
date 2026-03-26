@@ -6,8 +6,7 @@
     </div>
     <div class="reminder-content">
       <!-- <button @click="triggerShake">测试震动</button> -->
-      <a-table :columns="columns" :data-source="tableData" :pagination="pagination" :show-header="false"
-        @change="handleTableChange">
+      <a-table :columns="columns" :data-source="tableData" :pagination="pagination" :show-header="false" @change="handleTableChange">
         <template v-slot:msg="_, record">
           <span :class="record.handle ? 'status-success' : 'status-error'">
             {{ record.msg }}
@@ -20,8 +19,7 @@
           </span>
         </template>
         <template v-slot:operations="_, record">
-          <a-button v-if="!record.handle" size="small" type="primary" ghost @click="handleFeedback(record.id)"> 处理异常
-          </a-button>
+          <a-button v-if="!record.handle" size="small" type="primary" ghost @click="handleFeedback(record.id)"> 处理异常 </a-button>
         </template>
       </a-table>
     </div>
@@ -79,6 +77,7 @@ export default {
       },
       pollTimer: null,
       previousCount: 0, // 记录上次的条目数
+      isFirstLoad: true, // 标记是否为首次加载
       shouldShake: false, // 控制是否震动
       pagination: {
         current: 1,
@@ -128,7 +127,7 @@ export default {
     if (this.audioInstance) {
       this.audioInstance.onended = null;
       this.audioInstance.onerror = null;
-      this.audioInstance.src = '';
+      this.audioInstance.src = "";
       this.audioInstance.load();
       this.audioInstance = null;
     }
@@ -150,8 +149,8 @@ export default {
         const currentCount = res.pageBean.allRow;
         const newData = res.pageBean.list || [];
 
-        // 检查是否有新增项
-        if (currentCount > this.previousCount) {
+        // 检查是否有新增项（仅在非首次加载时检测）
+        if (currentCount > this.previousCount && !this.isFirstLoad) {
           // 找出新增的项
           const newItems = this.findNewItems(newData);
           // 处理新增项并播放提示音
@@ -173,10 +172,13 @@ export default {
         // }
 
         // 向父组件抛出当前计数
-        this.$emit('count-change', currentCount);
+        this.$emit("count-change", currentCount);
 
         // 更新之前的条目数
         this.previousCount = currentCount;
+        
+        // 首次加载完成后设置标志
+        this.isFirstLoad = false;
       });
     },
 
@@ -234,7 +236,7 @@ export default {
     // 找出新增的项
     findNewItems(newData) {
       const oldIds = new Set(this.tableData.map(item => item.id));
-      return newData.filter(item => !oldIds.has(item.id));
+      return newData.filter(item => !oldIds.has(item.id)).filter(item => !item.handle);
     },
     // 处理新增项并添加到播放队列
     processNewItems(newItems) {
@@ -254,7 +256,7 @@ export default {
       // 将需要播放的类型加入队列
       if (typesToPlay.length > 0) {
         this.audioQueue.push(...typesToPlay);
-        
+
         // 监控队列长度，超过阈值时清空队列
         if (this.audioQueue.length > this.MAX_QUEUE_LENGTH) {
           console.warn(`[FeedbackReminder] 队列长度超过阈值 (${this.MAX_QUEUE_LENGTH})，当前长度：${this.audioQueue.length}，已清空队列`);
@@ -262,7 +264,7 @@ export default {
           this.isPlaying = false;
           return;
         }
-        
+
         // 如果当前没有在播放，开始播放
         if (!this.isPlaying) {
           this.playNextAudio();
@@ -282,7 +284,7 @@ export default {
 
       // 从队列头部取出一个类型
       const type = this.audioQueue.shift();
-      
+
       // 选择对应的音频文件
       const audioSrc = type === 1 ? soundT1 : soundT2;
 
@@ -321,7 +323,7 @@ export default {
         audio.onended = null;
         audio.onerror = null;
         // 重置音频状态
-        audio.src = '';
+        audio.src = "";
         audio.load();
         // 播放下一个音频
         this.playNextAudio();
@@ -339,7 +341,7 @@ export default {
         audio.onended = null;
         audio.onerror = null;
         // 重置音频状态
-        audio.src = '';
+        audio.src = "";
         audio.load();
         // 继续播放下一个
         this.playNextAudio();
@@ -361,7 +363,7 @@ export default {
         audio.onended = null;
         audio.onerror = null;
         // 重置音频状态
-        audio.src = '';
+        audio.src = "";
         audio.load();
         // 继续播放下一个
         this.playNextAudio();
@@ -384,7 +386,6 @@ export default {
 }
 
 @keyframes shake {
-
   0%,
   100% {
     transform: translateX(0);
@@ -429,7 +430,7 @@ export default {
   margin: 0;
 }
 
-:deep(.ant-table) .ant-table-tbody>tr>td {
+:deep(.ant-table) .ant-table-tbody > tr > td {
   padding: 8px;
 }
 
@@ -444,18 +445,18 @@ export default {
 }
 
 .status-success {
-  color: #73D13D;
+  color: #73d13d;
 }
 
 .status-success .statusDot {
-  background-color: #73D13D;
+  background-color: #73d13d;
 }
 
 .status-error {
-  color: #FF4D4F;
+  color: #ff4d4f;
 }
 
 .status-error .statusDot {
-  background-color: #FF4D4F;
+  background-color: #ff4d4f;
 }
 </style>
