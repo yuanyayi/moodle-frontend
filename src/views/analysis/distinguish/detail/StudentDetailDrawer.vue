@@ -1,5 +1,5 @@
 <template>
-  <a-drawer title="学生考勤详情" placement="right" :width="800" :visible="visible" :closable="true" :mask="true" :mask-closable="true" @close="CloneRest">
+  <a-drawer title="学生考勤详情" placement="right" :width="800" :visible="visible" :closable="true" :mask="true" :mask-closable="true" @close="close">
     <div v-if="loading" class="loading-container">
       <a-spin tip="加载中..." size="large" />
     </div>
@@ -74,7 +74,6 @@ import { status1, status0, statusMinus1 } from "@/core/icons";
 import { getStudentRecordPage, updateAttendanceState, studentAppeal } from "@/api/distinguish";
 import { getLiveMaps } from "@/api/live";
 import { mapGetters } from "vuex";
-import { CloneRest } from "../../../../../../../Library/Caches/typescript/5.9/node_modules/@sinclair/typebox/build/cjs/index";
 
 export default {
   name: "StudentDetailDrawer",
