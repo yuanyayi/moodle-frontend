@@ -234,7 +234,7 @@ export default {
     // 找出新增的项
     findNewItems(newData) {
       const oldIds = new Set(this.tableData.map(item => item.id));
-      return newData.filter(item => !oldIds.has(item.id));
+      return newData.filter(item => !oldIds.has(item.id)).filter(item => item.handle === 1);
     },
     // 处理新增项并添加到播放队列
     processNewItems(newItems) {
