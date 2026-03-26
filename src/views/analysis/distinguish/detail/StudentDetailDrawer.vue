@@ -1,6 +1,5 @@
 <template>
-  <a-drawer title="学生考勤详情" placement="right" :width="800" :visible="visible" :closable="true" :mask="true"
-    :mask-closable="true" @close="handleClose">
+  <a-drawer title="学生考勤详情" placement="right" :width="800" :visible="visible" :closable="true" :mask="true" :mask-closable="true" @close="CloneRest">
     <div v-if="loading" class="loading-container">
       <a-spin tip="加载中..." size="large" />
     </div>
@@ -8,10 +7,10 @@
       <!-- 学生基本信息 -->
       <div class="info-section">
         <div class="student-header">
-          <div class="student-name">{{ studentInfo.student_name || '未知' }}</div>
-          <div class="student-id">学生ID：{{ studentInfo.student_id || '未知' }}</div>
+          <div class="student-name">{{ studentInfo.student_name || "未知" }}</div>
+          <div class="student-id">学生ID：{{ studentInfo.student_id || "未知" }}</div>
           <div class="attendance-status">
-            <a-icon :component="statusIcon" style="margin-right: 4px;" />
+            <a-icon :component="statusIcon" style="margin-right: 4px" />
             {{ attendanceStatusText }}
           </div>
         </div>
@@ -20,12 +19,10 @@
       <!-- 识别记录 -->
       <div class="records-section">
         <!-- 申诉弹窗 -->
-        <a-modal v-model="showAppealModal" title="申诉" @ok="handleAppeal" @cancel="showAppealModal = false"
-          :okText="'提交'">
+        <a-modal v-model="showAppealModal" title="申诉" @ok="handleAppeal" @cancel="showAppealModal = false" :okText="'提交'">
           <a-form :form="appealForm" layout="vertical">
             <a-form-item label="申诉理由">
-              <a-textarea v-decorator="['content', { rules: [{ required: true, message: '请输入申诉理由' }] }]" :rows="4"
-                placeholder="请输入申诉理由" />
+              <a-textarea v-decorator="['content', { rules: [{ required: true, message: '请输入申诉理由' }] }]" :rows="4" placeholder="请输入申诉理由" />
             </a-form-item>
           </a-form>
         </a-modal>
@@ -41,11 +38,11 @@
           </div>
 
           <!-- 抓取照片 -->
-          <h4>抓取照片
+          <h4>
+            抓取照片
             <!-- 操作按钮 -->
             <a-space>
               <template v-if="isNotStudent">
-                
                 <a-button @click="confirmAttendance">确认出勤</a-button>
                 <a-button @click="confirmAbsent">确认缺勤</a-button>
               </template>
@@ -59,18 +56,13 @@
             <div class="photo-item" v-for="(photo, index) in allPhotos" :key="index">
               <img :src="photo.url" alt="抓取照片" />
               <p :class="{ 'recognition-success': photo.result === 1, 'recognition-failed': photo.result === 0 }">
-                {{ photo.result === 1 ? '识别成功' : photo.result === 0 ? '识别失败' : '' }}
+                {{ photo.result === 1 ? "识别成功" : photo.result === 0 ? "识别失败" : "" }}
               </p>
             </div>
           </div>
 
           <!-- 分页导航 -->
-          <a-pagination 
-            v-bind="pagination"
-            @change="pageChange" 
-            @showSizeChange="onShowSizeChange"
-            style="text-align: right"
-            size="small" />
+          <a-pagination v-bind="pagination" @change="pageChange" @showSizeChange="onShowSizeChange" style="text-align: right" size="small" />
         </div>
       </div>
     </div>
@@ -82,13 +74,14 @@ import { status1, status0, statusMinus1 } from "@/core/icons";
 import { getStudentRecordPage, updateAttendanceState, studentAppeal } from "@/api/distinguish";
 import { getLiveMaps } from "@/api/live";
 import { mapGetters } from "vuex";
+import { CloneRest } from "../../../../../../../Library/Caches/typescript/5.9/node_modules/@sinclair/typebox/build/cjs/index";
 
 export default {
-  name: 'StudentDetailDrawer',
+  name: "StudentDetailDrawer",
   data() {
     return {
       visible: false,
-      attendanceStatusId: '',
+      attendanceStatusId: "",
       loading: false,
       listParam: { page: 1, pageSize: 20 },
       pagination: {
@@ -97,7 +90,7 @@ export default {
         pageSize: 20,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
-        showTotal: (total) => `共 ${total} 条数据`,
+        showTotal: total => `共 ${total} 条数据`,
       },
       studentInfo: {},
       systemPhotos: [],
@@ -116,27 +109,38 @@ export default {
     },
     attendanceStatusText() {
       const status = this.studentInfo.status;
-      if (status === 1) return '出勤';
-      if (status === -1) return '缺勤';
-      return '未处理';
+      if (status === 1) return "出勤";
+      if (status === -1) return "缺勤";
+      return "未处理";
     },
     // 判断当前用户是否是学生
     isNotStudent() {
-      return this.userInfo?.roleId !== 'student'
+      return this.userInfo?.roleId !== "student";
     },
-    ...mapGetters(['userInfo']),
+    ...mapGetters(["userInfo"]),
+  },
+  created() {
+    this.getMaps();
   },
   methods: {
     show(id) {
       this.attendanceStatusId = id;
       this.visible = true;
-      this.getMaps();
       this.fetch();
     },
     close() {
-      this.visible = false;
-    },
-    handleClose() {
+      // 重置分页参数
+      this.listParam = { page: 1, pageSize: 20 };
+
+      // 清空数据
+      this.attendanceStatusId = "";
+      this.studentInfo = {};
+      this.systemPhotos = [];
+      this.allPhotos = [];
+      this.showAppealModal = false;
+      this.loading = false;
+
+      // 关闭抽屉
       this.visible = false;
     },
     getMaps() {
@@ -167,8 +171,8 @@ export default {
           this.pagination.total = res.pageBean.allRow;
         })
         .catch(error => {
-          console.error('获取学生详情失败:', error);
-          this.$message.error('获取学生详情失败');
+          console.error("获取学生详情失败:", error);
+          this.$message.error("获取学生详情失败");
         })
         .finally(() => {
           this.loading = false;
@@ -177,7 +181,7 @@ export default {
 
     // 分页切换
     pageChange(page, pageSize) {
-      console.log('Page change:', page, pageSize);
+      console.log("Page change:", page, pageSize);
       // 确保参数是数字类型
       const currentPage = Number(page);
       const currentPageSize = Number(pageSize);
@@ -187,10 +191,10 @@ export default {
       this.pagination.pageSize = currentPageSize;
       this.fetch();
     },
-    
+
     // 每页条目变化
     onShowSizeChange(current, size) {
-      console.log('Show size change:', current, size);
+      console.log("Show size change:", current, size);
       // 确保参数是数字类型
       const currentPage = Number(current);
       const currentPageSize = Number(size);
@@ -211,7 +215,7 @@ export default {
         this.$message.success("已确认出勤");
         this.fetch();
         // 通知主页面刷新列表
-        this.$emit('refresh');
+        this.$emit("refresh");
       });
     },
 
@@ -225,25 +229,27 @@ export default {
         this.$message.success("已确认缺勤");
         this.fetch();
         // 通知主页面刷新列表
-        this.$emit('refresh');
+        this.$emit("refresh");
       });
     },
 
     handleAppeal() {
       this.appealForm.validateFields((err, values) => {
         if (!err) {
-          studentAppeal(this.attendanceStatusId, values.content,).then(() => {
-            this.$message.success("申诉已提交");
-            this.studentInfo.can_appeal = false;
-            this.showAppealModal = false;
-            this.appealForm.resetFields();
-          }).catch(() => {
-            this.$message.error("申诉提交失败");
-          });
+          studentAppeal(this.attendanceStatusId, values.content)
+            .then(() => {
+              this.$message.success("申诉已提交");
+              this.studentInfo.can_appeal = false;
+              this.showAppealModal = false;
+              this.appealForm.resetFields();
+            })
+            .catch(() => {
+              this.$message.error("申诉提交失败");
+            });
         }
       });
     },
-  }
+  },
 };
 </script>
 
@@ -255,10 +261,10 @@ export default {
 .info-section {
   margin-bottom: 24px;
   padding: 16px;
-  background: linear-gradient(180deg, #F3F7FF 0%, rgba(243, 247, 255, 0) 100%);
+  background: linear-gradient(180deg, #f3f7ff 0%, rgba(243, 247, 255, 0) 100%);
   border-radius: 12px;
   box-sizing: border-box;
-  border: 1px solid #E1EEFC;
+  border: 1px solid #e1eefc;
 }
 
 .student-header {
@@ -267,7 +273,7 @@ export default {
   flex-wrap: wrap;
   gap: 12px;
 
-  &>div {
+  & > div {
     margin-right: 16px;
   }
 }
@@ -286,7 +292,7 @@ export default {
   border-radius: 4px;
   padding: 0px 10px;
   box-sizing: border-box;
-  border: 1px solid #DCDCDC;
+  border: 1px solid #dcdcdc;
   font-size: 14px;
   line-height: 20px;
   color: #666;
@@ -318,12 +324,12 @@ export default {
   box-sizing: border-box;
   border-width: 0px 0px 0px 2px;
   border-style: solid;
-  border-color: #057CFB;
+  border-color: #057cfb;
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  >* {
+  > * {
     margin: -6px 0;
   }
 }
