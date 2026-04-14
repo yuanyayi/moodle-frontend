@@ -111,6 +111,13 @@ export const asyncRouterMap = [
               },
             ],
           },
+          // 助播统计
+          {
+            path: "helpAnalysis",
+            name: "helpAnalysis",
+            meta: { title: "助播统计", permission: ["analysis"] },
+            component: () => import("@/views/analysis/helpAnalysis"),
+          },
         ],
       },
       // 直播平台

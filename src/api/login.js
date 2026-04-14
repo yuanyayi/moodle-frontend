@@ -514,8 +514,9 @@ export function getInfo() {
       1: ["live", "distinguish"], // 1:学生
       2: ["live", "analysis"], // 2:老师
       3: ["analysis"], // 3:教务
+      4: ["analysis"], // 4:助教
     }[res.data.role];
-    let roleId = ["admin", "student", "teacher", "dean"][res.data.role];
+    let roleId = ["admin", "student", "teacher", "dean", "assistant"][res.data.role];
     let permissions = permissionList.map(per => {
       return {
         roleId,
@@ -583,7 +584,7 @@ export function logout() {
       status: 0,
       msg: "[测试接口] 注销成功",
       data: {},
-    })
+    }),
   );
 }
 
@@ -606,6 +607,6 @@ export function logout() {
 export function toSmartPlatform() {
   return request({
     url: userApi.ToSmart,
-    method: "get"
+    method: "get",
   });
 }

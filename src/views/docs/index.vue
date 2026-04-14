@@ -39,7 +39,8 @@ export default {
         'student': '/docs/杏林智慧教学直播平台使用手册-学生端0226.docx',
         'teacher': '/docs/杏林智慧教学直播平台使用手册-教师端0226.docx',
         'admin': '/docs/杏林智慧教学直播平台使用手册-教师端0226.docx',
-        'dean': '/docs/杏林智慧教学直播平台使用手册-教师端0226.docx'
+        'dean': '/docs/杏林智慧教学直播平台使用手册-教师端0226.docx',
+        'assistant': '/docs/杏林智慧教学直播平台使用手册-教师端0226.docx'
       }
       return roleMap[this.roles.id] || roleMap['teacher']
     }

@@ -46,7 +46,7 @@
                 <a-button @click="confirmAttendance">确认出勤</a-button>
                 <a-button @click="confirmAbsent">确认缺勤</a-button>
               </template>
-              <template v-if="!isNotStudent && studentInfo.can_appeal">
+              <template v-if="!isNotStudent && studentInfo.status !== 1" && studentInfo.can_appeal>
                 <a-button @click="showAppealModal = true" type="danger" ghost>申诉</a-button>
               </template>
             </a-space>
