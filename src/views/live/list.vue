@@ -29,7 +29,7 @@
             <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary" ghost @click="gotoCourseLive(detail.id)">进入直播间</a-button>
             <a-button v-if="assistantEnterLiveButton(detail)" type="primary" @click="gotoAssistantCourseLive(detail.id)">进入直播间</a-button>
             <a-button v-if="shouldShowEnterBroadcastButton(detail)" type="primary" @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
-            <a-button v-if="detail.replay && detail.status === 3" class="greenBtn" @click="gotoReplayList(detail.id)">直播回放</a-button>
+            <a-button v-if="role !== 'assistant' && detail.replay && detail.status === 3" class="greenBtn" @click="gotoReplayList(detail.id)">直播回放</a-button>
             <span style="opacity: 0; pointer-events: none">占位</span>
             <!-- <template v-if="role === 'teacher'">
               <a-button type="info" @click="$refs.createModal.edit(detail)">编辑</a-button>
