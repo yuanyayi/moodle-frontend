@@ -38,7 +38,6 @@ export default {
           list: [],
           onChange: this.getCoursesBySemester,
         },
-
         course_id: {
           type: "select",
           label: "相关课程",

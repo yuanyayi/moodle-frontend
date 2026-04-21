@@ -11,7 +11,7 @@
 
 <script>
 import SearchForm from "@/components/SearchForm.vue";
-import { fetchLiveStatPage, getStatisticsMaps, getCourseList } from "@/api/analysis";
+import { fetchAssistantDataPage, getStatisticsMaps, getCourseList } from "@/api/analysis";
 import { formatTime } from "@/utils/common";
 import { mapGetters } from "vuex";
 
@@ -25,14 +25,20 @@ export default {
       loading: false,
       queryField: {
         semester_id: {
-          label: "课程名称",
+          type: "select",
+          label: "学期",
           list: [],
           onChange: this.getCoursesBySemester,
         },
         course_id: {
+          type: "select",
+          label: "相关课程",
+          list: [],
+        },
+        start_time: {
           type: "dateRange",
           label: "直播时间",
-          list: [],
+          list: [], //_begin,_stop
         },
       },
       queryParam: {
@@ -62,26 +68,34 @@ export default {
         },
         {
           title: "直播时间",
-          dataIndex: "start_time",
-          key: "start_time",
-          customRender: text => formatTime(text, "YYYY-MM-DD HH:mm"),
+          key: "time_range",
+          customRender: (text, record) => {
+            const start = formatTime(record.start_time, "YYYY-MM-DD HH:mm");
+            const end = formatTime(record.end_time, "YYYY-MM-DD HH:mm");
+            return `${start} 至 ${end}`;
+          },
+        },
+        {
+          title: "持续时间",
+          dataIndex: "duration",
+          key: "duration",
+          customRender: text => text + "分钟",
         },
         {
           title: "进入直播时间",
           dataIndex: "enter_time",
           key: "enter_time",
-          customRender: text => formatTime(text, "YYYY-MM-DD HH:mm"),
+          customRender: text => (text ? formatTime(text, "YYYY-MM-DD HH:mm") : "-"),
         },
         {
-          title: "助播离开次数",
-          dataIndex: "n",
-          key: "n",
-          customRender: text => formatTime(text, "YYYY-MM-DD HH:mm"),
+          title: "离开次数",
+          dataIndex: "leave_count",
+          key: "leave_count",
         },
         {
-          title: "助播在线时长",
-          dataIndex: "h",
-          key: "h",
+          title: "在线时长",
+          dataIndex: "online_duration",
+          key: "online_duration",
           customRender: text => text + "分钟",
         },
       ],
@@ -130,7 +144,7 @@ export default {
       }
       let queryParam = { ...this.queryParam };
 
-      fetchLiveStatPage({
+      fetchAssistantDataPage({
         ...queryParam,
         ...this.listParam,
       })
@@ -208,5 +222,8 @@ export default {
 <style scoped>
 .table-page-search-wrapper {
   padding-bottom: 16px;
+}
+::v-deep .ant-table .ant-table-thead > tr > th {
+  text-wrap: nowrap;
 }
 </style>

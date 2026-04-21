@@ -82,3 +82,24 @@ export function getCourseList(semester_id = 0, courseName = "") {
     return {};
   });
 }
+
+// ---------- helps 助教数据 ---------- //
+
+/**
+ * 助教数据列表接口
+ * @param {Object} params - 查询参数
+ * @param {string} params.token - 令牌
+ * @param {number} params.page - 页码
+ * @param {number} params.pageSize - 每页数量
+ * @param {number} params.semester_id - 学期
+ * @param {string} params.course_id - 相关课程
+ * @param {number} params.start_time_begin - 直播开始时间
+ * @param {number} params.start_time_stop - 直播开始结束时间
+ */
+export function fetchAssistantDataPage(params) {
+  return axios({
+    url: "/assistant/dataPage",
+    method: "post",
+    params,
+  });
+}

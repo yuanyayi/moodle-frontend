@@ -514,7 +514,7 @@ export function getInfo() {
       1: ["live", "distinguish"], // 1:学生
       2: ["live", "analysis"], // 2:老师
       3: ["analysis"], // 3:教务
-      4: ["analysis"], // 4:助教
+      4: ["helplive", "analysis"], // 4:助教
     }[res.data.role];
     let roleId = ["admin", "student", "teacher", "dean", "assistant"][res.data.role];
     let permissions = permissionList.map(per => {
@@ -524,6 +524,11 @@ export function getInfo() {
           {
             permissionId: "live",
             permissionName: "直播列表",
+            dataAccess: null,
+          },
+          {
+            permissionId: "helplive",
+            permissionName: "助教直播",
             dataAccess: null,
           },
           {

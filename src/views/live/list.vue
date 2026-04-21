@@ -2,8 +2,7 @@
   <a-card :bordered="false" style="margin-bottom: 24px">
     <div class="table-page-search-wrapper">
       <!-- 搜索功能 -->
-      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter"
-        @clearQuery="clearQuery"></SearchForm>
+      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter" @clearQuery="clearQuery"></SearchForm>
     </div>
     <!-- 隐藏功能 -->
     <!-- <div style="padding-bottom: 12px; text-align: right;">
@@ -15,26 +14,23 @@
       <div v-for="(detail, index) in tableList" class="tableItem">
         <div class="content">
           <p>{{ detail.subject }}</p>
-          <p><a-icon :component="detail2" /><b>直播/上课时间:</b>{{ formatTime(detail.start_time,
-            "YYYY年M月D日") + detail.start_period }} - {{ detail.end_period +
-              formatTime(detail.end_time, "(周dd)") }}</p>
+          <p>
+            <a-icon :component="detail2" /><b>直播/上课时间:</b>{{ formatTime(detail.start_time, "YYYY年M月D日") + detail.start_period }} -
+            {{ detail.end_period + formatTime(detail.end_time, "(周dd)") }}
+          </p>
           <p><a-icon :component="detail1" /><b>相关课程：</b>{{ detail.course_name }}</p>
           <p><a-icon :component="detail3" /><b>授课老师：</b>{{ detail.teacher_name }}</p>
-          <p class="course-content"><a-icon type="snippets"
-              style="font-size: 14px;margin-left:2px;margin-right:9px;" /><b>授课内容：</b><span
-              :title="detail.course_content || '--'">{{
-                detail.course_content || "--" }}</span></p>
+          <p class="course-content">
+            <a-icon type="snippets" style="font-size: 14px; margin-left: 2px; margin-right: 9px" /><b>授课内容：</b
+            ><span :title="detail.course_content || '--'">{{ detail.course_content || "--" }}</span>
+          </p>
 
-          <a-space style="margin-top:6px; min-height: 32px;">
-            <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary" ghost
-              @click="gotoCourseLive(detail.id)">进入直播间</a-button>
-            <template v-if="role !== 'student'">
-              <a-button v-if="shouldShowEnterBroadcastutton(detail)" type="primary"
-                @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
-            </template>
-            <a-button v-if="detail.replay && detail.status === 3" class="greenBtn"
-              @click="gotoReplayList(detail.id)">直播回放</a-button>
-            <span style="opacity: 0; pointer-events: none;">占位</span>
+          <a-space style="margin-top: 6px; min-height: 32px">
+            <a-button v-if="shouldShowEnterLiveButton(detail)" type="primary" ghost @click="gotoCourseLive(detail.id)">进入直播间</a-button>
+            <a-button v-if="assistantEnterLiveButton(detail)" type="primary" @click="gotoAssistantCourseLive(detail.id)">进入直播间</a-button>
+            <a-button v-if="shouldShowEnterBroadcastButton(detail)" type="primary" @click="gotoCourseBroadcast(detail.id)">进入开播</a-button>
+            <a-button v-if="detail.replay && detail.status === 3" class="greenBtn" @click="gotoReplayList(detail.id)">直播回放</a-button>
+            <span style="opacity: 0; pointer-events: none">占位</span>
             <!-- <template v-if="role === 'teacher'">
               <a-button type="info" @click="$refs.createModal.edit(detail)">编辑</a-button>
               <a-button type="danger" @click="removeLiveConfig(detail.id)">删除</a-button>
@@ -46,14 +42,12 @@
           <img class="play-icon" src="@/assets/icons/play.png" style="width: 32px; height: 32px" />
         </div>
 
-        <div class="flag"
-          :style="{ backgroundColor: getStatusColor(detail.status), color: detail.status === 3 ? '#767A8A' : '#fff' }">
-          {{
-            getStatusText(detail.status) }}
+        <div class="flag" :style="{ backgroundColor: getStatusColor(detail.status), color: detail.status === 3 ? '#767A8A' : '#fff' }">
+          {{ getStatusText(detail.status) }}
         </div>
       </div>
     </div>
-    <a-pagination style="text-align:right;margin-top:20px;" v-bind="pagination" @change="paginationChangeHandler" />
+    <a-pagination style="text-align: right; margin-top: 20px" v-bind="pagination" @change="paginationChangeHandler" />
 
     <!--  -->
     <CreateLive ref="createModal" @ok="handleOk" />
@@ -134,7 +128,7 @@ export default {
         pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
-        showTotal: (total) => `共 ${total} 条数据`,
+        showTotal: total => `共 ${total} 条数据`,
       },
       repeatMap: [],
     };
@@ -174,8 +168,8 @@ export default {
       }
       let queryParam = { ...this.queryParam };
       if (queryParam.start_time.length) {
-        queryParam.start_time_begin = queryParam.start_time[0].startOf('day').format("x");
-        queryParam.start_time_stop = queryParam.start_time[1].endOf('day').format("x");
+        queryParam.start_time_begin = queryParam.start_time[0].startOf("day").format("x");
+        queryParam.start_time_stop = queryParam.start_time[1].endOf("day").format("x");
         delete queryParam.start_time;
       }
 
@@ -245,6 +239,16 @@ export default {
       // });
       const routeData = this.$router.resolve({
         name: "watch",
+        params: { liveConfigId },
+      });
+
+      // 对于 history 模式，需要构建完整 URL
+      const url = `${window.location.origin}${routeData.href}`;
+      window.open(url, "_blank");
+    },
+    gotoAssistantCourseLive(liveConfigId) {
+      const routeData = this.$router.resolve({
+        name: "helpWatchLive",
         params: { liveConfigId },
       });
 
@@ -331,7 +335,7 @@ export default {
     },
 
     shouldShowEnterLiveButton(detail) {
-      if (this.role === "teacher") return false;
+      if (this.role !== "student") return false;
 
       const now = moment();
       const startTime = moment(detail.start_time).startOf("day");
@@ -339,7 +343,18 @@ export default {
 
       return now.isBetween(startTime, endTime);
     },
-    shouldShowEnterBroadcastutton(detail) {
+    assistantEnterLiveButton(detail) {
+      if (this.role !== "assistant") return false;
+
+      const now = moment();
+      const startTime = moment(detail.start_time).startOf("day");
+      const endTime = moment(detail.start_time).endOf("day");
+
+      return now.isBetween(startTime, endTime);
+    },
+    shouldShowEnterBroadcastButton(detail) {
+      if (this.role !== "teacher") return false;
+
       const now = moment();
       const endTime = moment(detail.start_time).endOf("day");
 
@@ -365,14 +380,14 @@ export default {
 .tableItem {
   box-sizing: border-box;
   padding: 16px;
-  border: 1px solid #E9EBF1;
+  border: 1px solid #e9ebf1;
   display: flex;
   position: relative;
   flex-direction: row;
   align-items: flex-start;
   width: 100%;
   border-radius: 8px;
-  background: #FFFFFF;
+  background: #ffffff;
   box-shadow: 0px 8px 24px 0px rgba(46, 93, 209, 0.08), 0px 8px 16px 0px rgba(46, 93, 209, 0.04);
 
   &:hover {
@@ -424,7 +439,7 @@ export default {
       b,
       .anticon {
         font-weight: normal;
-        color: #565D69;
+        color: #565d69;
       }
 
       b {

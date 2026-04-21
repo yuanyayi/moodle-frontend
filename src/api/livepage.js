@@ -3,6 +3,12 @@
 import { axios } from "@/utils/request";
 // import { obj2arr, fileDownload, baseUrl, encodeRequest } from '@/utils/common'
 
+export function prepareAssitantLive(liveConfigId) {
+  return axios({
+    url: `/assistantUrl`,
+    params: { liveConfigId },
+  });
+}
 export function prepareLivePage2(liveConfigId, userId = "1", username = "trendy") {
   return axios({
     url: `/getVolcLiveUrl`,

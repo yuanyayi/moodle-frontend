@@ -147,6 +147,30 @@ export const asyncRouterMap = [
           // 两个页面需抛弃BaseLayout
         ],
       },
+      {
+        path: "/help_live",
+        name: "helpLive",
+        component: PageView,
+        redirect: "/help_live/list",
+        meta: { title: "直播列表", icon: list, permission: ["helplive"] },
+        children: [
+          // 直播列表
+          {
+            path: "list",
+            name: "helpLiveList",
+            component: () => import("@/views/live/list"),
+            meta: { title: "直播列表", permission: ["helplive"] },
+          },
+          {
+            // 课程观播
+            path: "watch/:liveConfigId([1-9]\\d*)/",
+            name: "helpWatchLive",
+            meta: { title: "课程直播页", permission: ["helplive"] },
+            component: () => import("@/views/live/liveClass/watchLive"),
+            hidden: true,
+          },
+        ],
+      },
       // {
       //   path: "/flv",
       //   name: "flvDemo",
