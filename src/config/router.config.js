@@ -161,14 +161,6 @@ export const asyncRouterMap = [
             component: () => import("@/views/live/list"),
             meta: { title: "直播列表", permission: ["helplive"] },
           },
-          {
-            // 课程观播
-            path: "watch/:liveConfigId([1-9]\\d*)/",
-            name: "helpWatchLive",
-            meta: { title: "课程直播页", permission: ["helplive"] },
-            component: () => import("@/views/live/liveClass/watchLive"),
-            hidden: true,
-          },
         ],
       },
       // {

@@ -3,7 +3,7 @@
     <!-- 倒计时弹窗，仅在直播模式下显示 -->
     <CountdownModal
       ref="countdownModal"
-      v-if="role !== 'assistant' && countdownTimestamp && mode === 'live'"
+      v-if="countdownTimestamp && mode === 'live'"
       :countdownTimestamp="countdownTimestamp"
       @cutout="handleEnterLive"
       @countdown-finished="handleCountdownFinished" />
@@ -21,7 +21,7 @@
     <!-- <LiveDeviceTestModal v-if="role === 'student' && mode === 'live'" :visible="deviceTestModalVisible" @confirm="handleDeviceConfirm" @cancel="handleDeviceCancel" /> -->
 
     <!-- 浮动胶囊组件 -->
-    <FloatingCapsule v-if="role !== 'assistant'" :items="capsuleItems" />
+    <FloatingCapsule :items="capsuleItems" />
 
     <!-- 主要内容区域 -->
     <!-- <div class="volcLiveApp" v-if="mode === 'live'">
@@ -78,7 +78,7 @@
 
 <script>
 import CameraCapture from "@/components/CameraCapture.vue";
-import { prepareLivePage2, prepareReplay, prepareAssitantLive, getLiveCountdownTime, handUp, getFeedbackResult } from "@/api/livepage";
+import { prepareLivePage2, prepareReplay, getLiveCountdownTime, handUp, getFeedbackResult } from "@/api/livepage";
 import VideoNotes from "@/components/VideoNotes.vue";
 import FloatingCapsule from "@/components/FloatingCapsule.vue";
 import { backSystem, feedback, eye, like } from "@/core/icons";
@@ -165,11 +165,7 @@ export default {
     },
   },
   mounted() {
-    if (this.role === "assistant") {
-      this.initAssistantLive();
-    } else {
-      this.mode === "live" ? this.initLive() : this.initReplay();
-    }
+    this.mode === "live" ? this.initLive() : this.initReplay();
     // 仅在直播模式下显示倒计时弹窗
     if (this.mode === "live") {
       this.showCountdownModal();
@@ -247,18 +243,6 @@ export default {
         const { url } = res.data;
         this.liveUrl = url;
         this.replayDetail = res.data;
-      });
-    },
-    initAssistantLive() {
-      prepareAssitantLive(this.liveConfigId).then(res => {
-        if (res.status) {
-          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
-          return;
-        }
-        this.liveUrl = res.data;
-        console.log(res.data);
-
-        return;
       });
     },
     loadScript() {

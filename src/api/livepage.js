@@ -9,6 +9,20 @@ export function prepareAssitantLive(liveConfigId) {
     params: { liveConfigId },
   });
 }
+
+/**
+ * 助播上报接口
+ * @param {number} liveConfigId - 直播配置ID
+ * @param {number} ts - 时间戳
+ */
+export function assistantHeartbeat(liveConfigId) {
+  return axios({
+    url: `/assistant/heartbeat/${liveConfigId}`,
+    method: "post",
+    params: { ts: Date.now() },
+  });
+}
+
 export function prepareLivePage2(liveConfigId, userId = "1", username = "trendy") {
   return axios({
     url: `/getVolcLiveUrl`,

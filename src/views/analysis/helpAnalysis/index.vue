@@ -76,24 +76,18 @@ export default {
           },
         },
         {
-          title: "持续时间",
-          dataIndex: "duration",
-          key: "duration",
-          customRender: text => text + "分钟",
-        },
-        {
           title: "进入直播时间",
           dataIndex: "enter_time",
           key: "enter_time",
           customRender: text => (text ? formatTime(text, "YYYY-MM-DD HH:mm") : "-"),
         },
         {
-          title: "离开次数",
+          title: "助播离开次数",
           dataIndex: "leave_count",
           key: "leave_count",
         },
         {
-          title: "在线时长",
+          title: "助播在线时长",
           dataIndex: "online_duration",
           key: "online_duration",
           customRender: text => text + "分钟",
