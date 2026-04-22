@@ -70,9 +70,7 @@ export default {
           title: "直播时间",
           key: "time_range",
           customRender: (text, record) => {
-            const start = formatTime(record.start_time, "YYYY-MM-DD HH:mm");
-            const end = formatTime(record.end_time, "YYYY-MM-DD HH:mm");
-            return `${start} 至 ${end}`;
+            return `${formatTime(record.start_time, "YYYY年M月D日")}${record.start_period || ""} - ${record.end_period || ""}${formatTime(record.end_time, "(周dd)")}`;
           },
         },
         {
