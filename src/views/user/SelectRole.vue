@@ -162,19 +162,18 @@ export default {
 
         if (response && response.data && response.data.token) {
           const newToken = response.data.token;
-
-          // 替换 localStorage 中的 token
           storage.set(ACCESS_TOKEN, newToken, new Date().getTime() + 7 * 24 * 60 * 60 * 1000);
-
-          // 清空 store 中的 roles 状态，确保跳转后 permission.js 能重新调用 GetInfo
           store.commit("SET_ROLES", []);
+          this.$router.push({ query: { token: newToken } });
 
-          this.$router.push({
-            name: ["", "live", "live", "live", "helpLive"][this.selectedRoleId],
-            query: {
-              token: newToken,
-            },
-          });
+          this.$nextTick(_ =>
+            this.$router.push({
+              name: ["", "live", "live", "live", "helpLive"][this.selectedRoleId],
+              query: {
+                token: newToken,
+              },
+            }),
+          );
         } else {
           throw new Error("获取Token失败");
         }
@@ -187,16 +186,7 @@ export default {
     },
 
     redirectToDefaultPage() {
-      this.$router.push({ name: "live" });
-    },
-
-    getRoleIcon(roleValue) {
-      const icons = {
-        student: "user",
-        teacher: "team",
-        assistant: "solution",
-      };
-      return icons[roleValue] || "user";
+      this.$router.push({ name: "index" });
     },
   },
 };
