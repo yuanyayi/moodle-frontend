@@ -616,3 +616,35 @@ export function toSmartPlatform() {
     method: "get",
   });
 }
+
+/**
+ * 获取用户可用角色列表
+ * @param {string} uid - 用户ID
+ * @param {string} token - 用户token
+ */
+export function getSelectableRoles(uid, token) {
+  return request({
+    url: "/login/selectableRole",
+    method: "get",
+    params: {
+      uid,
+      token,
+    },
+  });
+}
+
+/**
+ * 生成新角色的token
+ * @param {string} userId - 用户ID
+ * @param {number} role - 角色ID
+ */
+export function generateToken(userId, role) {
+  return request({
+    url: "/agent/generateToken",
+    method: "post",
+    params: {
+      user: userId,
+      role,
+    },
+  });
+}

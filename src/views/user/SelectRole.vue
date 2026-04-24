@@ -38,6 +38,7 @@
 import storage from "store";
 import { ACCESS_TOKEN } from "@/store/mutation-types";
 import store from "@/store";
+import { getSelectableRoles, generateToken } from "@/api/login";
 
 export default {
   name: "SelectRole",
@@ -96,14 +97,7 @@ export default {
 
       try {
         // 调用后端接口获取可用角色列表
-        const response = await this.$http({
-          url: "/login/selectableRole",
-          method: "get",
-          params: {
-            uid: this.userId,
-            token: this.token,
-          },
-        });
+        const response = await getSelectableRoles(this.userId, this.token);
 
         if (response && response.data) {
           // 后端返回格式可能为对象：{ "2": "教师", "4": "助教" }
@@ -151,14 +145,7 @@ export default {
 
       try {
         // 调用接口获取新角色的 token
-        const response = await this.$http({
-          url: "/agent/generateToken", // 请根据实际接口路径修改
-          method: "post",
-          params: {
-            user: this.userId,
-            role: this.selectedRoleId,
-          },
-        });
+        const response = await generateToken(this.userId, this.selectedRoleId);
 
         if (response && response.data && response.data.token) {
           const newToken = response.data.token;
