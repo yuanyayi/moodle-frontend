@@ -10,18 +10,19 @@ import { i18nRender } from "@/locales";
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
 
-const allowList = ["login", "register", "registerResult"]; // no redirect allowList
+const allowList = ["login", "register", "registerResult", "selectRole"]; // no redirect allowList
 const loginRoutePath = "/user/login";
+const selectRoleRoutePath = "/user/selectRole";
 // 将默认路由路径改为函数，动态计算用户首页
 const getDefaultRoutePath = () => {
   // 如果store还未初始化，或者用户没有角色信息，默认返回/live/list
   if (!store || !store.getters.roles || !store.getters.roles.permissionList) {
     return "/live/list";
   }
-  
+
   // 获取用户权限列表
   const permissionList = store.getters.roles.permissionList || [];
-  
+
   // 根据权限优先级顺序检查
   if (permissionList.includes("live")) {
     return "/live/list";
@@ -30,7 +31,7 @@ const getDefaultRoutePath = () => {
   } else if (permissionList.includes("distinguish")) {
     return "/live/distinguish";
   }
-  
+
   // 默认返回/live/list
   return "/live/list";
 };
@@ -46,7 +47,13 @@ router.beforeEach((to, from, next) => {
     if (to.path === loginRoutePath) {
       next({ path: getDefaultRoutePath() });
       NProgress.done();
+    } else if (to.path === selectRoleRoutePath) {
+      // selectRole 页面直接放行，不触发 GetInfo
+      next();
     } else {
+      console.log(token, urlToken, storedToken);
+      console.log(from, to);
+    alert("token: " + token); 
       // check login user.roles is null
       if (store.getters.roles.length === 0) {
         // request login userInfo
