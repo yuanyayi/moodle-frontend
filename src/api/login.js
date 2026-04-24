@@ -500,10 +500,11 @@ export function getSmsCaptcha(parameter) {
   });
 }
 
-export function getInfo() {
+export function getInfo(token) {
   return request({
     url: "/login/userinfo",
     method: "get",
+    params: token ? { token } : {},
     headers: {
       "Content-Type": "application/json;charset=UTF-8",
     },

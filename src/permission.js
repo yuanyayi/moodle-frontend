@@ -52,17 +52,18 @@ router.beforeEach((to, from, next) => {
       next();
     } else {
       console.log(token, urlToken, storedToken);
-      console.log(from, to);
-    alert("token: " + token); 
+      console.log(store.getters.roles);
+      console.log(store.getters.roles.length === 0);
       // check login user.roles is null
       if (store.getters.roles.length === 0) {
         // request login userInfo
         store
-          .dispatch("GetInfo")
+          .dispatch("GetInfo", { token })
           .then(res => {
             /* has token */
             storage.set(ACCESS_TOKEN, token, new Date().getTime() + 7 * 24 * 60 * 60 * 1000);
             // 根据用户权限信息生成可访问的路由表
+            console.log("GenerateRoutes begin");
             store.dispatch("GenerateRoutes", { token, ...res }).then(() => {
               // 动态添加可访问路由表
               // VueRouter@3.5.0+ New API
@@ -70,6 +71,8 @@ router.beforeEach((to, from, next) => {
               store.getters.addRouters.forEach(r => {
                 router.addRoute(r);
               });
+              console.log("GenerateRoutes end");
+
               // 请求带有 redirect 重定向时，登录自动重定向到该地址
               const redirect = decodeURIComponent(from.query.redirect || to.path);
               if (to.path === redirect) {

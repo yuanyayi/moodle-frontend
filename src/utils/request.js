@@ -57,8 +57,7 @@ service.interceptors.request.use(config => {
     const urlParams = new URLSearchParams(window.location.search);
     urlToken = urlParams.get("token");
   }
-  const token = urlToken || v;
-  console.log("token", token, urlToken, storage.get(ACCESS_TOKEN));
+  const token = urlToken || storage.get(ACCESS_TOKEN);
   if (token) {
     //     config.headers['Access-Token'] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
     config.params = Object.assign({}, config.params, {

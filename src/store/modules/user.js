@@ -52,10 +52,10 @@ const user = {
     },
 
     // 获取用户信息
-    GetInfo({ commit }) {
+    GetInfo({ commit }, { token } = {}) {
       return new Promise((resolve, reject) => {
         // 请求后端获取用户信息 /api/user/info
-        getInfo()
+        getInfo(token)
           .then(response => {
             const { result } = response;
 

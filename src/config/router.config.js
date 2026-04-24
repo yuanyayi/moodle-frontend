@@ -28,6 +28,8 @@ export const asyncRouterMap = [
       // 根据权限优先级顺序检查
       if (permissionList.includes("live")) {
         return "/live/list";
+      } else if (permissionList.includes("helpLive")) {
+        return "/help_live/list";
       } else if (permissionList.includes("analysis")) {
         return "/analysis/overview";
       }
