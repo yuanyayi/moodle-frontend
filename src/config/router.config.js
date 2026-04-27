@@ -117,7 +117,7 @@ export const asyncRouterMap = [
           {
             path: "helpAnalysis",
             name: "helpAnalysis",
-            meta: { title: "助播统计", permission: ["analysis"] },
+            meta: { title: "助教统计", permission: ["analysis"] },
             component: () => import("@/views/analysis/helpAnalysis"),
           },
         ],

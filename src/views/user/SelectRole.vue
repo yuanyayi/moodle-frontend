@@ -50,6 +50,7 @@ export default {
       selectedRoleId: "",
       availableRoles: [],
       userId: "",
+      liveConfigId: "",
       token: "",
     };
   },
@@ -61,6 +62,7 @@ export default {
       // 从 URL query 获取参数
       this.userId = this.$route.query.userId || "";
       this.token = this.$route.query.token || "";
+      this.liveConfigId = this.$route.query.liveConfigId || "";
 
       // 参数校验
       if (!this.userId && !this.token) {
@@ -155,7 +157,11 @@ export default {
 
           this.$nextTick(_ =>
             this.$router.push({
-              name: ["", "live", "live", "live", "helpLive"][this.selectedRoleId],
+              // -- 学生 老师 教务 助教
+              name: ["", "liveList", "broadcast", "liveList", "helpLive"][this.selectedRoleId],
+              params: {
+                liveConfigId: this.liveConfigId,
+              },
               query: {
                 token: newToken,
               },

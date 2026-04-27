@@ -135,6 +135,12 @@ export default {
         return;
       }
       let queryParam = { ...this.queryParam };
+      if (queryParam.start_time?.length) {
+        let [date1, date2] = queryParam.start_time;
+        queryParam.start_time_begin = date1.startOf("day").format("x");
+        queryParam.start_time_stop = date2.endOf("day").format("x");
+        delete queryParam.start_time;
+      }
 
       fetchAssistantDataPage({
         ...queryParam,
