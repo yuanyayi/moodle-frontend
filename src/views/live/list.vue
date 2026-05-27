@@ -61,7 +61,7 @@ import Empty from "@/components/Empty.vue";
 import DetailList from "@/components/DetailList";
 import { formatTime, readFromList } from "@/utils/common";
 import { fetchLiveList, getLiveMaps, getCourseList, removeLiveConfig } from "@/api/live";
-import { prepareAssitantLive, assistantHeartbeat } from "@/api/livepage";
+import { prepareAssitantLive, assistantHeartbeat, stopHeartbeat } from "@/api/livepage";
 import CreateLive from "./CreateLive.vue";
 import moment from "moment";
 import { mapGetters } from "vuex";
@@ -248,37 +248,30 @@ export default {
       window.open(url, "_blank");
     },
     gotoAssistantCourseLive(liveConfigId) {
+      // 启动心跳（发送即时心跳并开始定时循环）
+      assistantHeartbeat(liveConfigId);
+      
       prepareAssitantLive(liveConfigId).then(res => {
         const url = res.data;
         let bWindow = null;
         bWindow = window.open(url, "_blank");
 
-        // 定时检查B是否已关闭
-        const gapSecondes = 500;
-        const maxN = 60000 / gapSecondes;
-        let n = 0;
+        // 定时检查B是否已关闭（心跳由 assistantHeartbeat 自动处理）
         const checkInterval = setInterval(() => {
           try {
             // 核心逻辑：如果窗口关闭或引用变为'空'值，则判定为关闭
             // 注意：部分旧安卓下 closed 会是 undefined，所以用 != false 更保险
             if (!bWindow || bWindow.closed != false) {
-              // console.log("页面B已经被关闭了");
               clearInterval(checkInterval);
-            } else {
-              // console.log("页面B可能还开着（无法100%确定，只能知道没关闭）");
-              if (n < maxN) {
-                n++;
-              } else {
-                assistantHeartbeat(liveConfigId);
-                n = 0;
-              }
+              // 窗口关闭时停止心跳
+              stopHeartbeat(liveConfigId);
             }
           } catch (e) {
             // 如果访问 bWindow 抛出了安全错误，通常也意味着窗口已死
-            // console.log("页面B已经被关闭了");
             clearInterval(checkInterval);
+            stopHeartbeat(liveConfigId);
           }
-        }, gapSecondes); // 每500ms检查一次
+        }, 500); // 每500ms检查一次
       });
     },
     gotoReplayList(configId) {

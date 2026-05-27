@@ -103,18 +103,3 @@ export function fetchAssistantDataPage(params) {
     params,
   });
 }
-
-/**
- * 助播上报接口
- * @param {number} liveConfigId - 直播配置ID
- * @param {Object} params - 查询参数
- * @param {string} params.token - 令牌
- * @param {number} params.ts - 时间戳
- */
-export function assistantHeartbeat(liveConfigId, params) {
-  return axios({
-    url: `/assistant/heartbeat/${liveConfigId}`,
-    method: "post",
-    params,
-  });
-}
