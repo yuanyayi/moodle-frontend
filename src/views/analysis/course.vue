@@ -2,12 +2,10 @@
   <a-card :bordered="false">
     <div class="table-page-search-wrapper">
       <!-- 搜索功能 -->
-      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter"
-        @clearQuery="clearQuery"></SearchForm>
+      <SearchForm :queryField="queryField" :queryParam="queryParam" :autoCreatedFetch="false" @queryFilter="queryFilter" @clearQuery="clearQuery"></SearchForm>
     </div>
 
-    <a-table :columns="columns" :data-source="tableList" :pagination="pagination" :loading="loading" row-key="id"
-      @change="tableChangeHandler">
+    <a-table :columns="columns" :data-source="tableList" :pagination="pagination" :loading="loading" row-key="id" @change="tableChangeHandler">
       <template v-for="col in ['action']" :slot="col" slot-scope="text, record">
         <template v-if="col === 'action'">
           <a-button type="link" @click="viewDetail(record.id)">查看详情</a-button>
@@ -43,6 +41,11 @@ export default {
           label: "相关课程",
           list: [],
         },
+        start_time: {
+          type: "dateRange",
+          label: "直播时间",
+          list: [],
+        },
       },
       queryParam: {
         semester_id: undefined,
@@ -73,7 +76,7 @@ export default {
           title: "开始时间",
           dataIndex: "start_time",
           key: "start_time",
-          customRender: (text) => formatTime(text, "YYYY-MM-DD HH:mm"),
+          customRender: text => formatTime(text, "YYYY-MM-DD HH:mm"),
         },
         {
           title: "操作",
@@ -88,7 +91,7 @@ export default {
         pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
-        showTotal: (total) => `共 ${total} 条数据`,
+        showTotal: total => `共 ${total} 条数据`,
       },
     };
   },
@@ -125,7 +128,15 @@ export default {
         this.$message.error("请选择学期！");
         return;
       }
-      let queryParam = { ...this.queryParam };
+
+      let [start_time_begin, start_time_stop] = [];
+      if (this.queryParam.start_time && this.queryParam.start_time.length === 2) {
+        start_time_begin = this.queryParam.start_time[0].startOf("day").format("x");
+        start_time_stop = this.queryParam.start_time[1].endOf("day").format("x");
+      }
+
+      let queryParam = { ...this.queryParam, start_time_begin, start_time_stop };
+      delete queryParam.start_time;
 
       fetchLiveStatPage({
         ...queryParam,
@@ -181,7 +192,7 @@ export default {
     tableChangeHandler(pagination) {
       this.listParam = {
         page: pagination.current,
-        pageSize: pagination.pageSize
+        pageSize: pagination.pageSize,
       };
       this.fetch();
     },
@@ -189,7 +200,7 @@ export default {
       // 跳转到详情页
       this.$router.push({
         name: "courseDetail",
-        params: { id }
+        params: { id },
       });
     },
     // ---------- Filters ---------- //

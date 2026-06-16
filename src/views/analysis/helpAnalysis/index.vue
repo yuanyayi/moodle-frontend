@@ -67,6 +67,12 @@ export default {
           key: "teacher_name",
         },
         {
+          title: "助教",
+          dataIndex: "assistant_teacher_name",
+          key: "assistant_teacher_name",
+          customRender: text => text || "-",
+        },
+        {
           title: "直播时间",
           key: "time_range",
           customRender: (text, record) => {

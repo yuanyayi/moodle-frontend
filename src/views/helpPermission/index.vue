@@ -6,7 +6,7 @@
     </div>
 
     <!-- 添加权限按钮 -->
-    <a-button type="primary" style="margin-bottom: 16px" @click="showAddModal = true"> 添加权限 </a-button>
+    <a-button type="primary" style="margin-bottom: 16px" @click="handleAdd"> 添加权限 </a-button>
 
     <!-- 表格 -->
     <a-table :columns="columns" :data-source="tableList" :pagination="pagination" :loading="loading" @change="handleTableChange">
@@ -15,11 +15,23 @@
         <a-button type="link" class="ant-btn-danger" @click="deleteAssistant(record)">删除</a-button>
       </template>
     </a-table>
+
+    <!-- 添加/编辑模态框 -->
+    <CreateHelpPermissionModal
+      :visible="modalVisible"
+      :semester_id="currentSemesterId"
+      :semesterLabel="currentSemesterLabel"
+      :courseList="courseOptions"
+      :record="editingRecord"
+      @ok="handleModalOk"
+      @cancel="handleModalCancel"
+    ></CreateHelpPermissionModal>
   </a-card>
 </template>
 
 <script>
 import SearchForm from "@/components/SearchForm.vue";
+import CreateHelpPermissionModal from "@/components/CreateHelpPermissionModal.vue";
 import { fetchAssistantList, deleteAssistant } from "@/api/helpPermission";
 import { getLiveMaps, getCourseList } from "@/api/live";
 
@@ -27,6 +39,7 @@ export default {
   name: "helpPermission",
   components: {
     SearchForm,
+    CreateHelpPermissionModal,
   },
   data() {
     return {
@@ -66,7 +79,11 @@ export default {
         pageSizeOptions: ["10", "20", "50", "100"],
         showTotal: total => `共 ${total} 条数据`,
       },
-      showAddModal: false,
+      modalVisible: false,
+      editingRecord: null,
+      currentSemesterId: undefined,
+      currentSemesterLabel: "",
+      courseOptions: [],
     };
   },
   created() {
@@ -108,6 +125,8 @@ export default {
       // 默认选择第一个学期
       if (map.semesterMap.length > 0) {
         this.queryParam.semester_id = map.semesterMap[0].value;
+        this.currentSemesterId = map.semesterMap[0].value;
+        this.currentSemesterLabel = map.semesterMap[0].label;
         // 获取对应课程列表
         await this.loadCourseList(map.semesterMap[0].value);
       }
@@ -119,16 +138,24 @@ export default {
     async loadCourseList(semesterId) {
       if (!semesterId) {
         this.queryField.course_id.list = [];
+        this.courseOptions = [];
         return;
       }
 
       const result = await getCourseList(semesterId);
       this.queryField.course_id.list = result.courseMap || [];
+      this.courseOptions = result.courseMap || [];
     },
 
     handleSemesterChange(semesterId) {
       // 清空之前选择的课程
       this.queryParam.course_id = undefined;
+      // 更新当前学期信息
+      const semester = this.queryField.semester_id.list.find(item => item.value === semesterId);
+      if (semester) {
+        this.currentSemesterId = semesterId;
+        this.currentSemesterLabel = semester.label;
+      }
       // 加载对应课程列表
       this.loadCourseList(semesterId);
     },
@@ -191,9 +218,23 @@ export default {
       this.fetch();
     },
 
+    handleAdd() {
+      this.editingRecord = null;
+      this.modalVisible = true;
+    },
+
     editAssistant(record) {
-      // 编辑功能后续实现
-      this.$message.info("编辑功能开发中");
+      this.editingRecord = record;
+      this.modalVisible = true;
+    },
+
+    handleModalOk() {
+      this.fetch();
+    },
+
+    handleModalCancel() {
+      this.modalVisible = false;
+      this.editingRecord = null;
     },
 
     deleteAssistant(record) {

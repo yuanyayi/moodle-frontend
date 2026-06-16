@@ -1,7 +1,14 @@
 <template>
   <div class="stat-card">
     <div class="stat-text">
-      <div class="stat-title">{{ title }}</div>
+      <div class="stat-title">
+        {{ title }}
+        <template v-if="help">
+          <a-tooltip placement="topLeft" :title="help">
+            <a-icon type="question-circle" />
+          </a-tooltip>
+        </template>
+      </div>
       <div class="stat-value-container">
         <span class="stat-value">{{ value }}</span>
         <span class="stat-unit">{{ unit }}</span>
@@ -15,36 +22,40 @@
 
 <script>
 export default {
-  name: 'StatCard',
+  name: "StatCard",
   props: {
     title: {
       type: String,
-      required: true
+      required: true,
     },
     value: {
       type: [String, Number],
-      required: true
+      required: true,
     },
     unit: {
       type: String,
-      default: ''
+      default: "",
     },
     icon: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
+    help: {
+      type: String,
+      default: "",
+    },
   },
   computed: {
     iconSrc() {
       return require(`@/assets/icons/${this.icon}@2x.png`);
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
 .stat-card {
-  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%), url(@/assets/icons/card@2x.png);
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0) 100%), url(@/assets/icons/card@2x.png);
   background-size: cover;
   background-position: center;
   box-shadow: 0px 8px 16px 0px rgba(0, 68, 255, 0.08);

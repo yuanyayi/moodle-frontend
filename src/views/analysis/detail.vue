@@ -1,49 +1,39 @@
 <template>
   <div>
     <a-row :gutter="16">
-      <a-col
-        style="text-align: right; font-size: 12px; font-weight: normal; line-height: 20px; color: #828290;">数据最新更新于：{{
-          statisticsDate }}</a-col>
+      <a-col style="text-align: right; font-size: 12px; font-weight: normal; line-height: 20px; color: #828290">数据最新更新于：{{ statisticsDate }}</a-col>
       <a-col v-for="(item, index) in headList" :span="6" :key="item.key">
-        <stat-card :title="item.title" :value="item.value" :unit="item.unit" :icon="`analysis${index + 1}`" />
+        <stat-card :title="item.title" :value="item.value" :unit="item.unit" :icon="`analysis${index + 1}`" :help="item.help" />
       </a-col>
     </a-row>
 
-    <a-card :bordered="false" style="margin-top: 20px;">
+    <a-card :bordered="false" style="margin-top: 20px">
       <template v-slot:title>
-        <div style="display: flex; justify-content: space-between;">互动行为数据 <a-button icon="download"
-            @click="exportExcel">导出数据</a-button> </div>
+        <div style="display: flex; justify-content: space-between">互动行为数据 <a-button icon="download" @click="exportExcel">导出数据</a-button></div>
       </template>
       <!-- 修改: 添加无数据占位符 -->
-      <div v-if="barData.every(item => !item.y || item.y === 0)"
-        style="height: 254px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9; margin: 0 0 32px 32px;">
-        <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
+      <div v-if="barData.every(item => !item.y || item.y === 0)" style="height: 254px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9; margin: 0 0 32px 32px">
+        <span style="color: #bfbfbf; font-size: 16px">暂无数据</span>
       </div>
       <gradient-bar v-else :data="barData" title="互动行为数据" />
     </a-card>
-    <a-card :bordered="false" title="互动内容分析" style="margin-top: 20px;">
+    <a-card :bordered="false" title="互动内容分析" style="margin-top: 20px">
       <a-row>
         <a-col :span="12">
-          <div class="title5"><a-icon :component="ciyun1Icon" style="margin-right: 8px; font-size: 22px;" />老师互动内容词云
-          </div>
+          <div class="title5"><a-icon :component="ciyun1Icon" style="margin-right: 8px; font-size: 22px" />老师互动内容词云</div>
           <!-- 修改: 添加无数据占位符 -->
-          <div v-if="tagList1.length === 0"
-            style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
-            <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
+          <div v-if="tagList1.length === 0" style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9">
+            <span style="color: #bfbfbf; font-size: 16px">暂无数据</span>
           </div>
-          <tag-cloud v-else :tag-list="tagList1" :height="200" :force-fit="true"
-            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
+          <tag-cloud v-else :tag-list="tagList1" :height="200" :force-fit="true" :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
         </a-col>
         <a-col :span="12">
-          <div class="title5"><a-icon :component="ciyun2Icon" style="margin-right: 8px; font-size: 22px;" />学生互动内容词云
-          </div>
+          <div class="title5"><a-icon :component="ciyun2Icon" style="margin-right: 8px; font-size: 22px" />学生互动内容词云</div>
           <!-- 修改: 添加无数据占位符 -->
-          <div v-if="tagList2.length === 0"
-            style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9;">
-            <span style="color: #bfbfbf; font-size: 16px;">暂无数据</span>
+          <div v-if="tagList2.length === 0" style="height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d9d9d9">
+            <span style="color: #bfbfbf; font-size: 16px">暂无数据</span>
           </div>
-          <tag-cloud v-else :tag-list="tagList2" :height="200" :force-fit="true"
-            :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
+          <tag-cloud v-else :tag-list="tagList2" :height="200" :force-fit="true" :options="{ useCORS: true, enableCache: false, willReadFrequently: true }" />
         </a-col>
       </a-row>
     </a-card>
@@ -71,31 +61,35 @@ export default {
     return {
       ciyun1Icon,
       ciyun2Icon,
-      statisticsDate: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+      statisticsDate: new Date(Date.now() - 86400000).toISOString().split("T")[0],
       headList: [
         {
           key: "duration",
           title: "直播时长",
           value: "0",
           unit: "分钟",
+          help: "课程实际直播时长",
         },
         {
           key: "pv",
           title: "观看次数",
           value: "0",
           unit: "次",
+          help: "课程直播中实际观看次数",
         },
         {
           key: "uv",
           title: "观看人数",
           value: "0",
           unit: "人",
+          help: "课程直播中参与人数（去重后）",
         },
         {
           key: "replayPv",
           title: "回放次数",
           value: "0",
           unit: "次",
+          help: "观看直播回放的次数",
         },
       ],
       barData: [
@@ -156,7 +150,7 @@ export default {
               value: el.size,
               originalValue: el.size, // 保存原始值用于tooltip显示
             };
-          })
+          }),
         );
       });
       ciyun2(this.liveConfigId).then(res => {
@@ -168,7 +162,7 @@ export default {
               value: el.size,
               originalValue: el.size, // 保存原始值用于tooltip显示
             };
-          })
+          }),
         );
       });
     },
@@ -239,7 +233,7 @@ export default {
 .title5 {
   font-weight: 500;
   line-height: 22px;
-  color: #3D3D3D;
+  color: #3d3d3d;
 
   .anticon {
     vertical-align: bottom;

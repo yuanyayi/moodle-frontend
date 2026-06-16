@@ -3,7 +3,7 @@ import { axios } from "@/utils/request";
 /**
  * 获取助教配置列表（新接口）
  * GET /assistant/listPage
- * 
+ *
  * @param {Object} params
  * @param {number} params.page
  * @param {number} params.pageSize
@@ -20,29 +20,9 @@ export function fetchAssistantList(params) {
 }
 
 /**
- * 获取助教数据列表（原接口，保留备用）
- * POST /assistant/dataPage
- * 
- * @param {Object} params
- * @param {number} params.page
- * @param {number} params.pageSize
- * @param {number} params.semester_id
- * @param {string} params.course_id
- * @param {number} params.start_time_begin
- * @param {number} params.start_time_stop
- */
-export function fetchAssistantListOld(params) {
-  return axios({
-    url: "/assistant/dataPage",
-    method: "post",
-    params,
-  });
-}
-
-/**
  * 删除助教配置
  * POST /assistant/delete/{id}
- * 
+ *
  * @param {number} id
  */
 export function deleteAssistant(id) {
@@ -55,7 +35,7 @@ export function deleteAssistant(id) {
 /**
  * 根据学期、课程获取教学班
  * GET /assistant/getJxb
- * 
+ *
  * @param {Object} params
  * @param {number} params.semester_id
  * @param {string} params.course_id
@@ -71,7 +51,7 @@ export function getJxb(params) {
 /**
  * 新增或修改助教配置
  * POST /assistant/saveOrUpdateAssistant
- * 
+ *
  * @param {Object} params
  * @param {boolean} params.is_modify - 判断是否是修改
  * @param {number} [params.id]
@@ -85,6 +65,21 @@ export function saveOrUpdateAssistant(params) {
   return axios({
     url: "/assistant/saveOrUpdateAssistant",
     method: "post",
+    params,
+  });
+}
+
+/**
+ * 根据工号或姓名获取教师信息
+ * GET /assistant/getTeacherInfo
+ *
+ * @param {Object} params
+ * @param {string} params.query - 教师工号或姓名
+ */
+export function getTeacherInfo(params) {
+  return axios({
+    url: "/assistant/getTeacherInfo",
+    method: "get",
     params,
   });
 }
