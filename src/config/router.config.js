@@ -150,6 +150,22 @@ export const asyncRouterMap = [
         ],
       },
       {
+        path: "/helpPermission",
+        name: "helpPermission",
+        component: PageView,
+        redirect: "/helpPermission/",
+        meta: { title: "权限配置", icon: "hdd", permission: ["helpPermission"] },
+        children: [
+          // 权限配置
+          {
+            path: "list",
+            name: "helpPermissionList",
+            component: () => import("@/views/helpPermission"),
+            meta: { title: "权限配置", permission: ["helpPermission"] },
+          },
+        ],
+      },
+      {
         path: "/help_live",
         name: "helpLive",
         component: PageView,

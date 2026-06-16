@@ -511,10 +511,10 @@ export function getInfo(token) {
   }).then(res => {
     // 在这里判断角色和权限
     let permissionList = {
-      0: ["live", "analysis", "distinguish", "logs"], // 0:管理员
+      0: ["live", "analysis", "distinguish", "logs", "helpPermission"], // 0:管理员
       1: ["live", "distinguish"], // 1:学生
-      2: ["live", "analysis"], // 2:老师
-      3: ["analysis"], // 3:教务
+      2: ["live", "analysis", "helpPermission"], // 2:老师
+      3: ["analysis", "helpPermission"], // 3:教务
       4: ["helplive", "analysis"], // 4:助教
     }[res.data.role];
     let roleId = ["admin", "student", "teacher", "dean", "assistant"][res.data.role];
@@ -545,6 +545,11 @@ export function getInfo(token) {
           {
             permissionId: "logs",
             permissionName: "日志",
+            dataAccess: null,
+          },
+          {
+            permissionId: "helpPermission",
+            permissionName: "配置助教权限",
             dataAccess: null,
           },
         ].find(item => item.permissionId === per),
