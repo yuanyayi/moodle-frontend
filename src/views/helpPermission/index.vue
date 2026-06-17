@@ -17,15 +17,7 @@
     </a-table>
 
     <!-- 添加/编辑模态框 -->
-    <CreateHelpPermissionModal
-      :visible="modalVisible"
-      :semester_id="currentSemesterId"
-      :semesterLabel="currentSemesterLabel"
-      :courseList="courseOptions"
-      :record="editingRecord"
-      @ok="handleModalOk"
-      @cancel="handleModalCancel"
-    ></CreateHelpPermissionModal>
+    <CreateHelpPermissionModal ref="createModal" :semester_id="currentSemesterId" :semester_name="currentSemesterName" :courseList="courseOptions" @ok="handleModalOk"></CreateHelpPermissionModal>
   </a-card>
 </template>
 
@@ -79,10 +71,8 @@ export default {
         pageSizeOptions: ["10", "20", "50", "100"],
         showTotal: total => `共 ${total} 条数据`,
       },
-      modalVisible: false,
-      editingRecord: null,
       currentSemesterId: undefined,
-      currentSemesterLabel: "",
+      currentSemesterName: "",
       courseOptions: [],
     };
   },
@@ -126,7 +116,7 @@ export default {
       if (map.semesterMap.length > 0) {
         this.queryParam.semester_id = map.semesterMap[0].value;
         this.currentSemesterId = map.semesterMap[0].value;
-        this.currentSemesterLabel = map.semesterMap[0].label;
+        this.currentSemesterName = map.semesterMap[0].label;
         // 获取对应课程列表
         await this.loadCourseList(map.semesterMap[0].value);
       }
@@ -154,7 +144,7 @@ export default {
       const semester = this.queryField.semester_id.list.find(item => item.value === semesterId);
       if (semester) {
         this.currentSemesterId = semesterId;
-        this.currentSemesterLabel = semester.label;
+        this.currentSemesterName = semester.label;
       }
       // 加载对应课程列表
       this.loadCourseList(semesterId);
@@ -219,22 +209,15 @@ export default {
     },
 
     handleAdd() {
-      this.editingRecord = null;
-      this.modalVisible = true;
+      this.$refs.createModal.add();
     },
 
     editAssistant(record) {
-      this.editingRecord = record;
-      this.modalVisible = true;
+      this.$refs.createModal.edit(record);
     },
 
     handleModalOk() {
       this.fetch();
-    },
-
-    handleModalCancel() {
-      this.modalVisible = false;
-      this.editingRecord = null;
     },
 
     deleteAssistant(record) {

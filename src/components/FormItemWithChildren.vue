@@ -1,22 +1,18 @@
 <template>
   <!-- Real Form Input Here -->
   <a-input-group compact>
-    <template v-for="(childDesc, childField) in fieldDesc.children">
+    <template v-if="fieldDesc.children" v-for="(childDesc, childField) in fieldDesc.children">
       <!-- input -->
       <a-input
         :key="childField"
         v-model="childValue[childField]"
-        v-if="
-          childDesc.type !== 'hidden' &&
-          (!childDesc.type || childDesc.type === 'text')
-        "
+        v-if="childDesc.type !== 'hidden' && (!childDesc.type || childDesc.type === 'text')"
         v-bind="childDesc.props"
         @change="
-          (e) => {
+          e => {
             handleTxtChange(childField, e.target.value);
           }
-        "
-      />
+        " />
       <!-- Number -->
       <template v-if="childDesc.type === 'number'">
         <a-input-number
@@ -24,40 +20,30 @@
           v-model="childValue[childField]"
           v-bind="childDesc.props"
           @change="
-            (val) => {
+            val => {
               handleNumberChange(childField, val);
             }
-          "
-        />
-        <span
-          v-if="childDesc.props && childDesc.props.ps"
-          :key="childField + 'ps'"
-          style="line-height: 32px; height: 32px; padding-left: 3px"
-          :style="childDesc.props.ps.style"
-          >{{ childDesc.props.ps.text }}</span
-        >
+          " />
+        <span v-if="childDesc.props && childDesc.props.ps" :key="childField + 'ps'" style="line-height: 32px; height: 32px; padding-left: 3px" :style="childDesc.props.ps.style">{{
+          childDesc.props.ps.text
+        }}</span>
       </template>
       <!-- Select -->
       <a-select
         v-if="childDesc.type === 'select'"
         :key="childField"
         v-model="childValue[childField]"
-        :placeholder="
-          childDesc.inputSearch ? '输入文字进行搜索' : '选择一项进行搜索'
-        "
+        v-bind="childDesc.props"
+        :placeholder="childDesc.props.placeholder || (childDesc.inputSearch ? '输入文字进行搜索' : '选择一项进行搜索')"
         :showSearch="childDesc.inputSearch"
         :optionFilterProp="childDesc.inputSearch && 'children'"
-        v-bind="childDesc.props"
         @change="
-          (val) => {
+          val => {
             handleSelectChange(childField, val);
           }
         "
-        :notFoundContent="'--无结果--'"
-      >
-        <a-select-option v-for="item in childDesc.list" :key="item.value">{{
-          item.label
-        }}</a-select-option>
+        :notFoundContent="'--无结果--'">
+        <a-select-option v-for="item in childDesc.list" :key="item.value">{{ item.label }}</a-select-option>
       </a-select>
       <!-- Radio -->
       <a-radio-group
@@ -66,27 +52,18 @@
         v-model="childValue[childField]"
         v-bind="childDesc.props"
         @change="
-          (val) => {
+          val => {
             handleRadioChange(childField, val);
           }
-        "
-      >
+        ">
         <a-row>
-          <a-col
-            :span="+childDesc.span || 8"
-            v-for="item in childDesc.list"
-            :key="item.value"
-          >
+          <a-col :span="+childDesc.span || 8" v-for="item in childDesc.list" :key="item.value">
             <a-radio :value="item.value">{{ item.label }}</a-radio>
           </a-col>
         </a-row>
       </a-radio-group>
       <!-- 开关效果 -->
-      <span
-        class="item-cell"
-        v-if="childDesc.type === 'switch'"
-        :key="childField"
-      >
+      <span class="item-cell" v-if="childDesc.type === 'switch'" :key="childField">
         <a-switch
           v-model="childValue[childField]"
           v-bind="{
@@ -94,24 +71,18 @@
             ...childDesc.props,
             valuePropName: 'checked',
           }"
-          @change="(val) => handleTxtChange(childField, val)"
-        />
+          @change="val => handleTxtChange(childField, val)" />
       </span>
       <!-- checkbox -->
-      <span
-        class="item-cell"
-        v-if="childDesc.type === 'checkbox'"
-        :key="childField"
-      >
+      <span class="item-cell" v-if="childDesc.type === 'checkbox'" :key="childField">
         <a-checkbox-group
           v-model="childValue[childField]"
           v-bind="childDesc.props"
           @change="
-            (val) => {
+            val => {
               handleTxtChange(childField, val);
             }
-          "
-        >
+          ">
           <a-row>
             <a-col v-for="item in childDesc.list" :key="item.value">
               <a-checkbox v-bind="item">{{ item.label }}</a-checkbox>
@@ -125,19 +96,14 @@
           v-model="childValue[childField]"
           v-bind="childDesc.props"
           @change="
-            (val) => {
+            val => {
               triggerChange({ [childField]: val });
             }
           "
-          :key="childField"
-        />
+          :key="childField" />
       </template>
       <!-- 纯文字 -->
-      <div
-        :key="childField"
-        v-if="childDesc.type === 'string'"
-        class="ant-input-string"
-      >
+      <div :key="childField" v-if="childDesc.type === 'string'" class="ant-input-string">
         {{ childDesc.value }}
       </div>
     </template>
@@ -148,9 +114,9 @@
 export default {
   name: "FormItemWithChildren",
   props: {
-    value: { type: Object, default: (_) => {}, require: false },
+    value: { type: Object, default: _ => {}, require: false },
     field: { type: String, require: true },
-    fieldDesc: { type: Object, default: (_) => {} },
+    fieldDesc: { type: Object, default: _ => {} },
   },
   data() {
     return {
@@ -175,7 +141,8 @@ export default {
             val = {};
           }
         }
-        this.childValue = this.formatter(val);
+        const formatted = this.formatter(val);
+        this.childValue = formatted || {};
       },
     },
     "fieldDesc.props": {
@@ -194,7 +161,8 @@ export default {
     },
   },
   created() {
-    this.childValue = this.formatter(this.value);
+    const formatted = this.formatter(this.value);
+    this.childValue = formatted || {};
   },
   methods: {
     handleNumberChange(field, val) {

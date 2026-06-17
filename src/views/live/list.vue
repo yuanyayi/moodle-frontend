@@ -101,9 +101,13 @@ export default {
         },
         start_time: {
           // start_time_begin start_time_stop
-          type: "dateRange",
+          type: "select",
           label: "直播开始时间",
-          items: { md: 16, lg: 8 },
+          list: [
+            { value: "1", label: "1天内" },
+            { value: "7", label: "7天内" },
+            { value: "month", label: "一个月内" },
+          ],
         },
         course_id: {
           type: "select",
@@ -115,7 +119,7 @@ export default {
         semester_id: undefined,
         status: -1,
         subject: undefined,
-        start_time: [],
+        start_time: undefined,
         course_id: undefined,
       },
       listParam: {
@@ -168,9 +172,13 @@ export default {
         return;
       }
       let queryParam = { ...this.queryParam };
-      if (queryParam.start_time.length) {
-        queryParam.start_time_begin = queryParam.start_time[0].startOf("day").format("x");
-        queryParam.start_time_stop = queryParam.start_time[1].endOf("day").format("x");
+      if (queryParam.start_time) {
+        if (queryParam.start_time === "month") {
+          queryParam.start_time_begin = moment().add(-1, "month").startOf("day").format("x");
+        } else {
+          queryParam.start_time_begin = moment().add(-parseInt(queryParam.start_time), "day").startOf("day").format("x");
+        }
+        queryParam.start_time_stop = moment().endOf("day").format("x");
         delete queryParam.start_time;
       }
 
@@ -227,7 +235,7 @@ export default {
         semester_id: this.queryField.semester_id.list[0].value || undefined,
         status: -1,
         subject: undefined,
-        start_time: [],
+        start_time: undefined,
         course_id: undefined,
       };
       this.queryField.course_id.list = [];

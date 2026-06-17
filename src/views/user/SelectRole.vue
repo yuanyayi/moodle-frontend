@@ -155,18 +155,22 @@ export default {
           store.commit("SET_ROLES", []);
           this.$router.push({ query: { token: newToken } });
 
-          this.$nextTick(_ =>
+          this.$nextTick(_ => {
+            // -- 学生 老师 教务 助教
+            const name = ["", "liveList", this.liveConfigId ? "broadcast" : "liveList", "helpLive"][this.selectedRoleId];
+            const params = this.liveConfigId
+              ? {
+                  liveConfigId: this.liveConfigId,
+                }
+              : {};
             this.$router.push({
-              // -- 学生 老师 教务 助教
-              name: ["", "liveList", "broadcast", "liveList", "helpLive"][this.selectedRoleId],
-              params: {
-                liveConfigId: this.liveConfigId,
-              },
+              name,
+              params,
               query: {
                 token: newToken,
               },
-            }),
-          );
+            });
+          });
         } else {
           throw new Error("获取Token失败");
         }

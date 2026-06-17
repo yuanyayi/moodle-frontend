@@ -1,34 +1,15 @@
 <template>
-  <a-modal title="添加配置" :visible="visible" :footer="null" width="600px" @cancel="handleCancel">
+  <a-modal :title="addOrEdit === 'add' ? '添加配置' : '修改配置'" :visible="modalVisible" width="600px" @cancel="handleCancel">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-        <CFormItem v-for="(fieldDesc, field) in fieldsMap" v-bind="{ fieldDesc, field }" :key="field">
-          <template v-slot:course_info>
-            <a-row :gutter="12">
-              <a-col :span="11">
-                <a-select v-model="formData.course_id" :disabled="disabled" placeholder="请选择课程" @change="handleCourseChange">
-                  <a-select-option v-for="course in courseList" :key="course.value" :value="course.value">
-                    {{ course.label }}
-                  </a-select-option>
-                </a-select>
-              </a-col>
-              <a-col :span="11">
-                <a-select v-model="formData.jxb" :disabled="!formData.course_id || disabled" placeholder="请选择课程班级" :not-found-content="jxbLoading ? '加载中...' : '--无结果--'">
-                  <a-select-option v-for="jxb in jxbList" :key="jxb.value" :value="jxb.value">
-                    {{ jxb.label }}
-                  </a-select-option>
-                </a-select>
-              </a-col>
-            </a-row>
-          </template>
-        </CFormItem>
+        <CFormItem v-for="(fieldDesc, field) in fieldsMap" v-bind="{ fieldDesc, field }" :key="field"></CFormItem>
       </a-form>
     </a-spin>
 
-    <div style="text-align: center; margin-top: 24px">
+    <template slot="footer">
       <a-button @click="handleCancel">取消</a-button>
-      <a-button type="primary" @click="handleSubmit" style="margin-left: 8px" :loading="confirmLoading">完成</a-button>
-    </div>
+      <a-button type="primary" @click="handleSubmit" :loading="confirmLoading">完成</a-button>
+    </template>
   </a-modal>
 </template>
 
@@ -40,10 +21,6 @@ export default {
   name: "CreateHelpPermissionModal",
   components: { CFormItem },
   props: {
-    visible: {
-      type: Boolean,
-      default: false,
-    },
     disabled: {
       type: Boolean,
       default: false,
@@ -52,7 +29,7 @@ export default {
       type: Number,
       default: undefined,
     },
-    semesterLabel: {
+    semester_name: {
       type: String,
       default: "",
     },
@@ -60,26 +37,14 @@ export default {
       type: Array,
       default: () => [],
     },
-    record: {
-      type: Object,
-      default: null,
-    },
   },
   data() {
     return {
       form: this.$form.createForm(this),
+      modalVisible: false,
       confirmLoading: false,
-      formData: {
-        id: undefined,
-        assistant_teacher_id: undefined,
-        course_id: undefined,
-        semester_id: undefined,
-        jxb: undefined,
-        jxb_name: undefined,
-      },
-      teacherList: [],
-      jxbList: [],
-      jxbLoading: false,
+      addOrEdit: "add",
+      currentRecord: null,
       fieldsMap: {
         assistant_teacher_id: {
           label: "助教名称",
@@ -107,7 +72,7 @@ export default {
             disabled: true,
           },
         },
-        semester: {
+        semester_id: {
           label: "学期",
           type: "select",
           list: [],
@@ -120,61 +85,99 @@ export default {
         },
         course_info: {
           label: "所属课程",
-          type: "slot",
-          slotName: "course_info",
+          type: "children",
+          options: {
+            initialValue: { course_id: undefined, jxb: undefined },
+          },
+          onChange: this.handleCourseInfoChange,
+          children: {
+            course_id: {
+              label: "",
+              type: "select",
+              list: [],
+              options: {
+                rules: [{ required: true, message: "请选择课程" }],
+              },
+              props: {
+                placeholder: "请选择课程",
+                disabled: this.disabled,
+                style: {
+                  width: "40%",
+                },
+              },
+            },
+            jxb: {
+              label: "",
+              type: "select",
+              list: [],
+              options: {
+                rules: [{ required: true, message: "请选择课程班级" }],
+              },
+              props: {
+                placeholder: "请选择课程班级",
+                disabled: true,
+                style: {
+                  width: "40%",
+                  marginLeft: "10px",
+                },
+              },
+            },
+          },
         },
       },
     };
   },
-  watch: {
-    visible(val) {
-      if (val) {
-        this.initForm();
-      }
-    },
-  },
   methods: {
-    initForm() {
-      this.form.resetFields();
-      this.fieldsMap.semester.list = [{ value: this.semesterLabel, label: this.semesterLabel }];
+    add() {
+      this.addOrEdit = "add";
+      this.currentRecord = null;
+      this.fieldsMap.semester_id.list = [{ value: this.semester_id, label: this.semester_name }];
+      this.fieldsMap.course_info.children.course_id.list = this.courseList;
+      this.fieldsMap.course_info.children.jxb.list = [];
+      this.fieldsMap.course_info.children.jxb.props.disabled = true;
 
-      if (this.record) {
-        this.formData = {
-          id: this.record.id,
-          assistant_teacher_id: this.record.assistant_teacher_id,
-          course_id: this.record.course_id,
-          semester_id: this.record.semester_id,
-          jxb: this.record.jxb,
-          jxb_name: this.record.jxb_name,
-        };
+      this.modalVisible = true;
 
-        this.form.setFieldsValue({
-          assistant_teacher_id: this.record.assistant_teacher_id,
+      this.$nextTick(() => {
+        let initData = {
           role: "助教",
-          semester: this.semesterLabel,
-        });
-
-        if (this.formData.course_id) {
-          this.loadJxb(this.formData.course_id);
-        }
-      } else {
-        this.formData = {
-          id: undefined,
-          assistant_teacher_id: undefined,
-          course_id: undefined,
           semester_id: this.semester_id,
-          jxb: undefined,
-          jxb_name: undefined,
+          assistant_teacher_id: undefined,
+          course_info: { course_id: undefined, jxb: undefined },
         };
+        this.form.setFieldsValue(initData);
+      });
+    },
 
-        this.form.setFieldsValue({
-          role: "助教",
-          semester: this.semesterLabel,
-        });
+    edit(record) {
+      this.addOrEdit = "edit";
+      this.currentRecord = record;
 
-        this.jxbList = [];
+      this.fieldsMap.semester_id.list = [{ value: record.semester_id, label: record.semester_name }];
+      this.fieldsMap.course_info.children.course_id.list = this.courseList;
+      // 加载助教名称列表
+      if (record.assistant_teacher_id) {
+        this.handleTeacherSearch(record.assistant_teacher_id);
       }
-      this.teacherList = [];
+      // 先加载教学班列表
+      if (record.course_id) {
+        this.loadJxb(record.semester_id, record.course_id);
+      } else {
+        this.fieldsMap.course_info.children.jxb.list = [];
+        this.fieldsMap.course_info.children.jxb.props.disabled = true;
+      }
+
+      this.modalVisible = true;
+
+      this.$nextTick(() => {
+        let initData = {
+          role: "助教",
+          semester_id: record.semester_id,
+          assistant_teacher_id: record.assistant_teacher_id,
+          course_info: { course_id: record.course_id, jxb: record.jxb },
+        };
+        this.form.setFieldsValue(initData);
+      });
     },
 
     handleTeacherSearch(query) {
@@ -187,8 +190,8 @@ export default {
         .then(res => {
           if (res.status === 0 && res.data) {
             this.fieldsMap.assistant_teacher_id.list = res.data.map(item => ({
-              value: item.id,
-              label: `${item.department}/${item.name}/${item.id}`,
+              value: item.teacher_id,
+              label: `${item.department}/${item.name}/${item.teacher_id}`,
             }));
           } else {
             this.fieldsMap.assistant_teacher_id.list = [];
@@ -199,40 +202,50 @@ export default {
         });
     },
 
-    handleCourseChange(courseId) {
-      this.formData.course_id = courseId;
+    handleCourseInfoChange(value, changedFields) {
+      // 判断是哪个子字段发生了变化
+      if (changedFields && changedFields.course_id !== undefined) {
+        const courseId = changedFields.course_id;
+        // 清空已选的教学班
+        this.form.setFieldsValue({ "course_info.jxb": undefined });
 
-      if (!courseId || !this.formData.semester_id) {
-        this.jxbList = [];
-        this.formData.jxb = undefined;
-        this.formData.jxb_name = undefined;
-        return;
+        if (!courseId) {
+          this.fieldsMap.course_info.children.jxb.list = [];
+          this.fieldsMap.course_info.children.jxb.props.disabled = true;
+          return;
+        }
+
+        // 获取当前表单中的学期ID
+        const semesterId = this.form.getFieldValue("semester_id");
+        if (!semesterId) {
+          this.$message.error("请先选择学期！");
+          return;
+        }
+
+        this.loadJxb(semesterId, courseId);
       }
-
-      this.loadJxb(courseId);
     },
 
-    loadJxb(courseId) {
-      this.jxbLoading = true;
+    loadJxb(semesterId, courseId) {
       getJxb({
-        semester_id: this.formData.semester_id,
+        semester_id: semesterId,
         course_id: courseId,
       })
         .then(res => {
           if (res.status === 0 && res.data) {
-            this.jxbList = res.data.map(item => ({
+            this.fieldsMap.course_info.children.jxb.list = res.data.map(item => ({
               value: item.value,
               label: item.label,
             }));
+            this.fieldsMap.course_info.children.jxb.props.disabled = false;
           } else {
-            this.jxbList = [];
+            this.fieldsMap.course_info.children.jxb.list = [];
+            this.fieldsMap.course_info.children.jxb.props.disabled = true;
           }
         })
         .catch(() => {
-          this.jxbList = [];
-        })
-        .finally(() => {
-          this.jxbLoading = false;
+          this.fieldsMap.course_info.children.jxb.list = [];
+          this.fieldsMap.course_info.children.jxb.props.disabled = true;
         });
     },
 
@@ -242,33 +255,24 @@ export default {
           return;
         }
 
-        if (!this.formData.course_id) {
-          this.$message.error("请选择课程");
-          return;
-        }
-        if (!this.formData.jxb) {
-          this.$message.error("请选择课程班级");
-          return;
-        }
+        // 获取教学班名称
+        const jxbItem = this.fieldsMap.course_info.children.jxb.list.find(item => item.value === values.course_info.jxb);
+        const jxb_name = jxbItem ? jxbItem.label : "";
 
-        const jxbItem = this.jxbList.find(item => item.value === this.formData.jxb);
-        if (jxbItem) {
-          this.formData.jxb_name = jxbItem.label;
-        }
+        let sendData = {
+          is_modify: this.addOrEdit === "edit",
+          id: this.currentRecord?.id,
+          ...values,
+          ...values.course_info,
+          jxb_name: jxb_name,
+        };
+        delete sendData.course_info;
 
         this.confirmLoading = true;
-        saveOrUpdateAssistant({
-          is_modify: !!this.formData.id,
-          id: this.formData.id,
-          assistant_teacher_id: values.assistant_teacher_id,
-          course_id: this.formData.course_id,
-          semester_id: this.formData.semester_id,
-          jxb: this.formData.jxb,
-          jxb_name: this.formData.jxb_name,
-        })
+        saveOrUpdateAssistant(sendData)
           .then(res => {
             if (res.status === 0) {
-              this.$message.success(this.formData.id ? "修改成功！" : "添加成功！");
+              this.$message.success(this.addOrEdit === "edit" ? "修改成功！" : "添加成功！");
               this.$emit("ok");
               this.handleCancel();
             } else {
@@ -286,7 +290,11 @@ export default {
 
     handleCancel() {
       this.form.resetFields();
-      this.$emit("cancel");
+      this.modalVisible = false;
+      this.currentRecord = null;
+      this.fieldsMap.assistant_teacher_id.list = [];
+      this.fieldsMap.course_info.children.jxb.list = [];
+      this.fieldsMap.course_info.children.jxb.props.disabled = true;
     },
   },
 };

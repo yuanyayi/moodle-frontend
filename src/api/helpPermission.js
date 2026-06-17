@@ -1,4 +1,5 @@
 import { axios } from "@/utils/request";
+import { obj2arr } from "@/utils/common";
 
 /**
  * 获取助教配置列表（新接口）
@@ -45,6 +46,9 @@ export function getJxb(params) {
     url: "/assistant/getJxb",
     method: "get",
     params,
+  }).then(res => {
+    res.data = res.data ? obj2arr(res.data) : [];
+    return res;
   });
 }
 

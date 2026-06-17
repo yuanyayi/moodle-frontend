@@ -3,8 +3,7 @@
     <a-card :bordered="false">
       <!-- 直播基本信息 -->
       <div class="live-info-section">
-        <div class="title" style="line-height:26px">{{ liveInfo.subject }}<status-tag
-            :color="liveInfo.replay ? '#13C74F' : '#6E7079'" :text="liveInfo.replay ? '已开放回放' : '未开放回放'" /></div>
+        <div class="title" style="line-height: 26px">{{ liveInfo.subject }}<status-tag :color="liveInfo.replay ? '#13C74F' : '#6E7079'" :text="liveInfo.replay ? '已开放回放' : '未开放回放'" /></div>
         <div>
           <span class="info-item">
             <a-icon :component="detail1" />
@@ -26,14 +25,7 @@
 
       <!-- 学生观看记录列表 -->
       <div class="student-records-section">
-        <a-table
-          :columns="columns"
-          :data-source="studentRecords"
-          :pagination="pagination"
-          :loading="loading"
-          row-key="student_id"
-          @change="handleTableChange"
-        >
+        <a-table :columns="columns" :data-source="studentRecords" :pagination="pagination" :loading="loading" row-key="student_id" @change="handleTableChange">
           <template slot="action" slot-scope="text, record">
             <a-button type="link" @click="viewDetail(record)">查看详情</a-button>
           </template>
@@ -68,7 +60,7 @@ export default {
       liveConfigId: this.$route.params.live_config_id,
       liveInfo: {},
       loading: false,
-      
+
       // 学生记录列表
       studentRecords: [],
       params: {
@@ -81,7 +73,7 @@ export default {
         pageSize: 10,
         showSizeChanger: true,
         pageSizeOptions: ["10", "20", "50", "100"],
-        showTotal: (total) => `共 ${total} 条数据`,
+        showTotal: total => `共 ${total} 条数据`,
       },
       columns: [
         {
@@ -93,6 +85,11 @@ export default {
           title: "学生名称",
           dataIndex: "student_name",
           key: "student_name",
+        },
+        {
+          title: "在线时长（分钟）",
+          dataIndex: "online_time",
+          key: "online_time",
         },
         {
           title: "离开次数",
@@ -120,32 +117,35 @@ export default {
     fetchStudentRecords() {
       this.loading = true;
       const params = {
-        ...this.params
+        ...this.params,
       };
-      
-      fetchLogsByLive(this.liveConfigId, params).then((res) => {
-        if (res.status) {
-          this.$message.error(res.msg || "获取数据失败，请稍后再试。");
-          return;
-        }
-        
-        // 接口返回的数据结构包含data和pageBean
-        this.liveInfo = res.data || {};
-        this.studentRecords = res.pageBean?.list || [];
-        this.pagination.current = res.pageBean?.currentPage || 1;
-        this.pagination.pageSize = res.pageBean?.pageSize || 10;
-        this.pagination.total = res.pageBean?.allRow || 0;
-      }).catch(error => {
-        console.error("获取学生记录失败:", error);
-        this.$message.error("获取学生记录失败");
-      }).finally(() => {
-        this.loading = false;
-      });
+
+      fetchLogsByLive(this.liveConfigId, params)
+        .then(res => {
+          if (res.status) {
+            this.$message.error(res.msg || "获取数据失败，请稍后再试。");
+            return;
+          }
+
+          // 接口返回的数据结构包含data和pageBean
+          this.liveInfo = res.data || {};
+          this.studentRecords = res.pageBean?.list || [];
+          this.pagination.current = res.pageBean?.currentPage || 1;
+          this.pagination.pageSize = res.pageBean?.pageSize || 10;
+          this.pagination.total = res.pageBean?.allRow || 0;
+        })
+        .catch(error => {
+          console.error("获取学生记录失败:", error);
+          this.$message.error("获取学生记录失败");
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
     handleTableChange(pagination) {
       this.params = {
         page: pagination.current,
-        pageSize: pagination.pageSize
+        pageSize: pagination.pageSize,
       };
       this.fetchStudentRecords();
     },
@@ -153,7 +153,7 @@ export default {
       // 打开学生直播日志详情抽屉，传递学生信息
       this.$refs.studentLiveLogDetailDrawer.show(this.liveConfigId, record.student_id, {
         student_name: record.student_name,
-        student_id: record.student_id
+        student_id: record.student_id,
       });
     },
     // 添加t方法解决国际化问题
@@ -168,7 +168,7 @@ export default {
 <style scoped>
 .live-info-section {
   padding: 24px;
-  background: url('@/assets/bg/image@2x.png') right center / auto 100%, linear-gradient(180deg, #F3F7FF 0%, rgba(243, 247, 255, 0) 100%);
+  background: url("@/assets/bg/image@2x.png") right center / auto 100%, linear-gradient(180deg, #f3f7ff 0%, rgba(243, 247, 255, 0) 100%);
   background-repeat: no-repeat;
   border-radius: 16px;
   margin-bottom: 16px;
@@ -186,7 +186,7 @@ export default {
   .info-item {
     margin-right: 20px;
 
-    >*+* {
+    > * + * {
       margin-left: 8px;
     }
 
