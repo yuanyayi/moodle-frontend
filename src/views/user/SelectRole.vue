@@ -156,13 +156,14 @@ export default {
           this.$router.push({ query: { token: newToken } });
 
           this.$nextTick(_ => {
-            // -- 学生 老师 教务 助教
-            const name = ["", "liveList", this.liveConfigId ? "broadcast" : "liveList", "helpLive"][this.selectedRoleId];
+            // 角色index对应-- 学生 老师 教务 助教
+            const name = ["", "liveList", this.liveConfigId ? "broadcast" : "liveList", "liveList", "helpLive"][this.selectedRoleId];
             const params = this.liveConfigId
               ? {
                   liveConfigId: this.liveConfigId,
                 }
               : {};
+            console.log(name, params);
             this.$router.push({
               name,
               params,
