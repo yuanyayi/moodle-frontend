@@ -50,7 +50,7 @@ export default {
       selectedRoleId: "",
       availableRoles: [],
       userId: "",
-      liveConfigId: "",
+      liveConfigId: 0,
       token: "",
     };
   },
@@ -62,7 +62,7 @@ export default {
       // 从 URL query 获取参数
       this.userId = this.$route.query.userId || "";
       this.token = this.$route.query.token || "";
-      this.liveConfigId = this.$route.query.liveConfigId || "";
+      this.liveConfigId = +(this.$route.query.liveConfigId || 0);
 
       // 参数校验
       if (!this.userId && !this.token) {
