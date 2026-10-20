@@ -95,6 +95,7 @@ export default {
               label: "",
               type: "select",
               list: [],
+              inputSearch: true,
               options: {
                 rules: [{ required: true, message: "请选择课程" }],
               },
