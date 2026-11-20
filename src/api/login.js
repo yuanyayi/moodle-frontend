@@ -656,7 +656,7 @@ export function generateToken(userId, role) {
   const encrypted = encrypt.encrypt(userId+","+timestamp);
 
   return request({
-    url: "/generateToken",
+    url: "/login/generateToken",
     method: "post",
     params: {
       user: userId,
