@@ -1,4 +1,9 @@
 import request from "@/utils/request";
+import JSEncrypt from "jsencrypt";
+
+// RSA公钥
+const PUBLIC_KEY =
+  "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyWGF+AwWsq09SCQRIpR22Btu6ipAEb5vEi7OUmQ0iH3H+zlijHfmu0SBfxiHppRd1WsZKBrgdZYNdES/IU56Z6TPDkNdR8TYS4vNJ3SJyf+0NaGeP9j7JrmWpzgA0v6zwjhLlHUcKTNQ9XWnrseVZngTj0PKl7Mpn06DhV9veaot+NjgrZG7MtduxnNGMrKB5xLCUeXR9jomo43KFYGgOUON9UmDJJi8Kjijp5EmfQg2NyzByLgtenKogdgpHTfasFqrxb+mozPoZc3XSAlHO+bwRzC7ZTWr5qF0zaGi9CUTQKDbPG3io8DYsYGk8PY+xSeLLstMaJs4Y0CLabPDkwIDAQAB";
 
 const userApi = {
   Login: "/auth/login",
@@ -644,12 +649,19 @@ export function getSelectableRoles(uid, token) {
  * @param {number} role - 角色ID
  */
 export function generateToken(userId, role) {
+  // 使用RSA公钥加密userId和timestamp
+  const timestamp = Date.now();
+  const encrypt = new JSEncrypt();
+  encrypt.setPublicKey(`-----BEGIN PUBLIC KEY-----\n${PUBLIC_KEY}\n-----END PUBLIC KEY-----`);
+  const encrypted = encrypt.encrypt(userId+","+timestamp);
+
   return request({
-    url: "/agent/generateToken",
+    url: "/generateToken",
     method: "post",
     params: {
       user: userId,
       role,
+      e: encrypted,
     },
   });
 }
