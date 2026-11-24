@@ -149,8 +149,8 @@ export default {
         // 调用接口获取新角色的 token
         const response = await generateToken(this.userId, this.selectedRoleId);
 
-        if (response && response.data && response.data.token) {
-          const newToken = response.data.token;
+        if (response && response.token) {
+          const newToken = response.token;
           storage.set(ACCESS_TOKEN, newToken, new Date().getTime() + 7 * 24 * 60 * 60 * 1000);
           store.commit("SET_ROLES", []);
           this.$router.push({ query: { token: newToken } });
