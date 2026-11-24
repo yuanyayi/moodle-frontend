@@ -56,10 +56,15 @@ export default {
           dataIndex: "course_name",
           key: "course_name",
         },
+        // {
+        //   title: "直播名称",
+        //   dataIndex: "subject",
+        //   key: "subject",
+        // },
         {
-          title: "直播名称",
-          dataIndex: "subject",
-          key: "subject",
+          title: "班级名称",
+          dataIndex: "jxb",
+          key: "jxb",
         },
         {
           title: "老师",
